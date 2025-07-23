@@ -7,12 +7,17 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 </head>
 <body>
+    <div class="weather-bar">
+        <span class="weather-city">Buenos Aires</span>
+        <span class="weather-temp" id="weather-temp">Loading...</span>
+    </div>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-running"></i> Combined</h1>
-            <p>Workout from July 22</p>
+            <h1><i class="fas fa-running"></i> Workout Plan</h1>
+            <p>Combined Workout - July 22</p>
         </div>
         <div class="content">
             <!-- Easy Run Session (July 22) -->
@@ -111,10 +116,26 @@
             </div>
         </div>
     </div>
-    <div style="text-align:center;margin:40px 0 0 0;">
+     <div style="text-align:center;margin:40px 0 0 0;">
         <a href="index.html" style="display:inline-block;padding:15px 30px;background:#ee5a24;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:1.1rem;box-shadow:0 2px 8px rgba(60,60,80,0.2);transition:background 0.2s;">
             <i class="fas fa-arrow-left"></i> Back to current workout
         </a>
     </div>
+    <footer class="site-footer">
+        <a href="https://www.argensonix.com" target="_blank" rel="noopener" class="footer-link">© 2025 Argensonix Multimedia</a>
+    </footer>
+<script>
+// Fetch current temperature for Buenos Aires and update weather bar
+fetch('https://wttr.in/Buenos%20Aires?format=%t')
+  .then(response => response.text())
+  .then(temp => {
+    // Clean up temp string (remove +, add °C if missing)
+    let cleanTemp = temp.replace('+', '').replace('°C', '').trim();
+    document.getElementById('weather-temp').textContent = `${cleanTemp}°C 🌤️`;
+  })
+  .catch(() => {
+    document.getElementById('weather-temp').textContent = 'N/A';
+  });
+</script>
 </body>
 </html>

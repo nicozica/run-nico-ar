@@ -1,3 +1,87 @@
+/* Weather bar styles (centered above main table) */
+.weather-bar {
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+    color: #adb5bd;
+    background: none;
+    padding: 4px 0 16px 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 0;
+}
+.weather-bar .weather-city {
+    margin-right: 8px;
+    font-weight: 500;
+}
+.weather-bar .weather-temp {
+    font-weight: 400;
+}
+/* Header row for weather integration */
+.header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+}
+.header-row h1 {
+    margin-bottom: 0;
+}
+.weather-header {
+    text-align: right;
+    font-size: 1rem;
+    color: #adb5bd;
+    background: none;
+    padding: 0;
+    margin-top: 2px;
+    margin-right: 0;
+    letter-spacing: 0.5px;
+    font-family: 'Inter', sans-serif;
+}
+.weather-city {
+    margin-right: 8px;
+    font-weight: 500;
+}
+.weather-temp {
+    font-weight: 400;
+}
+/* Weather header styles */
+.weather-header {
+    width: 100%;
+    text-align: right;
+    font-size: 1rem;
+    color: #adb5bd;
+    background: none;
+    padding: 8px 18px 0 0;
+    letter-spacing: 0.5px;
+    font-family: 'Inter', sans-serif;
+}
+.weather-city {
+    margin-right: 10px;
+    font-weight: 500;
+}
+.weather-temp {
+    font-weight: 400;
+}
+/* Footer styles */
+.site-footer {
+    width: 100%;
+    text-align: center;
+    padding: 18px 0 10px 0;
+    color: #adb5bd;
+    font-size: 1rem;
+    margin-top: 60px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+.footer-link {
+    color: #adb5bd;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.footer-link:hover {
+    color: #4a69bd;
+}
 /* Past workouts section */
 .past-title {
     color: #f8f9fa;
