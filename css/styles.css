@@ -1,0 +1,387 @@
+/* Past workouts section */
+.past-title {
+    color: #f8f9fa;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    display: block;
+}
+.past-link {
+    display: inline-block;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+    background: #3742fa;
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(60,60,80,0.2);
+    transition: background 0.2s;
+}
+.past-link:hover {
+    background: #4a69bd;
+}
+.phase-desc {
+    color: #adb5bd;
+    margin-left: 8px;
+}
+.set-notes {
+    margin-top: 10px;
+    color: #f8f9fa;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #e4e6ea;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(30, 30, 46, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.content {
+    padding: 40px;
+}
+
+.session {
+    background: rgba(45, 45, 65, 0.8);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-left: 5px solid;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.session:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    background: rgba(50, 50, 70, 0.9);
+}
+
+.session.easy {
+    border-left-color: #2ecc71;
+}
+
+.session.threshold {
+    border-left-color: #e74c3c;
+}
+
+.session.ritmo {
+    border-left-color: #4a69bd;
+}
+
+.session-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.session-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.easy .session-icon {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.threshold .session-icon {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.ritmo .session-icon {
+    background: linear-gradient(135deg, #4a69bd, #3742fa);
+}
+
+.session-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #f8f9fa;
+}
+
+.session-subtitle {
+    color: #adb5bd;
+    font-size: 0.9rem;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    background: rgba(60, 60, 80, 0.6);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: #adb5bd;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #f8f9fa;
+}
+
+.workout-structure {
+    background: rgba(60, 60, 80, 0.6);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.workout-structure h4 {
+    color: #f8f9fa;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.phase {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e4e6ea;
+}
+
+.phase:last-child {
+    border-bottom: none;
+}
+
+.phase-dot {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    min-height: 12px;
+    border-radius: 50%;
+    margin-right: 15px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    display: inline-block;
+}
+
+.warmup { background: #3498db; }
+.work { background: #e74c3c; }
+.recovery { background: #f39c12; }
+.cooldown { background: #95a5a6; }
+.easy-dot { background: #2ecc71; }
+.moderado-dot { background: #e67e22; }
+.alegre-dot { background: #4a69bd; }
+.suave-dot { background: #95a5a6; }
+
+.tips {
+    background: linear-gradient(135deg, #4a69bd, #3742fa);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tips h3 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.tips ul {
+    list-style: none;
+}
+
+.tips li {
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+}
+
+.tips li::before {
+    content: '💡';
+    position: absolute;
+    left: 0;
+}
+
+.rpe-scale {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(60, 60, 80, 0.6);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rpe-item {
+    text-align: center;
+    flex: 1;
+}
+
+.rpe-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 5px;
+    font-weight: 600;
+    color: white;
+}
+
+.rpe-3 { background: #2ecc71; }
+.rpe-7 { background: #e74c3c; }
+
+.rpe-label {
+    font-size: 0.8rem;
+    color: #adb5bd;
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(60, 60, 80, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 2px;
+        border-radius: 10px;
+    }
+    .header {
+        padding: 10px;
+    }
+    .header h1 {
+        font-size: 1.3rem;
+    }
+    .content {
+        padding: 8px;
+    }
+    .session {
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    .details {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .workout-structure {
+        padding: 10px;
+        margin: 10px 0;
+    }
+    .tips {
+        padding: 12px;
+        margin-top: 15px;
+    }
+    .set-notes {
+        font-size: 0.95rem;
+    }
+    .past-title {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-size: 1rem;
+    }
+    .past-link {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Dark theme specific enhancements */
+.session strong {
+    color: #f8f9fa;
+}
+
+.phase strong {
+    color: #f8f9fa;
+}
+
+/* Subtle glow effects for dark theme */
+.session-icon {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.rpe-number {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
