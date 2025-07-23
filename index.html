@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Entrenamiento - Mañana</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e4e6ea;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(30, 30, 46, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .session {
+            background: rgba(45, 45, 65, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-left: 5px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .session:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            background: rgba(50, 50, 70, 0.9);
+        }
+
+        .session.easy {
+            border-left-color: #2ecc71;
+        }
+
+        .session.threshold {
+            border-left-color: #e74c3c;
+        }
+
+        .session-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .session-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .easy .session-icon {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .threshold .session-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .session-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #f8f9fa;
+        }
+
+        .session-subtitle {
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background: rgba(60, 60, 80, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #adb5bd;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #f8f9fa;
+        }
+
+        .workout-structure {
+            background: rgba(60, 60, 80, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .workout-structure h4 {
+            color: #f8f9fa;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .phase {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e4e6ea;
+        }
+
+        .phase:last-child {
+            border-bottom: none;
+        }
+
+        .phase-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .warmup { background: #3498db; }
+        .work { background: #e74c3c; }
+        .recovery { background: #f39c12; }
+        .cooldown { background: #95a5a6; }
+
+        .tips {
+            background: linear-gradient(135deg, #4a69bd, #3742fa);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tips h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .tips ul {
+            list-style: none;
+        }
+
+        .tips li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .tips li::before {
+            content: '💡';
+            position: absolute;
+            left: 0;
+        }
+
+        .rpe-scale {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(60, 60, 80, 0.6);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rpe-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .rpe-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 5px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .rpe-3 { background: #2ecc71; }
+        .rpe-7 { background: #e74c3c; }
+
+        .rpe-label {
+            font-size: 0.8rem;
+            color: #adb5bd;
+        }
+
+        /* Scrollbar styling for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(60, 60, 80, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .session {
+                padding: 20px;
+            }
+            
+            .details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Dark theme specific enhancements */
+        .session strong {
+            color: #f8f9fa;
+        }
+
+        .phase strong {
+            color: #f8f9fa;
+        }
+
+        /* Subtle glow effects for dark theme */
+        .session-icon {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .rpe-number {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-running"></i> Plan de Entrenamiento</h1>
+            <p>Transición de FC a Ritmo - Enfoque Natural</p>
+        </div>
+
+        <div class="content">
+            <!-- Easy Run Session -->
+            <div class="session easy">
+                <div class="session-header">
+                    <div class="session-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div>
+                        <div class="session-title">Easy Run</div>
+                        <div class="session-subtitle">Sesión de recuperación activa</div>
+                    </div>
+                </div>
+
+                <div class="details">
+                    <div class="detail-item">
+                        <div class="detail-label">Duración</div>
+                        <div class="detail-value">25 minutos</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Ritmo objetivo</div>
+                        <div class="detail-value">7:45 - 8:15 min/km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Esfuerzo (RPE)</div>
+                        <div class="detail-value">3/10</div>
+                    </div>
+                </div>
+
+                <div class="rpe-scale">
+                    <div class="rpe-item">
+                        <div class="rpe-number rpe-3">3</div>
+                        <div class="rpe-label">Muy cómodo<br>Respiración nasal</div>
+                    </div>
+                </div>
+
+                <p><strong>Objetivo:</strong> Ritmo suave y conversacional. No te preocupes si la FC va a 140-150 bpm, mientras se sienta muy liviano. Enfócate en que sea cómodo y natural.</p>
+            </div>
+
+            <!-- Threshold Session -->
+            <div class="session threshold">
+                <div class="session-header">
+                    <div class="session-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div>
+                        <div class="session-title">Threshold Run</div>
+                        <div class="session-subtitle">Trabajo de umbral anaeróbico</div>
+                    </div>
+                </div>
+
+                <div class="details">
+                    <div class="detail-item">
+                        <div class="detail-label">Duración total</div>
+                        <div class="detail-value">~45 minutos</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Ritmo trabajo</div>
+                        <div class="detail-value">6:15 - 6:30 min/km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Esfuerzo trabajo</div>
+                        <div class="detail-value">7/10</div>
+                    </div>
+                </div>
+
+                <div class="workout-structure">
+                    <h4><i class="fas fa-list-ol"></i> Estructura del entrenamiento</h4>
+                    
+                    <div class="phase">
+                        <div class="phase-dot warmup"></div>
+                        <div>
+                            <strong>Calentamiento:</strong> 10 min a ritmo fácil (8:00-8:15 min/km)
+                        </div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot work"></div>
+                        <div>
+                            <strong>Trabajo:</strong> 4 × 5 min a ritmo umbral (6:15-6:30 min/km)
+                        </div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot recovery"></div>
+                        <div>
+                            <strong>Recuperación:</strong> 1:30 min entre series (8:00-8:30 min/km)
+                        </div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot cooldown"></div>
+                        <div>
+                            <strong>Vuelta a la calma:</strong> 5-10 min trote liviano o caminata
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rpe-scale">
+                    <div class="rpe-item">
+                        <div class="rpe-number rpe-7">7</div>
+                        <div class="rpe-label">Intenso pero controlado<br>"¿Podría mantener esto 1 hora?"</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="tips">
+                <h3><i class="fas fa-lightbulb"></i> Tips para el entrenamiento</h3>
+                <ul>
+                    <li><strong>No mires el corazón:</strong> Enfócate en mantener esfuerzo constante por sensaciones</li>
+                    <li><strong>Usa tu experiencia:</strong> El cuerpo ya sabe lo que es un ritmo sostenible de tus carreras anteriores</li>
+                    <li><strong>Pregunta clave para umbral:</strong> "¿Podría mantener esto por una hora?"</li>
+                    <li><strong>Adaptación progresiva:</strong> Deja que el plan de Garmin siga como guía de estructura</li>
+                    <li><strong>Post-gimnasio:</strong> El miércoles, considera una caminata o trote suave si tienes energía</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple animation on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const sessions = document.querySelectorAll('.session');
+            sessions.forEach((session, index) => {
+                session.style.opacity = '0';
+                session.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    session.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    session.style.opacity = '1';
+                    session.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+
+        // Add click interaction for sessions
+        document.querySelectorAll('.session').forEach(session => {
+            session.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>
