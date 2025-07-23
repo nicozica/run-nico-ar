@@ -1,3 +1,38 @@
+.weather-bar-detailed {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 18px auto;
+    text-align: center;
+    font-size: 12px;
+    color: #f8f9fa;
+    background: rgba(30,30,46,0.95);
+    padding: 14px 0 10px 0;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 16px rgba(60,60,80,0.12);
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+}
+.weather-bar-detailed .weather-detail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+.weather-bar-detailed i {
+    font-size: 14px;
+    opacity: 0.85;
+}
+.weather-bar-detailed strong {
+    font-weight: 700;
+}
 /* Weather bar styles (centered above main table) */
 .weather-bar {
     width: 100%;
