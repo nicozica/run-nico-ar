@@ -18,7 +18,7 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 18px;
+    gap: 14px;
 }
 .weather-bar-detailed .weather-detail {
     display: flex;
