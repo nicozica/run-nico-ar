@@ -500,7 +500,7 @@ body {
         margin-bottom: 10px;
     }
     
-    .workout-structure, .pace-progression, .nutrition-section {
+    .workout-structure {
         padding: 15px;
         margin: 15px 0;
     }
@@ -565,18 +565,10 @@ body {
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
-/* Pace Progression Styles */
-.pace-progression {
-    background: rgba(70, 70, 90, 0.7);
-    border-radius: 12px;
-    padding: 20px;
-    margin: 20px 0;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
+/* Pace Progression Styles - Simplified, less nested */
 .pace-progression h5 {
     color: #f8f9fa;
-    margin-bottom: 15px;
+    margin: 20px 0 10px 0;
     font-size: 1rem;
     font-weight: 600;
     display: flex;
@@ -588,26 +580,26 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 15px;
-    margin-bottom: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    border-left: 4px solid #ff6b6b;
+    padding: 8px 0;
+    margin-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.2s ease;
 }
 
 .pace-block:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateX(3px);
+    background: rgba(255, 255, 255, 0.03);
+    padding-left: 8px;
+    border-radius: 4px;
 }
 
 .pace-block:last-child {
     margin-bottom: 0;
+    border-bottom: none;
 }
 
 .pace-label {
-    font-weight: 600;
-    color: #f8f9fa;
+    font-weight: 500;
+    color: #e4e6ea;
     font-size: 0.9rem;
 }
 
@@ -617,44 +609,35 @@ body {
     font-size: 0.9rem;
 }
 
-/* Nutrition Strategy Styles */
-.nutrition-section {
-    background: rgba(70, 90, 70, 0.6);
-    border-radius: 12px;
-    padding: 20px;
-    margin: 20px 0;
-    border: 1px solid rgba(46, 204, 113, 0.3);
-    border-left: 4px solid #2ecc71;
-}
-
+/* Nutrition Strategy Styles - Simplified, less nested */
 .nutrition-section h4 {
     color: #f8f9fa;
-    margin-bottom: 15px;
+    margin: 30px 0 15px 0;
     font-size: 1.1rem;
     display: flex;
     align-items: center;
     gap: 8px;
+    font-weight: 600;
 }
 
 .nutrition-timeline {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .nutrition-item {
     display: flex;
     align-items: center;
-    padding: 12px 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    border-left: 3px solid #2ecc71;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(46, 204, 113, 0.2);
     transition: all 0.2s ease;
 }
 
 .nutrition-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateX(3px);
+    background: rgba(46, 204, 113, 0.05);
+    padding-left: 8px;
+    border-radius: 4px;
 }
 
 .nutrition-time {
@@ -665,23 +648,18 @@ body {
 }
 
 .nutrition-food {
-    color: #f8f9fa;
+    color: #e4e6ea;
     font-size: 0.9rem;
     margin-left: 15px;
 }
 
 /* Enhanced mobile responsiveness */
 @media (max-width: 768px) {
-    .pace-progression, .nutrition-section {
-        padding: 15px;
-        margin: 15px 0;
-    }
-    
     .pace-block, .nutrition-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 5px;
-        padding: 10px;
+        padding: 8px 0;
     }
     
     .nutrition-time {
