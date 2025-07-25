@@ -8,15 +8,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script src="js/main.js" defer></script>
 </head>
 <body>
     <div class="weather-bar weather-bar-detailed">
         <span class="weather-detail"><i class="fas fa-map-marker-alt"></i> <strong>Buenos Aires</strong></span>
-        <span class="weather-detail" id="weather-temp">Loading...</span>
-        <span class="weather-detail"><i class="fas fa-eye"></i> <span id="weather-distance">10 km</span></span>
-        <span class="weather-detail"><i class="fas fa-wind"></i> <span id="weather-wind">12 km/h</span></span>
-        <span class="weather-detail"><i class="fas fa-tint"></i> <span id="weather-humidity">65%</span></span>
-        <span class="weather-detail"><i class="fas fa-thermometer-half"></i> Feels like: <span id="weather-feels">7°C</span></span>
+        <span class="weather-detail" id="weather-temp"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
+        <span class="weather-detail"><i class="fas fa-eye"></i> <span id="weather-distance">...</span></span>
+        <span class="weather-detail"><i class="fas fa-wind"></i> <span id="weather-wind">...</span></span>
+        <span class="weather-detail"><i class="fas fa-tint"></i> <span id="weather-humidity">...</span></span>
+        <span class="weather-detail"><i class="fas fa-thermometer-half"></i> Feels like: <span id="weather-feels">...</span></span>
     </div>
     
     <div class="main-wrapper">
@@ -128,76 +129,5 @@
             <a href="https://www.argensonix.com" target="_blank" rel="noopener" class="footer-link">© 2025 Argensonix Multimedia</a>
         </footer>
     </div>
-
-    <script>
-        // Simple animation on load
-        document.addEventListener('DOMContentLoaded', function() {
-            const sessions = document.querySelectorAll('.session');
-            sessions.forEach((session, index) => {
-                session.style.opacity = '0';
-                session.style.transform = 'translateY(20px)';
-                setTimeout(() => {
-                    session.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                    session.style.opacity = '1';
-                    session.style.transform = 'translateY(0)';
-                }, index * 200);
-            });
-        });
-    </script>
-<script>
-// Fetch weather details for Buenos Aires and update header
-fetch('https://wttr.in/Buenos%20Aires?format=j1')
-  .then(response => response.json())
-  .then(data => {
-    // Current conditions
-    const current = data.current_condition[0];
-    
-    // Function to get weather icon based on conditions
-    function getWeatherIcon(weatherDesc, temp) {
-      const desc = weatherDesc.toLowerCase();
-      
-      if (desc.includes('rain') || desc.includes('drizzle') || desc.includes('shower')) {
-        return '<i class="fas fa-cloud-rain"></i>';
-      } else if (desc.includes('snow') || desc.includes('sleet')) {
-        return '<i class="fas fa-snowflake"></i>';
-      } else if (desc.includes('storm') || desc.includes('thunder')) {
-        return '<i class="fas fa-bolt"></i>';
-      } else if (desc.includes('fog') || desc.includes('mist') || desc.includes('haze')) {
-        return '<i class="fas fa-smog"></i>';
-      } else if (desc.includes('cloud') || desc.includes('overcast')) {
-        return '<i class="fas fa-cloud"></i>';
-      } else if (desc.includes('partly') || desc.includes('scattered')) {
-        return '<i class="fas fa-cloud-sun"></i>';
-      } else if (desc.includes('clear') || desc.includes('sunny')) {
-        return '<i class="fas fa-sun"></i>';
-      } else {
-        // Default based on temperature
-        return temp > 25 ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-cloud"></i>';
-      }
-    }
-    
-    // Get weather description and icon
-    const weatherDesc = current.weatherDesc[0].value;
-    const weatherIcon = getWeatherIcon(weatherDesc, parseInt(current.temp_C));
-    
-    // Temperature with dynamic icon
-    document.getElementById('weather-temp').innerHTML = `${weatherIcon} ${current.temp_C}°C`;
-    // Distance (visibility)
-    document.getElementById('weather-distance').textContent = `${current.visibility} km`;
-    // Wind
-    document.getElementById('weather-wind').textContent = `${current.windspeedKmph} km/h`;
-    // Humidity
-    document.getElementById('weather-humidity').textContent = `${current.humidity}%`;
-    // Feels like
-    document.getElementById('weather-feels').textContent = `${current.FeelsLikeC}°C`;
-  })
-  .catch(() => {
-    document.getElementById('weather-temp').textContent = 'N/A';
-    document.getElementById('weather-distance').textContent = 'N/A';
-    document.getElementById('weather-wind').textContent = 'N/A';
-    document.getElementById('weather-humidity').textContent = 'N/A';
-    document.getElementById('weather-feels').textContent = 'N/A';
-  });
-</script>
 </body>
 </html>

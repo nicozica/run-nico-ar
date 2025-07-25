@@ -8,8 +8,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script src="js/main.js" defer></script>
 </head>
 <body>
+    <div class="weather-bar weather-bar-detailed">
+        <span class="weather-detail"><i class="fas fa-map-marker-alt"></i> <strong>Buenos Aires</strong></span>
+        <span class="weather-detail" id="weather-temp"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
+        <span class="weather-detail"><i class="fas fa-eye"></i> <span id="weather-distance">...</span></span>
+        <span class="weather-detail"><i class="fas fa-wind"></i> <span id="weather-wind">...</span></span>
+        <span class="weather-detail"><i class="fas fa-tint"></i> <span id="weather-humidity">...</span></span>
+        <span class="weather-detail"><i class="fas fa-thermometer-half"></i> Feels like: <span id="weather-feels">...</span></span>
+    </div>
     <div class="main-wrapper">
         <div class="header">
             <h1><i class="fas fa-exclamation-triangle"></i> Page Not Found</h1>
@@ -47,21 +56,5 @@
             <a href="https://www.argensonix.com" target="_blank" rel="noopener" class="footer-link">© 2025 Argensonix Multimedia</a>
         </footer>
     </div>
-
-    <script>
-        // Simple animation on load
-        document.addEventListener('DOMContentLoaded', function() {
-            const sessions = document.querySelectorAll('.session');
-            sessions.forEach((session, index) => {
-                session.style.opacity = '0';
-                session.style.transform = 'translateY(20px)';
-                setTimeout(() => {
-                    session.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                    session.style.opacity = '1';
-                    session.style.transform = 'translateY(0)';
-                }, index * 200);
-            });
-        });
-    </script>
 </body>
 </html>
