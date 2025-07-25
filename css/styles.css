@@ -250,6 +250,10 @@ body {
     border-left-color: #ff6b6b;
 }
 
+.session.error-session {
+    border-left-color: #f39c12;
+}
+
 .session-header {
     display: flex;
     align-items: center;
@@ -282,6 +286,10 @@ body {
 
 .long-run .session-icon {
     background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+}
+
+.error-session .session-icon {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
 }
 
 .session-title {
