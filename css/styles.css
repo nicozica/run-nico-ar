@@ -395,7 +395,13 @@ body {
 
 .workout-structure h4 {
     color: #f8f9fa;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.tips h4, .tips h3 {
+    color: #f8f9fa;
+    margin-bottom: 20px;
     font-size: 1.1rem;
 }
 
@@ -465,38 +471,45 @@ body {
 
 .rpe-scale {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     background: rgba(60, 60, 80, 0.6);
-    border-radius: 10px;
-    padding: 15px;
-    margin: 15px 0;
+    border-radius: 15px;
+    padding: 30px 40px;
+    margin: 25px 0;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 40px;
 }
 
 .rpe-item {
     text-align: center;
     flex: 1;
+    padding: 0 15px;
 }
 
 .rpe-number {
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 5px;
-    font-weight: 600;
+    margin: 0 auto 12px;
+    font-weight: 700;
+    font-size: 1.3rem;
     color: white;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .rpe-3 { background: #2ecc71; }
 .rpe-7 { background: #e74c3c; }
 
 .rpe-label {
-    font-size: 0.8rem;
-    color: #adb5bd;
+    font-size: 0.9rem;
+    color: #e4e6ea;
+    font-weight: 500;
+    line-height: 1.3;
 }
 
 /* Scrollbar styling for dark theme */
