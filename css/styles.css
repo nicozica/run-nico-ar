@@ -1,12 +1,12 @@
 .weather-bar-detailed {
     width: 100%;
-    max-width: 800px;
-    margin: 0 auto 18px auto;
+    max-width: 760px;
+    margin: 0 auto;
     text-align: center;
     font-size: 12px;
     color: #f8f9fa;
     background: rgba(30,30,46,0.95);
-    padding: 14px 0 10px 0;
+    padding: 14px 20px 10px 20px;
     border-radius: 14px;
     font-family: 'Inter', sans-serif;
     font-weight: 500;
@@ -128,37 +128,72 @@
     color: #4a69bd;
 }
 /* Past workouts section */
+.past-workouts-section {
+    padding: 20px 0;
+    margin-top: 30px;
+}
+
 .past-title {
     color: #f8f9fa;
-    margin-top: 40px;
+    margin-top: 0;
     margin-bottom: 20px;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     display: block;
-    font-weight: 600;
 }
 
 .past-link {
     display: block;
-    padding: 18px 22px;
-    margin-bottom: 12px;
-    background: rgba(60, 60, 80, 0.6);
-    color: #e4e6ea;
-    border-radius: 12px;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    margin-right: 0;
+    background: rgba(30,30,46,0.7);
+    color: #a8b2d1;
+    border-radius: 6px;
     text-decoration: none;
-    font-weight: 500;
-    font-size: 0.95rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s ease;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-weight: 400;
+    font-size: 0.9rem;
+    border: 1px solid rgba(60,60,80,0.3);
+    transition: background 0.2s, color 0.2s;
 }
 
 .past-link:hover {
-    background: rgba(70, 70, 90, 0.8);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    color: #f8f9fa;
+    background: rgba(40,40,60,0.8);
+    color: #c8d2e8;
 }
+
+/* Back to current workout button */
+.back-to-current {
+    display: inline-block;
+    padding: 12px 20px;
+    margin: 20px auto;
+    background: linear-gradient(135deg, #ff6b35, #ee5a24);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+    transition: all 0.2s ease;
+    text-align: center;
+    width: fit-content;
+}
+
+.back-to-current:hover {
+    background: linear-gradient(135deg, #ff7849, #f0632a);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    color: white;
+}
+
+.back-to-current i {
+    margin-right: 8px;
+}
+
+.back-button-container {
+    text-align: center;
+    margin: 20px 0 15px 0;
+}
+
 .phase-desc {
     color: #adb5bd;
     margin-left: 8px;
@@ -180,6 +215,14 @@ body {
     padding: 0;
     margin: 0;
     color: #e4e6ea;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+    position: relative;
 }
 
 .main-wrapper {
@@ -557,6 +600,85 @@ body {
     }
 }
 
+/* New workout-specific styles */
+.objectives-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.objective-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: #e4e6ea;
+}
+
+.objective-item i {
+    color: #4a69bd;
+    font-size: 1.1em;
+}
+
+.phase-section {
+    margin: 20px 0;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.phase-section:last-child {
+    border-bottom: none;
+}
+
+.phase-section h5 {
+    color: #f8f9fa;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.phase-section h6 {
+    color: #adb5bd;
+    margin: 15px 0 8px 0;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.variation-block {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+}
+
+.variation-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.variation-list li {
+    padding: 4px 0;
+    color: #e4e6ea;
+    position: relative;
+    padding-left: 20px;
+}
+
+.variation-list li::before {
+    content: '•';
+    color: #4a69bd;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
 /* Dark theme specific enhancements */
 .session strong {
     color: #f8f9fa;
@@ -665,6 +787,44 @@ body {
 
 /* Enhanced mobile responsiveness */
 @media (max-width: 768px) {
+    .container {
+        margin: 0 auto;
+        border-radius: 10px;
+        max-width: 100%;
+        padding: 0 15px;
+    }
+    
+    .weather-bar-detailed {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 15px 8px 15px;
+        margin: 15px auto 18px auto;
+        max-width: calc(100% - 30px);
+    }
+    
+    .past-workouts-section {
+        padding: 20px 0;
+        margin-top: 30px;
+    }
+    
+    .past-link {
+        display: block;
+        margin-right: 0;
+        margin-bottom: 8px;
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .back-to-current {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+        margin: 15px auto;
+    }
+    
+    .back-button-container {
+        margin: 15px 0 10px 0;
+    }
+    
     .pace-block, .nutrition-item {
         flex-direction: column;
         align-items: flex-start;

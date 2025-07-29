@@ -20,127 +20,137 @@
         <span class="weather-detail"><i class="fas fa-thermometer-half"></i> Feels like: <span id="weather-feels">...</span></span>
     </div>
     
-    <div class="main-wrapper">
+    <div class="container">
         <div class="header">
             <h1><i class="fas fa-running"></i> Workout Plan</h1>
-            <p>Combined Workout - July 22</p>
+            <p>Combined Session - July 22</p>
         </div>
         
-        <!-- Easy Run Session (July 22) -->
-        <div class="session easy">
-            <div class="session-header">
-                <div class="session-icon">
-                    <i class="fas fa-leaf"></i>
+        <div class="content">
+            <!-- Easy Run Session (July 22) -->
+            <div class="session easy">
+                <div class="session-header">
+                    <div class="session-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div>
+                        <div class="session-title">Easy Run</div>
+                        <div class="session-subtitle">Active recovery session</div>
+                    </div>
                 </div>
-                <div>
-                    <div class="session-title">Easy Run</div>
-                    <div class="session-subtitle">Active recovery session</div>
+                <div class="details">
+                    <div class="detail-item">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value">25 minutes</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Target pace</div>
+                        <div class="detail-value">7:45 - 8:15 min/km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Effort (RPE)</div>
+                        <div class="detail-value">3/10</div>
+                    </div>
+                </div>
+                <div class="rpe-scale">
+                    <div class="rpe-item">
+                        <div class="rpe-number rpe-3">3</div>
+                        <div class="rpe-label">Very easy<br>Nasal breathing</div>
+                    </div>
+                </div>
+                <p><strong>Goal:</strong> Easy, conversational pace. Don't worry if your HR goes to 140-150 bpm, as long as it feels very light. Focus on comfort and natural movement.</p>
+            </div>
+            
+            <!-- Threshold Session (July 22) -->
+            <div class="session threshold">
+                <div class="session-header">
+                    <div class="session-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div>
+                        <div class="session-title">Threshold Run</div>
+                        <div class="session-subtitle">Anaerobic threshold work</div>
+                    </div>
+                </div>
+                <div class="details">
+                    <div class="detail-item">
+                        <div class="detail-label">Total duration</div>
+                        <div class="detail-value">~45 minutes</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Work pace</div>
+                        <div class="detail-value">6:15 - 6:30 min/km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Work effort</div>
+                        <div class="detail-value">7/10</div>
+                    </div>
+                </div>
+                <div class="workout-structure">
+                    <h4><i class="fas fa-list-ol"></i> Workout structure</h4>
+                    <div class="phase">
+                        <div class="phase-dot warmup"></div>
+                        <div><strong>Warm-up:</strong> 10 min at easy pace (8:00-8:15 min/km)</div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-dot work"></div>
+                        <div><strong>Main set:</strong> 4 × 5 min at threshold pace (6:15-6:30 min/km)</div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-dot recovery"></div>
+                        <div><strong>Recovery:</strong> 1:30 min between sets (8:00-8:30 min/km)</div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-dot cooldown"></div>
+                        <div><strong>Cool-down:</strong> 5-10 min easy jog or walk</div>
+                    </div>
+                </div>
+                <div class="rpe-scale">
+                    <div class="rpe-item">
+                        <div class="rpe-number rpe-7">7</div>
+                        <div class="rpe-label">Intense but controlled<br>"Could I hold this for 1 hour?"</div>
+                    </div>
                 </div>
             </div>
-            <div class="details">
-                <div class="detail-item">
-                    <div class="detail-label">Duration</div>
-                    <div class="detail-value">25 minutes</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Target pace</div>
-                    <div class="detail-value">7:45 - 8:15 min/km</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Effort (RPE)</div>
-                    <div class="detail-value">3/10</div>
-                </div>
+            
+            <div class="tips">
+                <h3><i class="fas fa-lightbulb"></i> Workout tips</h3>
+                <ul>
+                    <li><strong>Don't look at your heart rate:</strong> Focus on maintaining a steady effort by feel</li>
+                    <li><strong>Use your experience:</strong> Your body already knows what a sustainable pace feels like from previous runs</li>
+                    <li><strong>Threshold key question:</strong> "Could I hold this for an hour?"</li>
+                    <li><strong>Progressive adaptation:</strong> Let the Garmin plan guide your structure</li>
+                    <li><strong>Post-gym:</strong> On Wednesday, consider a walk or easy jog if you have energy</li>
+                </ul>
             </div>
-            <div class="rpe-scale">
-                <div class="rpe-item">
-                    <div class="rpe-number rpe-3">3</div>
-                    <div class="rpe-label">Very easy<br>Nasal breathing</div>
-                </div>
-            </div>
-            <p><strong>Goal:</strong> Easy, conversational pace. Don't worry if your HR goes to 140-150 bpm, as long as it feels very light. Focus on comfort and natural movement.</p>
-        </div>
-        
-        <!-- Threshold Session (July 22) -->
-        <div class="session threshold">
-            <div class="session-header">
-                <div class="session-icon">
-                    <i class="fas fa-fire"></i>
-                </div>
-                <div>
-                    <div class="session-title">Threshold Run</div>
-                    <div class="session-subtitle">Anaerobic threshold work</div>
-                </div>
-            </div>
-            <div class="details">
-                <div class="detail-item">
-                    <div class="detail-label">Total duration</div>
-                    <div class="detail-value">~45 minutes</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Work pace</div>
-                    <div class="detail-value">6:15 - 6:30 min/km</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Work effort</div>
-                    <div class="detail-value">7/10</div>
-                </div>
-            </div>
-            <div class="workout-structure">
-                <h4><i class="fas fa-list-ol"></i> Workout structure</h4>
-                <div class="phase">
-                    <div class="phase-dot warmup"></div>
-                    <div><strong>Warm-up:</strong> 10 min at easy pace (8:00-8:15 min/km)</div>
-                </div>
-                <div class="phase">
-                    <div class="phase-dot work"></div>
-                    <div><strong>Main set:</strong> 4 × 5 min at threshold pace (6:15-6:30 min/km)</div>
-                </div>
-                <div class="phase">
-                    <div class="phase-dot recovery"></div>
-                    <div><strong>Recovery:</strong> 1:30 min between sets (8:00-8:30 min/km)</div>
-                </div>
-                <div class="phase">
-                    <div class="phase-dot cooldown"></div>
-                    <div><strong>Cool-down:</strong> 5-10 min easy jog or walk</div>
-                </div>
-            </div>
-            <div class="rpe-scale">
-                <div class="rpe-item">
-                    <div class="rpe-number rpe-7">7</div>
-                    <div class="rpe-label">Intense but controlled<br>"Could I hold this for 1 hour?"</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="tips">
-            <h3><i class="fas fa-lightbulb"></i> Workout tips</h3>
-            <ul>
-                <li><strong>Don't look at your heart rate:</strong> Focus on maintaining a steady effort by feel</li>
-                <li><strong>Use your experience:</strong> Your body already knows what a sustainable pace feels like from previous runs</li>
-                <li><strong>Threshold key question:</strong> "Could I hold this for an hour?"</li>
-                <li><strong>Progressive adaptation:</strong> Let the Garmin plan guide your structure</li>
-                <li><strong>Post-gym:</strong> On Wednesday, consider a walk or easy jog if you have energy</li>
-            </ul>
         </div>
         
         <!-- Past Workouts -->
-        <h2 class="past-title"><i class="fas fa-history"></i> Past Workouts</h2>
-        <a href="2025-07-27-long-base-run.html" class="past-link">
-            <i class="fas fa-mountain"></i> Long Base Run - July 27
-        </a>
-        <a href="2025-07-24-pace-variations.html" class="past-link">
-            <i class="fas fa-bolt"></i> Pace Variations - July 24
-        </a>
-        
-        <div style="text-align:center;margin:40px 0 0 0;">
-            <a href="index.html" style="display:inline-block;padding:15px 30px;background:#ee5a24;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:1.1rem;box-shadow:0 2px 8px rgba(60,60,80,0.2);transition:background 0.2s;">
-                <i class="fas fa-arrow-left"></i> Back to current workout
+        <div class="past-workouts-section">
+            <h2 class="past-title"><i class="fas fa-history"></i> Past Workouts</h2>
+            <a href="index.html" class="past-link">
+                <i class="fas fa-bolt"></i> Fartlek Session - July 31
+            </a>
+            <a href="2025-07-29-active-recovery.html" class="past-link">
+                <i class="fas fa-leaf"></i> Active Recovery - July 29
+            </a>
+            <a href="2025-07-27-long-base-run.html" class="past-link">
+                <i class="fas fa-mountain"></i> Long Base Run - July 27
+            </a>
+            <a href="2025-07-24-pace-variations.html" class="past-link">
+                <i class="fas fa-bolt"></i> Pace Variations - July 24
             </a>
         </div>
         
-        <footer class="site-footer">
-            <a href="https://www.argensonix.com" target="_blank" rel="noopener" class="footer-link">© 2025 Argensonix Multimedia</a>
-        </footer>
+        <div class="back-button-container">
+            <a href="index.html" class="back-to-current">
+                <i class="fas fa-arrow-left"></i> Back to current workout
+            </a>
+        </div>
     </div>
+    
+    <footer class="site-footer">
+        <a href="https://www.argensonix.com" target="_blank" rel="noopener" class="footer-link">© 2025 Argensonix Multimedia</a>
+    </footer>
 </body>
 </html>

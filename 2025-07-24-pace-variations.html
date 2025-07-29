@@ -20,89 +20,95 @@
         <span class="weather-detail"><i class="fas fa-thermometer-half"></i> Feels like: <span id="weather-feels">...</span></span>
     </div>
     
-    <div class="main-wrapper">
+    <div class="container">
         <div class="header">
             <h1><i class="fas fa-running"></i> Workout Plan</h1>
-            <p>Controlled Pace Variations - July 24</p>
+            <p>Pace Variations - July 24</p>
         </div>
         
-        <!-- Main Workout July 24 -->
-        <div class="session ritmo">
-            <div class="session-header">
-                <div class="session-icon">
-                    <i class="fas fa-bolt"></i>
+        <div class="content">
+            <!-- Main Workout July 24 -->
+            <div class="session ritmo">
+                <div class="session-header">
+                    <div class="session-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div>
+                        <div class="session-title">Pace Variations</div>
+                        <div class="session-subtitle">Effort-based workout</div>
+                    </div>
                 </div>
-                <div>
-                    <div class="session-title">Pace Variations</div>
-                    <div class="session-subtitle">Effort-based workout</div>
+                <div class="details">
+                    <div class="detail-item">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value">40 minutes</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Format</div>
+                        <div class="detail-value">10 sets of 4 minutes</div>
+                    </div>
                 </div>
-            </div>
-            <div class="details">
-                <div class="detail-item">
-                    <div class="detail-label">Duration</div>
-                    <div class="detail-value">40 minutes</div>
+                <div class="workout-structure">
+                    <h4><i class="fas fa-list-ol"></i> Set Structure</h4>
+                    <div class="phase">
+                        <div class="phase-dot easy-dot"></div>
+                        <div><strong>1' Easy:</strong> 7:30-7:50 min/km <span class="phase-desc">Comfortable, conversational</span></div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-dot moderado-dot"></div>
+                        <div><strong>1' Moderate:</strong> 6:30-6:50 min/km <span class="phase-desc">Strong breathing, controlled</span></div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-dot alegre-dot"></div>
+                        <div><strong>1' Fast:</strong> 5:40-6:10 min/km <span class="phase-desc">Threshold pace, challenging</span></div>
+                    </div>
+                    <div class="phase">
+                        <div class="phase-dot suave-dot"></div>
+                        <div><strong>1' Very easy/walk:</strong> Full recovery</div>
+                    </div>
+                    <div class="set-notes">
+                        🔁 Repeat this set 10 times = 40 min<br>
+                        ❄️ Then, walk 5-10 min + stretching
+                    </div>
                 </div>
-                <div class="detail-item">
-                    <div class="detail-label">Format</div>
-                    <div class="detail-value">10 sets of 4 minutes</div>
+                <div class="tips">
+                    <h3><i class="fas fa-lightbulb"></i> Extra tips</h3>
+                    <ul>
+                        <li>Use music to mark pace changes (one song per set or per minute).</li>
+                        <li>If you want to check HR, don't worry if it goes up and down with each interval.</li>
+                        <li>No pressure: this workout is perfect to reconnect with your body, enjoy, and build confidence.</li>
+                    </ul>
                 </div>
-            </div>
-            <div class="workout-structure">
-                <h4><i class="fas fa-list-ol"></i> Set Structure</h4>
-                <div class="phase">
-                    <div class="phase-dot easy-dot"></div>
-                    <div><strong>1' Easy:</strong> 7:30-7:50 min/km <span class="phase-desc">Comfortable, conversational</span></div>
-                </div>
-                <div class="phase">
-                    <div class="phase-dot moderado-dot"></div>
-                    <div><strong>1' Moderate:</strong> 6:30-6:50 min/km <span class="phase-desc">Strong breathing, controlled</span></div>
-                </div>
-                <div class="phase">
-                    <div class="phase-dot alegre-dot"></div>
-                    <div><strong>1' Fast:</strong> 5:40-6:10 min/km <span class="phase-desc">Threshold pace, challenging</span></div>
-                </div>
-                <div class="phase">
-                    <div class="phase-dot suave-dot"></div>
-                    <div><strong>1' Very easy/walk:</strong> Full recovery</div>
-                </div>
-                <div class="set-notes">
-                    🔁 Repeat this set 10 times = 40 min<br>
-                    ❄️ Then, walk 5-10 min + stretching
-                </div>
-            </div>
-            <div class="tips">
-                <h3><i class="fas fa-lightbulb"></i> Extra tips</h3>
-                <ul>
-                    <li>Use music to mark pace changes (one song per set or per minute).</li>
-                    <li>If you want to check HR, don't worry if it goes up and down with each interval.</li>
-                    <li>No pressure: this workout is perfect to reconnect with your body, enjoy, and build confidence.</li>
-                </ul>
             </div>
         </div>
         
         <!-- Past Workouts -->
-        <h2 class="past-title"><i class="fas fa-history"></i> Past Workouts</h2>
-        <a href="2025-07-27-long-base-run.html" class="past-link">
-            <i class="fas fa-mountain"></i> Long Base Run - July 27
-        </a>
-        <a href="2025-07-22-combined.html" class="past-link">
-            <i class="fas fa-running"></i> Combined - July 22
-        </a>
-        
-        <div style="text-align:center;margin:40px 0 0 0;">
-            <a href="index.html" style="display:inline-block;padding:15px 30px;background:#ee5a24;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:1.1rem;box-shadow:0 2px 8px rgba(60,60,80,0.2);transition:background 0.2s;">
-                <i class="fas fa-arrow-left"></i> Back to current workout
+        <div class="past-workouts-section">
+            <h2 class="past-title"><i class="fas fa-history"></i> Past Workouts</h2>
+            <a href="index.html" class="past-link">
+                <i class="fas fa-bolt"></i> Fartlek Session - July 31
+            </a>
+            <a href="2025-07-29-active-recovery.html" class="past-link">
+                <i class="fas fa-leaf"></i> Active Recovery - July 29
+            </a>
+            <a href="2025-07-27-long-base-run.html" class="past-link">
+                <i class="fas fa-mountain"></i> Long Base Run - July 27
+            </a>
+            <a href="2025-07-22-combined.html" class="past-link">
+                <i class="fas fa-running"></i> Combined - July 22
             </a>
         </div>
         
-        <footer class="site-footer">
-                        <a href="https://www.argensonix.com" target="_blank" rel="noopener" class="footer-link">© 2025 Argensonix Multimedia</a>
-        </footer>
+        <div class="back-button-container">
+            <a href="index.html" class="back-to-current">
+                <i class="fas fa-arrow-left"></i> Back to current workout
+            </a>
+        </div>
     </div>
-</body>
-</html>
-        </footer>
-    </div>
+    
+    <footer class="site-footer">
+        <a href="https://www.argensonix.com" target="_blank" rel="noopener" class="footer-link">© 2025 Argensonix Multimedia</a>
+    </footer>
 
 <script>
 // Fetch weather details for Buenos Aires and update header
