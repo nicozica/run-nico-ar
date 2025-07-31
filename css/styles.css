@@ -438,6 +438,7 @@ body {
 .moderado-dot { background: #e67e22; }
 .alegre-dot { background: #4a69bd; }
 .suave-dot { background: #95a5a6; }
+.tempo-dot { background: #e74c3c; }
 
 .tips {
     background: linear-gradient(135deg, #4a69bd, #3742fa);
@@ -648,7 +649,7 @@ body {
 
 .phase-section h5 {
     color: #f8f9fa;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-size: 1.1rem;
     display: flex;
     align-items: center;
@@ -855,4 +856,42 @@ body {
     .pace-value {
         margin-top: 5px;
     }
+}
+
+/* Objectives block styling */
+.objectives-block {
+    background: linear-gradient(135deg, #2d8659, #27ae60);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.objectives-block h4 {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.objectives-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.objectives-list li {
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.objectives-list li:last-child {
+    margin-bottom: 0;
 }
