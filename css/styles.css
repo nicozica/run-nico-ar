@@ -439,6 +439,8 @@ body {
 .alegre-dot { background: #4a69bd; }
 .suave-dot { background: #95a5a6; }
 .tempo-dot { background: #e74c3c; }
+.threshold-dot { background: #d63031; }
+.recovery-dot { background: #f39c12; }
 
 .tips {
     background: linear-gradient(135deg, #4a69bd, #3742fa);
@@ -894,4 +896,58 @@ body {
 
 .objectives-list li:last-child {
     margin-bottom: 0;
+}
+
+/* Pace guidance styling */
+.pace-guidance {
+    background: linear-gradient(135deg, #2d3436, #636e72);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pace-guidance h4 {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pace-block {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pace-block:last-child {
+    margin-bottom: 0;
+}
+
+.pace-label {
+    font-size: 0.9rem;
+    opacity: 0.95;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.pace-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #ffffff;
+}
+
+.pace-desc {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    font-style: italic;
+    color: #f8f9fa;
 }
