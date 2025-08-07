@@ -113,7 +113,7 @@
 .site-footer {
     width: 100%;
     text-align: center;
-    padding: 18px 0 10px 0;
+    padding: 24px 0 32px 0;
     color: #adb5bd;
     font-size: 1rem;
     margin-top: 40px;
@@ -191,7 +191,7 @@
 
 .back-button-container {
     text-align: center;
-    margin: 20px 0 15px 0;
+    margin: 5px 0 0 0;
 }
 
 .phase-desc {
