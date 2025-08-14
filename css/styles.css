@@ -303,6 +303,14 @@ body {
     border-left-color: #ff6b6b;
 }
 
+.session.marathon-pace {
+    border-left-color: #6c5ce7;
+}
+
+.session.threshold-adaptation {
+    border-left-color: #fd79a8;
+}
+
 .session.error-session {
     border-left-color: #f39c12;
 }
@@ -339,6 +347,15 @@ body {
 
 .long-run .session-icon {
     background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+}
+
+.marathon-pace .session-icon {
+    background: linear-gradient(135deg, #6c5ce7, #5f3dc4);
+    color: white !important;
+}
+
+.threshold-adaptation .session-icon {
+    background: linear-gradient(135deg, #fd79a8, #e84393);
 }
 
 .error-session .session-icon {
@@ -441,6 +458,8 @@ body {
 .tempo-dot { background: #e74c3c; }
 .threshold-dot { background: #d63031; }
 .recovery-dot { background: #f39c12; }
+.marathon-dot { background: #6c5ce7; }
+.repeat-phase { background: #fd79a8; }
 
 .tips {
     background: linear-gradient(135deg, #4a69bd, #3742fa);
