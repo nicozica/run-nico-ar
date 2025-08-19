@@ -311,6 +311,10 @@ body {
     border-left-color: #fd79a8;
 }
 
+.session.double-session {
+    border-left-color: #00b894;
+}
+
 .session.error-session {
     border-left-color: #f39c12;
 }
@@ -356,6 +360,10 @@ body {
 
 .threshold-adaptation .session-icon {
     background: linear-gradient(135deg, #fd79a8, #e84393);
+}
+
+.double-session .session-icon {
+    background: linear-gradient(135deg, #00b894, #00a085);
 }
 
 .error-session .session-icon {
