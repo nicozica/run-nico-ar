@@ -465,8 +465,11 @@ body {
 .suave-dot { background: #95a5a6; }
 .tempo-dot { background: #e74c3c; }
 .threshold-dot { background: #d63031; }
+.vo2-dot { background: #fd79a8; }
 .recovery-dot { background: #f39c12; }
 .marathon-dot { background: #6c5ce7; }
+.fueling-dot { background: #74b9ff; }
+.hydration-dot { background: #0984e3; }
 .repeat-phase { background: #fd79a8; }
 
 .tips {
