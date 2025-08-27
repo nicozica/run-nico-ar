@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progressive Controlled Fartlek - August 26</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+</head>
+<body>
+    <div class="weather-bar weather-bar-detailed">
+        <span class="weather-detail"><i class="fas fa-map-marker-alt"></i> <strong>Buenos Aires</strong></span>
+        <span class="weather-detail" id="weather-temp"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
+        <span class="weather-detail"><i class="fas fa-eye"></i> <span id="weather-distance">...</span></span>
+        <span class="weather-detail"><i class="fas fa-wind"></i> <span id="weather-wind">...</span></span>
+        <span class="weather-detail"><i class="fas fa-tint"></i> <span id="weather-humidity">...</span></span>
+        <span class="weather-detail"><i class="fas fa-thermometer-half"></i> Feels like: <span id="weather-feels">...</span></span>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-flag-checkered"></i> Workout Plan</h1>
+            <p>Progressive Controlled Fartlek - August 26</p>
+        </div>
+        
+        <div class="content">
+            <!-- Workout Plan August 26 -->
+            <div class="session fartlek-session">
+                <div class="session-header">
+                    <div class="session-icon">
+                        <i class="fas fa-wave-square"></i>
+                    </div>
+                    <div>
+                        <div class="session-title">Progressive Controlled Fartlek</div>
+                        <div class="session-subtitle">Pace-based variation training - activate without fatigue</div>
+                    </div>
+                </div>
+                <div class="details">
+                    <div class="detail-item">
+                        <div class="detail-label">Total duration</div>
+                        <div class="detail-value">45 minutes</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Training type</div>
+                        <div class="detail-value">Fartlek by pace</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Total distance</div>
+                        <div class="detail-value">6.5-7 km</div>
+                    </div>
+                </div>
+
+                <div class="workout-structure">
+                    <h4><i class="fas fa-thermometer-empty"></i> Warm-up - 10 minutes</h4>
+                    
+                    <div class="phase">
+                        <div class="phase-dot easy-dot"></div>
+                        <div><strong>Easy pace:</strong> <span class="phase-desc">6:45-7:00/km - Gentle start</span></div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot suave-dot"></div>
+                        <div><strong>Mobility work:</strong> <span class="phase-desc">Include ankle mobility and 2-3 gentle accelerations at the end</span></div>
+                    </div>
+                </div>
+
+                <div class="workout-structure">
+                    <h4><i class="fas fa-sync-alt"></i> Fartlek - 3 blocks of 10 minutes</h4>
+                    
+                    <div class="phase">
+                        <div class="phase-dot tempo-dot"></div>
+                        <div><strong>5 min controlled pace:</strong> <span class="phase-desc">6:10-6:20/km - Steady, controlled effort</span></div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot easy-dot"></div>
+                        <div><strong>5 min easy pace:</strong> <span class="phase-desc">6:45-7:00/km - Active recovery</span></div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot repeat-phase"></div>
+                        <div><strong>Repeat pattern:</strong> <span class="phase-desc">Complete this 5min + 5min cycle three times (30 min total)</span></div>
+                    </div>
+                </div>
+
+                <div class="workout-structure">
+                    <h4><i class="fas fa-thermometer-quarter"></i> Cool-down - 5 minutes</h4>
+                    
+                    <div class="phase">
+                        <div class="phase-dot cooldown"></div>
+                        <div><strong>Very easy jog:</strong> <span class="phase-desc">Or active walking to finish</span></div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot recovery-dot"></div>
+                        <div><strong>Basic stretching:</strong> <span class="phase-desc">Focus on legs - calves, quads, hamstrings</span></div>
+                    </div>
+                </div>
+
+                <div class="tips">
+                    <h4><i class="fas fa-lightbulb"></i> Key Points</h4>
+                    <ul>
+                        <li><strong>Not a test:</strong> This is a control session, not a demanding workout</li>
+                        <li><strong>Good form during fast segments:</strong> Maintain posture, short arms, elastic stride</li>
+                        <li><strong>Focus during easy segments:</strong> Concentrate on breathing and relaxed form</li>
+                        <li><strong>Pace reminder:</strong> Use this as pace awareness, not competition</li>
+                    </ul>
+                </div>
+
+                <div class="tips">
+                    <h4><i class="fas fa-target"></i> Training Objective</h4>
+                    <ul>
+                        <li><strong>Body activation:</strong> Gentle pace variations to wake up the system</li>
+                        <li><strong>Pace control:</strong> Practice transitioning between different effort levels</li>
+                        <li><strong>Avoid fatigue:</strong> Should feel energized, not depleted after session</li>
+                        <li><strong>Form awareness:</strong> Use variations to focus on running mechanics</li>
+                    </ul>
+                </div>
+
+                <div class="tips">
+                    <h4><i class="fas fa-running"></i> Execution Tips</h4>
+                    <ul>
+                        <li><strong>Controlled transitions:</strong> Don't surge into fast segments, build gradually</li>
+                        <li><strong>Relaxed effort:</strong> Fast segments should feel comfortably hard, not strained</li>
+                        <li><strong>Active recovery:</strong> Easy segments are not walking - maintain light jogging</li>
+                        <li><strong>Listen to your body:</strong> If feeling heavy, stay conservative on pace</li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link primary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Current Workout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Past Workouts -->
+        <div class="past-workouts-section">
+            <h2 class="past-title"><i class="fas fa-history"></i> Past Workouts</h2>
+            <a href="2025-08-21-double-session-z2.html" class="past-link">
+                <i class="fas fa-layer-group"></i> Double Session Z2 - August 21
+            </a>
+            <a href="2025-08-19-threshold-run.html" class="past-link">
+                <i class="fas fa-tachometer-alt"></i> Threshold Run - August 19
+            </a>
+            <a href="2025-08-17-marathon-pace-work.html" class="past-link">
+                <i class="fas fa-bullseye"></i> Marathon Pace Work - August 17
+            </a>
+            <a href="2025-08-14-easy-recovery-run.html" class="past-link">
+                <i class="fas fa-leaf"></i> Easy Recovery Run - August 14
+            </a>
+            <a href="2025-08-12-threshold-adaptation.html" class="past-link">
+                <i class="fas fa-tachometer-alt"></i> Threshold Adaptation - August 12
+            </a>
+            <a href="2025-08-10-long-run.html" class="past-link">
+                <i class="fas fa-mountain"></i> Long Run - August 10
+            </a>
+            <a href="2025-08-07-easy-recovery-run.html" class="past-link">
+                <i class="fas fa-leaf"></i> Easy Recovery Run - August 7
+            </a>
+            <a href="2025-08-05-threshold-run.html" class="past-link">
+                <i class="fas fa-tachometer-alt"></i> Threshold Run - August 5
+            </a>
+            <a href="2025-08-03-long-base-run.html" class="past-link">
+                <i class="fas fa-mountain"></i> Long Base Run - August 3
+            </a>
+            <a href="2025-07-31-simplified-fartlek.html" class="past-link">
+                <i class="fas fa-bolt"></i> Simplified Fartlek - July 31
+            </a>
+        </div>
+    </div>
+
+    <script src="js/weather.js"></script>
+    <script src="js/animations.js"></script>
+</body>
+</html>
