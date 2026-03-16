@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">run.nico.ar</title>
+  <desc id="desc">A bold running lane mark for run.nico.ar.</desc>
+  <rect width="64" height="64" rx="16" fill="#151d28" />
+  <path d="M14 45C21 35 29 28 41 23" fill="none" stroke="#ff5a1f" stroke-linecap="round" stroke-width="8" />
+  <path d="M17 50H45" fill="none" stroke="#d7ff42" stroke-linecap="round" stroke-width="6" />
+  <circle cx="47" cy="20" r="7" fill="#00b3a4" />
+</svg>

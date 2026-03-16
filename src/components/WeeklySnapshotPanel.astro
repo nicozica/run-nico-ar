@@ -1,0 +1,54 @@
+---
+import type { WeeklySnapshot } from "../lib/data/types";
+
+interface Props {
+  weeklySnapshot: WeeklySnapshot;
+}
+
+const { weeklySnapshot } = Astro.props;
+const maxDistance = Math.max(...weeklySnapshot.dailyDistanceKm.map((d) => d.distanceKm), 1);
+---
+
+<section class="panel weekly-panel" aria-labelledby="weekly-heading">
+  <div class="panel__header panel__header--compact">
+    <div>
+      <p class="eyebrow">This week</p>
+      <h2 id="weekly-heading">{weeklySnapshot.trainingStatus}</h2>
+    </div>
+  </div>
+
+  <dl class="weekly-meta">
+    <div class="weekly-meta__item">
+      <dt>Volume</dt>
+      <dd>{weeklySnapshot.totalKm.toFixed(1)} km</dd>
+    </div>
+    <div class="weekly-meta__item">
+      <dt>Runs</dt>
+      <dd>{weeklySnapshot.runCount}</dd>
+    </div>
+    <div class="weekly-meta__item">
+      <dt>Time</dt>
+      <dd>{weeklySnapshot.totalTimeMinutes} min</dd>
+    </div>
+  </dl>
+
+  <p class="weekly-summary">{weeklySnapshot.summary}</p>
+
+  <!-- 7-day trend bars; zero-distance days show no value label -->
+  <div class="trend" aria-label="Daily km this week">
+    {weeklySnapshot.dailyDistanceKm.map((entry) => (
+      <div class="trend__item">
+        <span
+          class="trend__bar"
+          style={`--bar-scale: ${entry.distanceKm / maxDistance};`}
+        ></span>
+        <div class="trend__meta">
+          <span class="trend__label">{entry.label}</span>
+          {entry.distanceKm > 0 && (
+            <span class="trend__value">{entry.distanceKm.toFixed(1)}</span>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

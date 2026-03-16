@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Plan - July 29</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script src="js/main.js" defer></script>
+</head>
+<body>
+    <div class="weather-bar weather-bar-detailed">
+        <span class="weather-detail"><i class="fas fa-map-marker-alt"></i> <strong>Buenos Aires</strong></span>
+        <span class="weather-detail" id="weather-temp"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
+        <span class="weather-detail"><i class="fas fa-eye"></i> <span id="weather-distance">...</span></span>
+        <span class="weather-detail"><i class="fas fa-wind"></i> <span id="weather-wind">...</span></span>
+        <span class="weather-detail"><i class="fas fa-tint"></i> <span id="weather-humidity">...</span></span>
+        <span class="weather-detail"><i class="fas fa-thermometer-half"></i> Feels like: <span id="weather-feels">...</span></span>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-running"></i> Workout Plan</h1>
+            <p>Active Recovery - July 29</p>
+        </div>
+        
+        <div class="content">
+            <!-- Main Workout July 29 -->
+            <div class="session easy">
+            <div class="session-header">
+                <div class="session-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div>
+                    <div class="session-title">Active Recovery</div>
+                    <div class="session-subtitle">Post-long run recovery session</div>
+                </div>
+            </div>
+            <div class="details">
+                <div class="detail-item">
+                    <div class="detail-label">Total duration</div>
+                    <div class="detail-value">30 minutes</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Target zone</div>
+                    <div class="detail-value">Z2 (110-129 bpm)</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Purpose</div>
+                    <div class="detail-value">Recovery & circulation</div>
+                </div>
+            </div>
+            <div class="workout-structure">
+                <h4><i class="fas fa-heart"></i> Recovery Session Structure</h4>
+                <div class="phase">
+                    <div class="phase-dot warmup"></div>
+                    <div><strong>5 min easy walk:</strong> Gentle activation <span class="phase-desc">Get the body moving, no rush</span></div>
+                </div>
+                <div class="phase">
+                    <div class="phase-dot easy-dot"></div>
+                    <div><strong>20 min easy jog:</strong> Very comfortable pace <span class="phase-desc">Focus on blood circulation, not speed</span></div>
+                </div>
+                <div class="phase">
+                    <div class="phase-dot cooldown"></div>
+                    <div><strong>5 min walk:</strong> Cool down gradually <span class="phase-desc">End relaxed and refreshed</span></div>
+                </div>
+                
+                <div class="pace-progression">
+                    <h5><i class="fas fa-gauge-simple"></i> Pace guidelines</h5>
+                    <div class="pace-block">
+                        <div class="pace-label">Target pace</div>
+                        <div class="pace-value">6:30-7:00 min/km (or slower)</div>
+                    </div>
+                    <div class="pace-block">
+                        <div class="pace-label">If tired</div>
+                        <div class="pace-value">Reduce to 20-25 min or walk</div>
+                    </div>
+                    <div class="pace-block">
+                        <div class="pace-label">Surface</div>
+                        <div class="pace-value">Dirt or grass preferred (softer impact)</div>
+                    </div>
+                    <div class="pace-block">
+                        <div class="pace-label">Mental approach</div>
+                        <div class="pace-value">Listen to body over watch</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nutrition-section">
+                <h4><i class="fas fa-apple-alt"></i> Recovery Nutrition</h4>
+                <div class="nutrition-timeline">
+                    <div class="nutrition-item">
+                        <div class="nutrition-time">Before run</div>
+                        <div class="nutrition-food">Light if anything - tea or water sufficient</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-time">During run</div>
+                        <div class="nutrition-food">Just water - no fueling needed for 30 min</div>
+                    </div>
+                    <div class="nutrition-item">
+                        <div class="nutrition-time">Post-run</div>
+                        <div class="nutrition-food">Continue normal recovery from yesterday</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips">
+                <h4><i class="fas fa-lightbulb"></i> Recovery Session Tips</h4>
+                <ul>
+                    <li><strong>Listen to your body:</strong> The day after a long run, your body needs gentle movement to aid recovery</li>
+                    <li><strong>Surface matters:</strong> Choose softer surfaces like dirt trails or grass - easier on legs after yesterday's volume</li>
+                    <li><strong>Hydration:</strong> Continue rehydrating from yesterday, but don't overdo it during the easy run</li>
+                    <li><strong>No pressure:</strong> If you feel more tired than expected, reduce duration or walk instead</li>
+                    <li><strong>Goal is circulation:</strong> We're promoting blood flow to flush out metabolic waste, not building fitness</li>
+                    <li><strong>Heart rate priority:</strong> Stay in Z2 even if it means running very slowly - the effort is more important than pace</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Past Workouts -->
+        <div class="past-workouts-section">
+            <h2 class="past-title"><i class="fas fa-history"></i> Past Workouts</h2>
+            <a href="index.html" class="past-link">
+                <i class="fas fa-bolt"></i> Fartlek Session - July 31
+            </a>
+            <a href="2025-07-27-long-base-run.html" class="past-link">
+                <i class="fas fa-mountain"></i> Long Base Run - July 27
+            </a>
+            <a href="2025-07-24-pace-variations.html" class="past-link">
+                <i class="fas fa-bolt"></i> Pace Variations - July 24
+            </a>
+            <a href="2025-07-22-combined.html" class="past-link">
+                <i class="fas fa-running"></i> Combined - July 22
+            </a>
+        </div>
+    </div>
+    
+    <div class="back-button-container">
+        <a href="index.html" class="back-to-current">
+            <i class="fas fa-arrow-left"></i> Back to Current Workout
+        </a>
+    </div>
+    
+    <footer class="site-footer">
+        <a href="https://www.argensonix.com" target="_blank" rel="noopener" class="footer-link">© 2025 Argensonix Multimedia</a>
+    </footer>
+</body>
+</html>

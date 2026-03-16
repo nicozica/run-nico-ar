@@ -1,0 +1,39 @@
+---
+import LatestSessionPanel from "../components/LatestSessionPanel.astro";
+import NextRunPanel from "../components/NextRunPanel.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import UsefulReadsPanel from "../components/UsefulReadsPanel.astro";
+import WeeklySnapshotPanel from "../components/WeeklySnapshotPanel.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { loadDashboardData } from "../lib/data/load-dashboard";
+
+const dashboard = await loadDashboardData();
+---
+
+<BaseLayout
+  title="nico://run | Training interpreted"
+  description={dashboard.site.heroBody}
+>
+  <SiteHeader site={dashboard.site} currentPath="/" />
+
+  <main id="content" class="page-shell">
+    <!-- Act 1: Latest run — the main story -->
+    <LatestSessionPanel
+      latestSession={dashboard.latestSession}
+      coachFeedback={dashboard.coachFeedback}
+    />
+
+    <!-- Act 2: Next run (primary) + Weekly context (secondary) -->
+    <!-- DOM order: NextRun first so it appears above Weekly on narrow screens -->
+    <div class="content-grid content-grid--context">
+      <NextRunPanel nextRun={dashboard.nextRun} />
+      <WeeklySnapshotPanel weeklySnapshot={dashboard.weeklySnapshot} />
+    </div>
+
+    <!-- Act 3: Reading context -->
+    <UsefulReadsPanel usefulReads={dashboard.usefulReads} />
+  </main>
+
+  <SiteFooter site={dashboard.site} />
+</BaseLayout>

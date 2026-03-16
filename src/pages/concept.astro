@@ -1,0 +1,99 @@
+---
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { loadDashboardData } from "../lib/data/load-dashboard";
+
+const dashboard = await loadDashboardData();
+const architectureSteps = [
+  "Pacer exports local JSON on the Pi 5 side.",
+  "run.nico.ar reads that snapshot, normalizes it, and adds a small layer of interpretation.",
+  "Astro builds plain HTML, CSS, and /eink-summary.json for static hosting on the Pi Zero."
+];
+---
+
+<BaseLayout
+  title={`Concept | ${dashboard.site.brand}`}
+  description={dashboard.site.conceptBody}
+>
+  <SiteHeader site={dashboard.site} currentPath="/concept/" />
+
+  <main id="content" class="page-shell page-shell--narrow">
+    <section class="panel panel--hero">
+      <p class="eyebrow">Concept</p>
+      <h1>{dashboard.site.conceptTitle}</h1>
+      <p class="hero__body">{dashboard.site.conceptBody}</p>
+      <div class="pill-row">
+        <span class="pill">Training explained</span>
+        <span class="pill">Static-first</span>
+        <span class="pill">Pi 5 to Pi Zero</span>
+      </div>
+    </section>
+
+    <section class="story-grid">
+      <article class="panel story-panel">
+        <p class="eyebrow">The problem</p>
+        <h2>Recorded is not the same as explained</h2>
+        <p class="panel-copy">
+          Garmin and Strava already capture the workout. What tends to be missing later is a calmer read: what the latest session means,
+          how the week is shaping up, and what should follow next.
+        </p>
+      </article>
+
+      <article class="panel story-panel">
+        <p class="eyebrow">What it is not</p>
+        <h2>Not another training platform</h2>
+        <p class="panel-copy">
+          run.nico.ar does not try to replace Garmin, Strava, or Pacer. It sits after them. The watch records. Pacer prepares the data.
+          This site turns that export into a lightweight reading layer.
+        </p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">How it fits</p>
+          <h2>Pacer in, run out, e-ink later</h2>
+        </div>
+      </div>
+
+      <div class="concept-grid">
+        <article class="concept-card">
+          <p class="aside-block__label">Pacer</p>
+          <p>Handles the heavier aggregation work and produces the local dataset. It is the engine, not the public portal.</p>
+        </article>
+        <article class="concept-card">
+          <p class="aside-block__label">run.nico.ar</p>
+          <p>Surfaces the latest session, the shape of the week, and the next suggestion with much less friction than a full training app.</p>
+        </article>
+        <article class="concept-card">
+          <p class="aside-block__label">E-ink</p>
+          <p>Keeps a compact JSON output ready for a smaller display later, without adding server-side complexity now.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Static-first</p>
+          <h2>Built for Pi 5 build time and Pi Zero serving</h2>
+        </div>
+      </div>
+
+      <ol class="flow-list">
+        {architectureSteps.map((step) => (
+          <li>{step}</li>
+        ))}
+      </ol>
+
+      <p class="panel-copy panel-copy--spaced">
+        The tradeoff is deliberate: fewer moving parts, no production SSR, no live tokens in the frontend, and a result that stays easy to
+        maintain. It also leaves room for richer Strava, lap, and block analysis later without rebuilding the whole site.
+      </p>
+    </section>
+  </main>
+
+  <SiteFooter site={dashboard.site} />
+</BaseLayout>

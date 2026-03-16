@@ -1,0 +1,50 @@
+---
+import type { UsefulRead } from "../lib/data/types";
+
+interface Props {
+  usefulReads: UsefulRead[];
+}
+
+const { usefulReads } = Astro.props;
+
+const topicClass: Record<string, string> = {
+  running: "topic-badge--running",
+  training: "topic-badge--training",
+  wellness: "topic-badge--wellness",
+  cycling: "topic-badge--cycling",
+};
+---
+
+<section class="panel" aria-labelledby="useful-reads-heading">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Useful reads</p>
+      <h2 id="useful-reads-heading">Worth reading</h2>
+    </div>
+
+    <p class="panel__meta">Cached from RSS at build time</p>
+  </div>
+
+  {usefulReads.length > 0 ? (
+    <ul class="reads-list">
+      {usefulReads.map((item) => (
+        <li class="reads-item">
+          <a class="reads-link" href={item.url} target="_blank" rel="noreferrer noopener">
+            <span class="reads-link__title">{item.title}</span>
+            <span class="reads-link__meta">
+              {item.topic && (
+                <span class:list={["topic-badge", topicClass[item.topic] ?? ""]}>
+                  {item.topic}
+                </span>
+              )}
+              <span>{item.source}</span>
+              {item.publishedLabel && <span>{item.publishedLabel}</span>}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="panel-copy">No feed snapshot available yet. The build will use cached or mock reads until the RSS sources respond.</p>
+  )}
+</section>

@@ -1,0 +1,1026 @@
+.weather-bar-detailed {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 12px;
+    color: #f8f9fa;
+    background: rgba(30,30,46,0.95);
+    padding: 14px 20px 10px 20px;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 16px rgba(60,60,80,0.12);
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+}
+.weather-bar-detailed .weather-detail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+.weather-bar-detailed i {
+    font-size: 14px;
+    opacity: 0.85;
+}
+.weather-bar-detailed strong {
+    font-weight: 700;
+}
+
+/* Loading spinner animation */
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+/* Weather bar styles (centered above main table) */
+.weather-bar {
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+    color: #adb5bd;
+    background: none;
+    padding: 24px 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 0;
+}
+.weather-bar .weather-city {
+    margin-right: 8px;
+    font-weight: 500;
+}
+.weather-bar .weather-temp {
+    font-weight: 400;
+}
+/* Header row for weather integration */
+.header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+}
+.header-row h1 {
+    margin-bottom: 0;
+}
+.weather-header {
+    text-align: right;
+    font-size: 1rem;
+    color: #adb5bd;
+    background: none;
+    padding: 0;
+    margin-top: 2px;
+    margin-right: 0;
+    letter-spacing: 0.5px;
+    font-family: 'Inter', sans-serif;
+}
+.weather-city {
+    margin-right: 8px;
+    font-weight: 500;
+}
+.weather-temp {
+    font-weight: 400;
+}
+/* Weather header styles */
+.weather-header {
+    width: 100%;
+    text-align: right;
+    font-size: 1rem;
+    color: #adb5bd;
+    background: none;
+    padding: 8px 18px 0 0;
+    letter-spacing: 0.5px;
+    font-family: 'Inter', sans-serif;
+}
+.weather-city {
+    margin-right: 10px;
+    font-weight: 500;
+}
+.weather-temp {
+    font-weight: 400;
+}
+/* Footer styles */
+.site-footer {
+    width: 100%;
+    text-align: center;
+    padding: 24px 0 32px 0;
+    color: #adb5bd;
+    font-size: 1rem;
+    margin-top: 40px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+.footer-link {
+    color: #adb5bd;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.footer-link:hover {
+    color: #4a69bd;
+}
+/* Past workouts section */
+.past-workouts-section {
+    padding: 20px 0;
+    margin-top: 30px;
+}
+
+.past-title {
+    color: #f8f9fa;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    display: block;
+}
+
+.past-link {
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    margin-right: 0;
+    background: rgba(30,30,46,0.7);
+    color: #a8b2d1;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 0.9rem;
+    border: 1px solid rgba(60,60,80,0.3);
+    transition: background 0.2s, color 0.2s;
+}
+
+.past-link:hover {
+    background: rgba(40,40,60,0.8);
+    color: #c8d2e8;
+}
+
+/* Back to current workout button */
+.back-to-current {
+    display: inline-block;
+    padding: 12px 20px;
+    margin: 20px auto;
+    background: linear-gradient(135deg, #ff6b35, #ee5a24);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+    transition: all 0.2s ease;
+    text-align: center;
+    width: fit-content;
+}
+
+.back-to-current:hover {
+    background: linear-gradient(135deg, #ff7849, #f0632a);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    color: white;
+}
+
+.back-to-current i {
+    margin-right: 8px;
+}
+
+.back-button-container {
+    text-align: center;
+    margin: 5px 0 0 0;
+}
+
+.phase-desc {
+    color: #adb5bd;
+    margin-left: 8px;
+}
+.set-notes {
+    margin-top: 10px;
+    color: #f8f9fa;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+    color: #e4e6ea;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+    position: relative;
+}
+
+.main-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px 20px 20px;
+    min-height: 100vh;
+}
+
+.header {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.session {
+    background: rgba(45, 45, 65, 0.9);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-left: 5px solid;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.session:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    background: rgba(50, 50, 70, 0.9);
+}
+
+.session.easy {
+    border-left-color: #2ecc71;
+}
+
+.session.threshold {
+    border-left-color: #e74c3c;
+}
+
+.session.ritmo {
+    border-left-color: #4a69bd;
+}
+
+.session.long-run {
+    border-left-color: #ff6b6b;
+}
+
+.session.marathon-pace {
+    border-left-color: #6c5ce7;
+}
+
+.session.threshold-adaptation {
+    border-left-color: #fd79a8;
+}
+
+.session.double-session {
+    border-left-color: #00b894;
+}
+
+.session.error-session {
+    border-left-color: #f39c12;
+}
+
+.session-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.session-icon {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    max-width: 50px;
+    max-height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    font-size: 1.5rem;
+    color: white;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.easy .session-icon {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.threshold .session-icon {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.ritmo .session-icon {
+    background: linear-gradient(135deg, #4a69bd, #3742fa);
+}
+
+.long-run .session-icon {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+}
+
+.marathon-pace .session-icon {
+    background: linear-gradient(135deg, #6c5ce7, #5f3dc4);
+    color: white !important;
+}
+
+.threshold-adaptation .session-icon {
+    background: linear-gradient(135deg, #fd79a8, #e84393);
+}
+
+.double-session .session-icon {
+    background: linear-gradient(135deg, #00b894, #00a085);
+}
+
+.error-session .session-icon {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.session-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #f8f9fa;
+}
+
+.session-subtitle {
+    color: #adb5bd;
+    font-size: 0.9rem;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    background: rgba(60, 60, 80, 0.6);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: #adb5bd;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #f8f9fa;
+}
+
+.workout-structure {
+    background: rgba(60, 60, 80, 0.6);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.workout-structure h4 {
+    color: #f8f9fa;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.tips h4, .tips h3 {
+    color: #f8f9fa;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.phase {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e4e6ea;
+}
+
+.phase:last-child {
+    border-bottom: none;
+}
+
+.phase-dot {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    min-height: 12px;
+    border-radius: 50%;
+    margin-right: 15px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    display: inline-block;
+}
+
+.warmup { background: #3498db; }
+.work { background: #e74c3c; }
+.recovery { background: #f39c12; }
+.cooldown { background: #95a5a6; }
+.steady { background: #ff6b6b; }
+.easy-dot { background: #2ecc71; }
+.moderado-dot { background: #e67e22; }
+.controlled-dot { background: #3498db; }
+.alegre-dot { background: #4a69bd; }
+.suave-dot { background: #95a5a6; }
+.tempo-dot { background: #e74c3c; }
+.threshold-dot { background: #d63031; }
+.vo2-dot { background: #fd79a8; }
+.recovery-dot { background: #f39c12; }
+.marathon-dot { background: #6c5ce7; }
+.fueling-dot { background: #74b9ff; }
+.hydration-dot { background: #0984e3; }
+
+/* Table styling for fueling plans */
+.pace-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: rgba(55, 55, 75, 0.7);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.pace-table th {
+    background: rgba(45, 45, 65, 0.9);
+    color: #f8f9fa;
+    font-weight: 600;
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.pace-table td {
+    padding: 14px 20px;
+    color: #e9ecef;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+}
+
+.pace-table tr:last-child td {
+    border-bottom: none;
+}
+
+.pace-table tr:hover {
+    background: rgba(65, 65, 85, 0.6);
+}
+.repeat-phase { background: #fd79a8; }
+
+.tips {
+    background: linear-gradient(135deg, #4a69bd, #3742fa);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tips h3 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.tips ul {
+    list-style: none;
+}
+
+.tips li {
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+}
+
+.tips li::before {
+    content: '💡';
+    position: absolute;
+    left: 0;
+}
+
+.rpe-scale {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(60, 60, 80, 0.6);
+    border-radius: 15px;
+    padding: 30px 40px;
+    margin: 25px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 40px;
+}
+
+.rpe-item {
+    text-align: center;
+    flex: 1;
+    padding: 0 15px;
+}
+
+.rpe-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: white;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.rpe-3 { background: #2ecc71; }
+.rpe-7 { background: #e74c3c; }
+
+.rpe-label {
+    font-size: 0.9rem;
+    color: #e4e6ea;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(60, 60, 80, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+    }
+    
+    .main-wrapper {
+        padding: 0 10px 10px 10px;
+        max-width: 100%;
+    }
+    
+    .weather-bar-detailed {
+        max-width: calc(100% - 20px);
+    }
+    
+    .header {
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .session {
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 15px;
+    }
+    
+    .details {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .workout-structure {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .tips {
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .set-notes {
+        font-size: 0.95rem;
+    }
+    
+    .past-title {
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+    }
+    
+    .past-link {
+        padding: 15px 18px;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    
+    .pace-block, .nutrition-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        padding: 10px;
+    }
+    
+    .nutrition-time {
+        min-width: auto;
+        margin-bottom: 5px;
+    }
+    
+    .nutrition-food {
+        margin-left: 0;
+    }
+    
+    .pace-value {
+        margin-top: 5px;
+    }
+}
+
+/* New workout-specific styles */
+.objectives-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.objective-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: #e4e6ea;
+}
+
+.objective-item i {
+    color: #4a69bd;
+    font-size: 1.1em;
+}
+
+.phase-section {
+    margin: 20px 0;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.phase-section:last-child {
+    border-bottom: none;
+}
+
+.phase-section h5 {
+    color: #f8f9fa;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.phase-section h6 {
+    color: #adb5bd;
+    margin: 15px 0 8px 0;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.variation-block {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+}
+
+.variation-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.variation-list li {
+    padding: 4px 0;
+    color: #e4e6ea;
+    position: relative;
+    padding-left: 20px;
+}
+
+.variation-list li::before {
+    content: '•';
+    color: #4a69bd;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* Dark theme specific enhancements */
+.session strong {
+    color: #f8f9fa;
+}
+
+.phase strong {
+    color: #f8f9fa;
+}
+
+/* Subtle glow effects for dark theme */
+.session-icon {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.rpe-number {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+/* Pace Progression Styles - Simplified, less nested */
+.pace-progression h5 {
+    color: #f8f9fa;
+    margin: 20px 0 10px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pace-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    margin-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.pace-block:hover {
+    background: rgba(255, 255, 255, 0.03);
+    padding-left: 8px;
+    border-radius: 4px;
+}
+
+.pace-block:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.pace-label {
+    font-weight: 500;
+    color: #e4e6ea;
+    font-size: 0.9rem;
+}
+
+.pace-value {
+    color: #ff6b6b;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* Nutrition Strategy Styles - Simplified, less nested */
+.nutrition-section h4 {
+    color: #f8f9fa;
+    margin: 30px 0 15px 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.nutrition-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.nutrition-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(46, 204, 113, 0.2);
+    transition: all 0.2s ease;
+}
+
+.nutrition-item:hover {
+    background: rgba(46, 204, 113, 0.05);
+    padding-left: 8px;
+    border-radius: 4px;
+}
+
+.nutrition-time {
+    font-weight: 600;
+    color: #2ecc71;
+    min-width: 100px;
+    font-size: 0.9rem;
+}
+
+.nutrition-food {
+    color: #e4e6ea;
+    font-size: 0.9rem;
+    margin-left: 15px;
+}
+
+/* Enhanced mobile responsiveness */
+@media (max-width: 768px) {
+    .container {
+        margin: 0 auto;
+        border-radius: 10px;
+        max-width: 100%;
+        padding: 0 15px;
+    }
+    
+    .weather-bar-detailed {
+        padding: 12px 0 8px 0;
+        margin: 15px auto 18px auto;
+        max-width: calc(100% - 30px);
+    }
+    
+    .past-workouts-section {
+        padding: 20px 0;
+        margin-top: 30px;
+    }
+    
+    .past-link {
+        display: block;
+        margin-right: 0;
+        margin-bottom: 8px;
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .back-to-current {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+        margin: 15px auto;
+    }
+    
+    .back-button-container {
+        margin: 15px 0 10px 0;
+    }
+    
+    .pace-block, .nutrition-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        padding: 8px 0;
+    }
+    
+    .nutrition-time {
+        min-width: auto;
+        margin-bottom: 5px;
+    }
+    
+    .nutrition-food {
+        margin-left: 0;
+    }
+    
+    .pace-value {
+        margin-top: 5px;
+    }
+}
+
+/* Objectives block styling */
+.objectives-block {
+    background: linear-gradient(135deg, #2d8659, #27ae60);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.objectives-block h4 {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.objectives-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.objectives-list li {
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.objectives-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* Pace guidance styling */
+.pace-guidance {
+    background: linear-gradient(135deg, #2d3436, #636e72);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pace-guidance h4 {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pace-block {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pace-block:last-child {
+    margin-bottom: 0;
+}
+
+.pace-label {
+    font-size: 0.9rem;
+    opacity: 0.95;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.pace-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #ffffff;
+}
+
+.pace-desc {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    font-style: italic;
+    color: #f8f9fa;
+}

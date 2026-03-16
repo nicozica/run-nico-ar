@@ -1,0 +1,35 @@
+---
+import type { SiteCopy } from "../lib/data/types";
+
+interface Props {
+  site: SiteCopy;
+}
+
+const { site } = Astro.props;
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__summary">
+      <p class="site-footer__title">{site.brand}</p>
+      <p><em>Running</em> lightly on a <a href="https://zero.nico.ar" target="_blank" rel="noreferrer noopener">Pi Zero 2 W</a></p>
+    </div>
+
+    <div class="site-footer__aside">
+      <nav class="site-footer__nav" aria-label="Secondary">
+        <a href="/archive/run-2025/" target="_blank" rel="noreferrer noopener">Archive 2025 ↗</a>
+        <a href="https://pacer.nico.ar" target="_blank" rel="noreferrer noopener">Pacer ↗</a>
+      </nav>
+
+      <p class="site-footer__ring" aria-label="Companion sites">
+        <a href="https://www.nico.com.ar/" target="_blank" rel="noreferrer noopener">nico://log</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://www.nico.ar/" target="_blank" rel="noreferrer noopener">nico.ar</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://www.blurfm.com/" target="_blank" rel="noreferrer noopener">blurfm.com</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://www.lodelnico.com/" target="_blank" rel="noreferrer noopener">photoblog</a>
+      </p>
+    </div>
+  </div>
+</footer>

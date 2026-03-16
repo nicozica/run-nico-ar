@@ -1,0 +1,48 @@
+{
+  "source": "mock",
+  "windowLabel": "Rolling 7 days",
+  "totalKm": 23.8,
+  "runCount": 4,
+  "totalTimeMinutes": 237,
+  "rideCount": 1,
+  "rideKm": 14.2,
+  "summary": "Enough volume to move the week forward without turning it into a spreadsheet contest.",
+  "trainingStatus": "Steady base",
+  "dailyDistanceKm": [
+    {
+      "date": "2026-03-06",
+      "label": "Fri",
+      "distanceKm": 5.2
+    },
+    {
+      "date": "2026-03-07",
+      "label": "Sat",
+      "distanceKm": 0
+    },
+    {
+      "date": "2026-03-08",
+      "label": "Sun",
+      "distanceKm": 4.2
+    },
+    {
+      "date": "2026-03-09",
+      "label": "Mon",
+      "distanceKm": 0
+    },
+    {
+      "date": "2026-03-10",
+      "label": "Tue",
+      "distanceKm": 6.6
+    },
+    {
+      "date": "2026-03-11",
+      "label": "Wed",
+      "distanceKm": 0
+    },
+    {
+      "date": "2026-03-12",
+      "label": "Thu",
+      "distanceKm": 8.6
+    }
+  ]
+}

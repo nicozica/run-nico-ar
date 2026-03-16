@@ -1,0 +1,35 @@
+---
+import type { CoachFeedback } from "../lib/data/types";
+
+interface Props {
+  coachFeedback: CoachFeedback;
+}
+
+const { coachFeedback } = Astro.props;
+---
+
+<section class="panel" aria-labelledby="coach-summary-heading">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Coach-style summary</p>
+      <h2 id="coach-summary-heading">{coachFeedback.headline}</h2>
+    </div>
+
+    <p class="summary-verdict">{coachFeedback.verdict}</p>
+  </div>
+
+  <div class="summary-stack">
+    <p class="summary-lead">{coachFeedback.summaryShort}</p>
+
+    <dl class="summary-list">
+      <div>
+        <dt>Main takeaway</dt>
+        <dd>{coachFeedback.mainTakeaway}</dd>
+      </div>
+      <div>
+        <dt>Next recommendation</dt>
+        <dd>{coachFeedback.nextRecommendation}</dd>
+      </div>
+    </dl>
+  </div>
+</section>

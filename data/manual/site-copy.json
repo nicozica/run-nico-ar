@@ -1,0 +1,15 @@
+{
+  "brand": "run.nico.ar",
+  "tagline": "Running lightly",
+  "heroKicker": "Personal running portal",
+  "heroTitle": "Latest run first. Week second. Next move after that.",
+  "heroBody": "run.nico.ar reads exported training data and turns it into a calmer post-run view: what just happened, how the week is trending, and what should come next.",
+  "conceptTitle": "After the watch, before the next session",
+  "conceptBody": "Training explained, not just recorded. This is the quiet reading layer on top of Pacer: static, personal, and built to stay useful after the workout is over.",
+  "conceptPoints": [
+    "Reads prepared exports instead of calling live APIs from the frontend.",
+    "Lets Pacer do the heavy lifting while run.nico.ar stays lightweight.",
+    "Keeps a compact output ready for future e-ink and ESP32 views."
+  ],
+  "builtOn": "Built on Raspberry Pi 5. Served lightly on Pi Zero 2 W."
+}

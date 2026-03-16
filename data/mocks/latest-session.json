@@ -1,0 +1,44 @@
+{
+  "source": "mock",
+  "title": "Morning Run",
+  "activityType": "Run",
+  "date": "2026-03-12",
+  "distanceKm": 8.63,
+  "durationSeconds": 3421,
+  "durationLabel": "57m 01s",
+  "paceLabel": "6:36 /km",
+  "averageHeartRate": 162,
+  "maxHeartRate": 193,
+  "elevationMeters": 29,
+  "weatherLabel": "19C, humid dawn air",
+  "statusLabel": "Solid",
+  "overallFeeling": "Controlled effort with a sharper final kilometer.",
+  "personalNote": "Cadence settled after the first ten minutes and the last stretch felt cleaner than expected.",
+  "locationLabel": "Buenos Aires",
+  "laps": [
+    {
+      "lapNumber": 1,
+      "title": "Lap 1",
+      "distanceKm": 1,
+      "durationLabel": "6m 44s",
+      "paceLabel": "6:44 /km",
+      "averageHeartRate": 149
+    },
+    {
+      "lapNumber": 2,
+      "title": "Lap 2",
+      "distanceKm": 1,
+      "durationLabel": "6m 34s",
+      "paceLabel": "6:34 /km",
+      "averageHeartRate": 158
+    },
+    {
+      "lapNumber": 3,
+      "title": "Lap 3",
+      "distanceKm": 1,
+      "durationLabel": "6m 29s",
+      "paceLabel": "6:29 /km",
+      "averageHeartRate": 165
+    }
+  ]
+}

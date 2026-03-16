@@ -1,0 +1,39 @@
+{
+  "feeds": [
+    {
+      "name": "PodiumRunner",
+      "url": "https://www.podiumrunner.com/feed/",
+      "topic": "running"
+    },
+    {
+      "name": "Runners World",
+      "url": "https://www.runnersworld.com/rss/all.xml",
+      "topic": "running"
+    },
+    {
+      "name": "iRunFar",
+      "url": "https://www.irunfar.com/feed",
+      "topic": "running"
+    },
+    {
+      "name": "TrainingPeaks",
+      "url": "https://www.trainingpeaks.com/blog/feed/",
+      "topic": "training"
+    },
+    {
+      "name": "Science for Sport",
+      "url": "https://www.scienceforsport.com/feed/",
+      "topic": "wellness"
+    },
+    {
+      "name": "BikeRadar",
+      "url": "https://www.bikeradar.com/feed",
+      "topic": "cycling"
+    },
+    {
+      "name": "Velonews",
+      "url": "https://www.velonews.com/feed/",
+      "topic": "cycling"
+    }
+  ]
+}

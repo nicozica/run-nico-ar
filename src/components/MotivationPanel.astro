@@ -1,0 +1,26 @@
+---
+import type { MotivationNote, SiteCopy } from "../lib/data/types";
+
+interface Props {
+  motivation: MotivationNote;
+  site: SiteCopy;
+}
+
+const { motivation, site } = Astro.props;
+---
+
+<section class="panel panel--quote" aria-labelledby="motivation-heading">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Motivation and notes</p>
+      <h2 id="motivation-heading">{motivation.quote}</h2>
+    </div>
+
+    <p class="panel__meta">{motivation.sourceLabel}</p>
+  </div>
+
+  <div class="quote-layout">
+    <p class="quote-copy">{motivation.note}</p>
+    <p class="system-note">{site.builtOn}</p>
+  </div>
+</section>

@@ -1,0 +1,29 @@
+{
+  "name": "run-nico-ar",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "node --experimental-strip-types scripts/prepare-data.ts && astro dev",
+    "build": "node --experimental-strip-types scripts/prepare-data.ts && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "deploy:preview": "bash scripts/deploy-preview.sh",
+    "data:prepare:auto": "node --experimental-strip-types scripts/prepare-data.ts auto",
+    "data:prepare:pacer": "node --experimental-strip-types scripts/prepare-data.ts pacer",
+    "data:prepare:mocks": "node --experimental-strip-types scripts/prepare-data.ts mocks"
+  },
+  "dependencies": {
+    "@fontsource/barlow-condensed": "^5.2.6",
+    "@fontsource-variable/manrope": "^5.2.6",
+    "astro": "^5.18.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.2"
+  }
+}

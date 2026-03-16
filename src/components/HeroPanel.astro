@@ -1,0 +1,25 @@
+---
+import type { SiteCopy, WeeklySnapshot } from "../lib/data/types";
+
+interface Props {
+  site: SiteCopy;
+  weeklySnapshot: WeeklySnapshot;
+}
+
+const { site, weeklySnapshot } = Astro.props;
+---
+
+<section class="hero panel panel--hero">
+  <div class="hero__copy">
+    <p class="eyebrow">{site.heroKicker}</p>
+    <h1>{site.brand}</h1>
+    <p class="hero__tagline">{site.heroTitle}</p>
+    <p class="hero__body">{site.heroBody}</p>
+
+    <div class="pill-row" aria-label="Current week">
+      <span class="pill pill--live">{weeklySnapshot.totalKm.toFixed(1)} km this week</span>
+      <span class="pill">{weeklySnapshot.runCount} run{weeklySnapshot.runCount === 1 ? "" : "s"}</span>
+      <span class="pill">{weeklySnapshot.trainingStatus}</span>
+    </div>
+  </div>
+</section>

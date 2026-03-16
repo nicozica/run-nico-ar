@@ -1,0 +1,76 @@
+---
+import WeatherGlyph from "./WeatherGlyph.astro";
+import type { NextRun } from "../lib/data/types";
+
+interface Props {
+  nextRun: NextRun;
+}
+
+const { nextRun } = Astro.props;
+
+function getWeatherKind(summary: string): "clear" | "cloudy" | "overcast" | "rain" | "storm" | "mixed" {
+  const value = summary.toLowerCase();
+
+  if (value.includes("storm")) {
+    return "storm";
+  }
+
+  if (value.includes("rain")) {
+    return "rain";
+  }
+
+  if (value.includes("overcast")) {
+    return "overcast";
+  }
+
+  if (value.includes("cloud")) {
+    return "cloudy";
+  }
+
+  if (value.includes("clear") || value.includes("warm") || value.includes("cool")) {
+    return "clear";
+  }
+
+  return "mixed";
+}
+---
+
+<section class="panel panel--accent" aria-labelledby="next-run-heading">
+  <div class="panel__header panel__header--compact">
+    <div>
+      <p class="eyebrow">Next run</p>
+      <h2 id="next-run-heading">{nextRun.name}</h2>
+    </div>
+  </div>
+
+  <p class="panel-copy">{nextRun.goal}</p>
+
+  <dl class="next-run-stats">
+    <div class="next-run-stat">
+      <dt>Estimated duration</dt>
+      <dd>{nextRun.estimatedDuration}</dd>
+    </div>
+    <div class="next-run-stat">
+      <dt>Pace range</dt>
+      <dd>{nextRun.paceRange}</dd>
+    </div>
+  </dl>
+
+  {nextRun.forecast && nextRun.forecast.length > 0 && (
+    <div class="forecast-block" aria-label="Next run forecast">
+      <ul class="forecast-list">
+        {nextRun.forecast.map((day) => (
+          <li class="forecast-item">
+            <span class="forecast-item__day">{day.label}</span>
+            <WeatherGlyph kind={getWeatherKind(day.summary)} className="forecast-item__icon" />
+            <div class="forecast-item__temps">
+              <span class="forecast-item__temp forecast-item__temp--min">{day.temperatureMinC === null ? "—" : `${day.temperatureMinC}°`}</span>
+              <span class="forecast-item__temp forecast-item__temp--max">{day.temperatureMaxC === null ? "—" : `${day.temperatureMaxC}°`}</span>
+            </div>
+            <span class="forecast-item__summary">{day.summary}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</section>

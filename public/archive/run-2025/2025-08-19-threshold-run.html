@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threshold Run - August 19</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+</head>
+<body>
+    <div class="weather-bar weather-bar-detailed">
+        <span class="weather-detail"><i class="fas fa-map-marker-alt"></i> <strong>Buenos Aires</strong></span>
+        <span class="weather-detail" id="weather-temp"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
+        <span class="weather-detail"><i class="fas fa-eye"></i> <span id="weather-distance">...</span></span>
+        <span class="weather-detail"><i class="fas fa-wind"></i> <span id="weather-wind">...</span></span>
+        <span class="weather-detail"><i class="fas fa-tint"></i> <span id="weather-humidity">...</span></span>
+        <span class="weather-detail"><i class="fas fa-thermometer-half"></i> Feels like: <span id="weather-feels">...</span></span>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-running"></i> Workout Plan</h1>
+            <p>Threshold Run - August 19</p>
+        </div>
+        
+        <div class="content">
+            <!-- Main Workout August 19 -->
+            <div class="session threshold">
+                <div class="session-header">
+                    <div class="session-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div>
+                        <div class="session-title">Threshold Run</div>
+                        <div class="session-subtitle">Pace-adapted threshold training</div>
+                    </div>
+                </div>
+                <div class="details">
+                    <div class="detail-item">
+                        <div class="detail-label">Total duration</div>
+                        <div class="detail-value">~46 minutes</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Threshold pace</div>
+                        <div class="detail-value">5:40-5:50/km</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Total distance</div>
+                        <div class="detail-value">7.5-8.5 km</div>
+                    </div>
+                </div>
+
+                <div class="workout-structure">
+                    <h4><i class="fas fa-puzzle-piece"></i> Session Structure</h4>
+                    
+                    <div class="phase">
+                        <div class="phase-dot easy-dot"></div>
+                        <div><strong>10 min easy warm-up:</strong> <span class="phase-desc">6:50-7:10/km (Z1-Z2)</span></div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot threshold-dot"></div>
+                        <div><strong>8 min threshold pace:</strong> <span class="phase-desc">5:40-5:50/km (Z4 - strong controlled)</span></div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot recovery-dot"></div>
+                        <div><strong>2 min easy recovery:</strong> <span class="phase-desc">6:45-7:10/km (Z2 soft jog)</span></div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot repeat-phase"></div>
+                        <div><strong>Repeat 3 times:</strong> <span class="phase-desc">3 blocks of 8 min threshold + 2 min recovery</span></div>
+                    </div>
+                    
+                    <div class="phase">
+                        <div class="phase-dot cooldown"></div>
+                        <div><strong>~10 min free cool-down:</strong> <span class="phase-desc">6:45-7:30/km based on sensations</span></div>
+                    </div>
+                </div>
+
+                <div class="tips">
+                    <h4><i class="fas fa-lightbulb"></i> Execution Tips</h4>
+                    <ul>
+                        <li><strong>First block:</strong> Start closer to 5:50/km and adjust if feeling good</li>
+                        <li><strong>Breathing:</strong> Strong but controlled - avoid gasping like in speed sessions</li>
+                        <li><strong>Cadence:</strong> Aim for >165 spm</li>
+                        <li><strong>Recovery:</strong> Don't walk unless needed - easy jog to keep legs active</li>
+                        <li><strong>Heart rate:</strong> If HR spikes, reduce pace but keep stride relaxed</li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Past Workouts -->
+        <div class="past-workouts-section">
+            <h2 class="past-title"><i class="fas fa-history"></i> Past Workouts</h2>
+            <a href="2025-08-17-marathon-pace-work.html" class="past-link">
+                <i class="fas fa-bullseye"></i> Marathon Pace Work - August 17
+            </a>
+            <a href="2025-08-14-easy-recovery-run.html" class="past-link">
+                <i class="fas fa-leaf"></i> Easy Recovery Run - August 14
+            </a>
+            <a href="2025-08-12-threshold-adaptation.html" class="past-link">
+                <i class="fas fa-tachometer-alt"></i> Threshold Adaptation - August 12
+            </a>
+            <a href="2025-08-10-long-run.html" class="past-link">
+                <i class="fas fa-mountain"></i> Long Run - August 10
+            </a>
+            <a href="2025-08-07-easy-recovery-run.html" class="past-link">
+                <i class="fas fa-leaf"></i> Easy Recovery Run - August 7
+            </a>
+            <a href="2025-08-05-threshold-run.html" class="past-link">
+                <i class="fas fa-tachometer-alt"></i> Threshold Run - August 5
+            </a>
+            <a href="2025-08-03-long-base-run.html" class="past-link">
+                <i class="fas fa-mountain"></i> Long Base Run - August 3
+            </a>
+            <a href="2025-07-31-simplified-fartlek.html" class="past-link">
+                <i class="fas fa-bolt"></i> Simplified Fartlek - July 31
+            </a>
+            <a href="2025-07-29-active-recovery.html" class="past-link">
+                <i class="fas fa-leaf"></i> Active Recovery - July 29
+            </a>
+        </div>
+    </div>
+    
+    <div class="back-button-container">
+        <a href="index.html" class="back-to-current">
+            <i class="fas fa-arrow-left"></i> Back to Current Workout
+        </a>
+    </div>
+    
+    <footer class="site-footer">
+        <a href="https://www.argensonix.com" target="_blank" rel="noopener" class="footer-link">© 2025 Argensonix Multimedia</a>
+    </footer>
+
+    <script>
+        // Simple animation on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const sessions = document.querySelectorAll('.session');
+            sessions.forEach((session, index) => {
+                session.style.opacity = '0';
+                session.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    session.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    session.style.opacity = '1';
+                    session.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+
+        // Add click interaction for sessions
+        document.querySelectorAll('.session').forEach(session => {
+            session.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+    </script>
+
+    <script>
+        // Fetch weather details for Buenos Aires and update header
+        fetch('https://wttr.in/Buenos%20Aires?format=j1')
+          .then(response => response.json())
+          .then(data => {
+            // Current conditions
+            const current = data.current_condition[0];
+            // Temperature
+            document.getElementById('weather-temp').innerHTML = `<i class='fas fa-sun'></i> ${current.temp_C}°C`;
+            // Distance (visibility)
+            document.getElementById('weather-distance').textContent = `${current.visibility} km`;
+            // Wind
+            document.getElementById('weather-wind').textContent = `${current.windspeedKmph} km/h`;
+            // Humidity
+            document.getElementById('weather-humidity').textContent = `${current.humidity}%`;
+            // Feels like
+            document.getElementById('weather-feels').textContent = `${current.FeelsLikeC}°C`;
+          })
+          .catch(() => {
+            document.getElementById('weather-temp').textContent = 'N/A';
+            document.getElementById('weather-distance').textContent = 'N/A';
+            document.getElementById('weather-wind').textContent = 'N/A';
+            document.getElementById('weather-humidity').textContent = 'N/A';
+            document.getElementById('weather-feels').textContent = 'N/A';
+          });
+    </script>
+</body>
+</html>
