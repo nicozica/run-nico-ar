@@ -1,17 +1,37 @@
 import path from "node:path";
-import { buildEinkSummary, mergeLatestSessionWithNotes, mergeWeeklySnapshotWithNotes, normalizePacerExport } from "../src/lib/data/normalize.ts";
+import { buildEinkSummary } from "../src/lib/data/normalize.ts";
+import {
+  applyCanonicalWeekSummary,
+  buildCanonicalSiteOutput,
+  buildCoachFeedbackFromCanonical,
+  buildNextRunFromCanonical
+} from "../src/lib/data/editorial-output.ts";
+import {
+  buildFallbackNextRun,
+  toLatestSession,
+  toWeatherActivity,
+  toWeeklySnapshot,
+  type PacerCmsArchiveList,
+  type PacerCmsLatestSession,
+  type PacerCmsNextRun,
+  type PacerCmsWeeklySummary
+} from "../src/lib/data/pacer-cms.ts";
+import { buildRaceContext } from "../src/lib/data/race-context.ts";
+import { buildFixtureWeeklySummarySnapshot, buildReviewOutput } from "../src/lib/data/review-output.ts";
 import { fileExists, readJsonFile, writeJsonFile } from "../src/lib/data/json.ts";
-import { currentDataDir, manualDataDir, mockDataDir, resolvePacerExportPath } from "../src/lib/data/paths.ts";
-import { readPacerExport } from "../src/lib/data/pacer.ts";
+import { currentDataDir, manualDataDir, mockDataDir, resolvePacerCmsSnapshotPath } from "../src/lib/data/paths.ts";
+import { buildDerivedInsights } from "../src/lib/data/signal-engine.ts";
 import { loadUsefulReadSources, refreshUsefulReads } from "../src/lib/data/useful-reads.ts";
 import { fetchWeatherSnapshot } from "../src/lib/data/weather.ts";
-import { isRunLike, sortActivitiesDesc } from "../src/lib/data/pacer.ts";
 import type {
+  CanonicalSiteOutput,
   CoachFeedback,
+  DerivedInsights,
   EinkSummary,
   LatestSession,
   NextRun,
-  SessionNotes,
+  RaceContext,
+  RaceDefinition,
   UsefulRead,
   WeatherSnapshot,
   WeeklySnapshot
@@ -34,18 +54,70 @@ async function loadManualFile<T>(fileName: string): Promise<T> {
   return data;
 }
 
+async function loadPacerCmsFile<T>(fileName: string): Promise<T | null> {
+  return readJsonFile<T>(resolvePacerCmsSnapshotPath(fileName));
+}
+
+function buildWeatherFallback(latestSession: LatestSession): WeatherSnapshot {
+  return {
+    latestRunLabel: latestSession.weatherLabel,
+    nextRunForecast: []
+  };
+}
+
+function buildPlaceholderNextRun(latestSnapshot: PacerCmsLatestSession): PacerCmsNextRun {
+  return {
+    fromSessionId: latestSnapshot.sessionId,
+    sessionDate: latestSnapshot.sessionDate,
+    title: "Next run",
+    summary: latestSnapshot.ai.carryForward || "No next-run guidance saved in Pacer yet.",
+    durationMin: null,
+    durationMax: null,
+    paceMinSecPerKm: null,
+    paceMaxSecPerKm: null,
+    updatedAt: latestSnapshot.updatedAt
+  };
+}
+
+function buildMockArchiveList(): PacerCmsArchiveList {
+  return {
+    count: 0,
+    sessions: []
+  };
+}
+
+function buildMockPublishedSessions(): PacerCmsLatestSession[] {
+  return [];
+}
+
 async function writeCurrentFiles(input: {
   latestSession: LatestSession;
+  coachFeedback: CoachFeedback;
+  nextRun: NextRun;
   weeklySnapshot: WeeklySnapshot;
   weatherSnapshot: WeatherSnapshot;
   usefulReads: UsefulRead[];
+  archiveList: PacerCmsArchiveList;
+  publishedSessions: PacerCmsLatestSession[];
+  derivedInsights: DerivedInsights;
+  raceContext: RaceContext;
+  canonicalOutput: CanonicalSiteOutput;
+  reviewOutput: unknown;
   einkSummary: EinkSummary;
 }): Promise<void> {
   await Promise.all([
     writeJsonFile(path.join(currentDataDir, "latest-session.json"), input.latestSession),
+    writeJsonFile(path.join(currentDataDir, "coach-feedback.json"), input.coachFeedback),
+    writeJsonFile(path.join(currentDataDir, "next-run.json"), input.nextRun),
     writeJsonFile(path.join(currentDataDir, "weekly-summary.json"), input.weeklySnapshot),
     writeJsonFile(path.join(currentDataDir, "weather.json"), input.weatherSnapshot),
     writeJsonFile(path.join(currentDataDir, "useful-reads.json"), input.usefulReads),
+    writeJsonFile(path.join(currentDataDir, "archive-list.json"), input.archiveList),
+    writeJsonFile(path.join(currentDataDir, "published-sessions.json"), input.publishedSessions),
+    writeJsonFile(path.join(currentDataDir, "derived-insights.json"), input.derivedInsights),
+    writeJsonFile(path.join(currentDataDir, "race-context.json"), input.raceContext),
+    writeJsonFile(path.join(currentDataDir, "site-output.json"), input.canonicalOutput),
+    writeJsonFile(path.join(currentDataDir, "review-output.json"), input.reviewOutput),
     writeJsonFile(path.join(currentDataDir, "eink-summary.json"), input.einkSummary)
   ]);
 }
@@ -96,55 +168,196 @@ async function prepareUsefulReadsFromFeeds(): Promise<UsefulRead[]> {
 }
 
 async function prepareFromMocks(): Promise<void> {
-  const [latestSession, weeklySnapshot, weatherSnapshot, usefulReads, einkSummary] = await Promise.all([
+  const [latestSession, weeklySnapshotBase, weatherSnapshot, usefulReads, canonicalOutput, derivedInsights, raceContext] = await Promise.all([
     readJsonFile<LatestSession>(path.join(mockDataDir, "latest-session.json")),
     readJsonFile<WeeklySnapshot>(path.join(mockDataDir, "weekly-summary.json")),
     readJsonFile<WeatherSnapshot>(path.join(mockDataDir, "weather.json")),
     readJsonFile<UsefulRead[]>(path.join(mockDataDir, "useful-reads.json")),
-    readJsonFile<EinkSummary>(path.join(mockDataDir, "eink-summary.json"))
+    readJsonFile<CanonicalSiteOutput>(path.join(mockDataDir, "site-output.json")),
+    readJsonFile<DerivedInsights>(path.join(mockDataDir, "derived-insights.json")),
+    readJsonFile<RaceContext>(path.join(mockDataDir, "race-context.json"))
   ]);
 
-  if (!latestSession || !weeklySnapshot || !weatherSnapshot || !usefulReads || !einkSummary) {
+  if (!latestSession || !weeklySnapshotBase || !weatherSnapshot || !usefulReads || !canonicalOutput || !derivedInsights || !raceContext) {
     throw new Error("Mock data files are incomplete.");
   }
 
-  await writeCurrentFiles({ latestSession, weeklySnapshot, weatherSnapshot, usefulReads, einkSummary });
+  const weeklySnapshot = applyCanonicalWeekSummary({
+    weeklySnapshot: weeklySnapshotBase,
+    canonicalOutput
+  });
+  const nextRun = buildNextRunFromCanonical({
+    canonicalOutput,
+    forecast: weatherSnapshot.nextRunForecast
+  });
+  const coachFeedback = buildCoachFeedbackFromCanonical({
+    canonicalOutput,
+    raceContext
+  });
+  const einkSummary = buildEinkSummary({
+    latestSession,
+    weeklySnapshot,
+    coachFeedback,
+    nextRun
+  });
+  const reviewOutput = {
+    generatedAt: new Date().toISOString(),
+    rawSummary: {
+      latestSession,
+      nextRunSnapshot: null,
+      weeklySummarySnapshot: buildFixtureWeeklySummarySnapshot({
+        sessionId: 0,
+        sourceActivityId: 0,
+        sessionDate: latestSession.date,
+        startDateLocal: latestSession.startDateLocal,
+        title: latestSession.title,
+        sport: latestSession.activityType,
+        distanceM: latestSession.distanceKm === null ? null : latestSession.distanceKm * 1000,
+        movingTimeS: latestSession.durationSeconds,
+        elapsedTimeS: latestSession.durationSeconds,
+        paceSecPerKm: null,
+        hrAvg: latestSession.averageHeartRate,
+        hrMax: latestSession.maxHeartRate,
+        elevationM: latestSession.elevationMeters,
+        weatherTempC: null,
+        weatherCondition: latestSession.weatherLabel,
+        weatherWindKmh: null,
+        city: latestSession.locationLabel,
+        startLat: null,
+        startLon: null,
+        routeSvgPoints: latestSession.routeSvgPoints ?? null,
+        manual: {
+          sessionType: latestSession.statusLabel ?? "",
+          legs: "",
+          sleepScore: null,
+          restedness: "",
+          extraNotes: latestSession.personalNote ?? ""
+        },
+        files: {
+          tcxFilename: "",
+          tcxAttached: false,
+          briefFilename: ""
+        },
+        ai: {
+          signalTitle: canonicalOutput.signalTitle,
+          signalParagraphs: canonicalOutput.signalParagraphs,
+          carryForward: canonicalOutput.carryForward,
+          nextRunTitle: canonicalOutput.nextRunTitle,
+          nextRunSummary: canonicalOutput.nextRunSummary,
+          nextRunDurationMin: canonicalOutput.nextRunDurationMin,
+          nextRunDurationMax: canonicalOutput.nextRunDurationMax,
+          nextRunPaceMinSecPerKm: canonicalOutput.nextRunPaceMinSecPerKm,
+          nextRunPaceMaxSecPerKm: canonicalOutput.nextRunPaceMaxSecPerKm,
+          weekTitle: canonicalOutput.weekTitle,
+          weekSummary: canonicalOutput.weekSummary
+        },
+        laps: [],
+        updatedAt: new Date().toISOString()
+      })
+    },
+    derivedInsight: derivedInsights.latest,
+    raceContext,
+    canonicalSiteOutput: canonicalOutput,
+    confidenceMetadata: derivedInsights.latest
+      ? {
+        signalConfidence: derivedInsights.latest.signalConfidence,
+        dataSourcesUsed: derivedInsights.latest.dataSourcesUsed,
+        missingSignals: derivedInsights.latest.missingSignals
+      }
+      : null
+  };
+
+  await writeCurrentFiles({
+    latestSession,
+    coachFeedback,
+    nextRun,
+    weeklySnapshot,
+    weatherSnapshot,
+    usefulReads,
+    archiveList: buildMockArchiveList(),
+    publishedSessions: buildMockPublishedSessions(),
+    derivedInsights,
+    raceContext,
+    canonicalOutput,
+    reviewOutput,
+    einkSummary
+  });
   console.log("Prepared data/current from mocks.");
 }
 
+async function loadWeatherSnapshot(latestSnapshot: PacerCmsLatestSession, latestSession: LatestSession): Promise<WeatherSnapshot> {
+  const weatherActivity = toWeatherActivity(latestSnapshot);
+
+  if (weatherActivity) {
+    try {
+      return await fetchWeatherSnapshot(weatherActivity, { forecastDays: 3 });
+    } catch (error) {
+      console.warn(`Weather fetch failed, using fallback data: ${(error as Error).message}`);
+    }
+  }
+
+  return (await readJsonFile<WeatherSnapshot>(path.join(currentDataDir, "weather.json")))
+    ?? (await readJsonFile<WeatherSnapshot>(path.join(mockDataDir, "weather.json")))
+    ?? buildWeatherFallback(latestSession);
+}
+
 async function prepareFromPacer(): Promise<void> {
-  const pacerExport = await readPacerExport();
-
-  if (!pacerExport) {
-    throw new Error(`Pacer export not found at ${resolvePacerExportPath()}`);
-  }
-
-  const [sessionNotes, coachFeedback, nextRun] = await Promise.all([
-    loadManualFile<SessionNotes>("session-notes.json"),
-    loadManualFile<CoachFeedback>("coach-feedback.json"),
-    loadManualFile<NextRun>("next-run.json")
+  const [latestSnapshot, nextRunSnapshotRaw, weeklySummarySnapshot, archiveList, publishedSessionsSnapshot] = await Promise.all([
+    loadPacerCmsFile<PacerCmsLatestSession>("latest-session.json"),
+    loadPacerCmsFile<PacerCmsNextRun>("next-run.json"),
+    loadPacerCmsFile<PacerCmsWeeklySummary>("weekly-summary.json"),
+    loadPacerCmsFile<PacerCmsArchiveList>("archive-list.json"),
+    loadPacerCmsFile<PacerCmsLatestSession[]>("published-sessions.json")
   ]);
-  const activities = sortActivitiesDesc(pacerExport.activities ?? []);
-  const latestRelevantActivity = activities.find(isRunLike) ?? activities[0];
 
-  if (!latestRelevantActivity) {
-    throw new Error("Pacer export does not contain activities for weather lookup.");
+  if (!latestSnapshot) {
+    throw new Error(`Pacer CMS snapshot not found at ${resolvePacerCmsSnapshotPath("latest-session.json")}`);
   }
 
-  const normalized = normalizePacerExport(pacerExport, { sessionNotes });
-  const latestSession = mergeLatestSessionWithNotes(normalized.latestSession, sessionNotes);
-  const weeklySnapshot = mergeWeeklySnapshotWithNotes(normalized.weeklySnapshot, sessionNotes);
-  let weatherSnapshot: WeatherSnapshot;
-
-  try {
-    weatherSnapshot = await fetchWeatherSnapshot(latestRelevantActivity, { forecastDays: 3 });
-  } catch (error) {
-    console.warn(`Weather fetch failed, using fallback data: ${(error as Error).message}`);
-    weatherSnapshot = (await readJsonFile<WeatherSnapshot>(path.join(currentDataDir, "weather.json")))
-      ?? (await readJsonFile<WeatherSnapshot>(path.join(mockDataDir, "weather.json")))
-      ?? { latestRunLabel: latestSession.weatherLabel, nextRunForecast: [] };
+  if (!weeklySummarySnapshot) {
+    throw new Error(`Pacer CMS snapshot not found at ${resolvePacerCmsSnapshotPath("weekly-summary.json")}`);
   }
 
+  if (!archiveList) {
+    throw new Error(`Pacer CMS snapshot not found at ${resolvePacerCmsSnapshotPath("archive-list.json")}`);
+  }
+
+  if (!publishedSessionsSnapshot) {
+    throw new Error(`Pacer CMS snapshot not found at ${resolvePacerCmsSnapshotPath("published-sessions.json")}`);
+  }
+
+  const nextRunSnapshot = nextRunSnapshotRaw
+    ?? buildFallbackNextRun(latestSnapshot)
+    ?? buildPlaceholderNextRun(latestSnapshot);
+  const latestSession = toLatestSession(latestSnapshot);
+  const races = await loadManualFile<RaceDefinition[]>("races.json")
+    .catch(() => []);
+  const derivedInsights = await buildDerivedInsights(publishedSessionsSnapshot);
+  const raceContext = buildRaceContext({
+    latestSessionDate: latestSnapshot.sessionDate,
+    derivedInsight: derivedInsights.latest,
+    races
+  });
+  const canonicalOutput = buildCanonicalSiteOutput({
+    latestSnapshot,
+    nextRunSnapshot,
+    weeklySummarySnapshot,
+    derivedInsight: derivedInsights.latest,
+    raceContext
+  });
+  const weatherSnapshot = await loadWeatherSnapshot(latestSnapshot, latestSession);
+  const nextRun = buildNextRunFromCanonical({
+    canonicalOutput,
+    forecast: weatherSnapshot.nextRunForecast
+  });
+  const weeklySnapshot = applyCanonicalWeekSummary({
+    weeklySnapshot: toWeeklySnapshot(weeklySummarySnapshot),
+    canonicalOutput
+  });
+  const coachFeedback = buildCoachFeedbackFromCanonical({
+    canonicalOutput,
+    raceContext
+  });
   const usefulReads = await prepareUsefulReadsFromFeeds();
   const einkSummary = buildEinkSummary({
     latestSession: {
@@ -153,20 +366,39 @@ async function prepareFromPacer(): Promise<void> {
     },
     weeklySnapshot,
     coachFeedback,
-    nextRun: {
-      ...nextRun,
-      forecast: weatherSnapshot.nextRunForecast
-    }
+    nextRun
+  });
+  const reviewOutput = buildReviewOutput({
+    latestSnapshot,
+    nextRunSnapshot,
+    weeklySummarySnapshot,
+    derivedInsight: derivedInsights.latest,
+    raceContext,
+    canonicalOutput
   });
 
-  await writeCurrentFiles({ latestSession, weeklySnapshot, weatherSnapshot, usefulReads, einkSummary });
-  console.log(`Prepared data/current from Pacer export at ${resolvePacerExportPath()}.`);
+  await writeCurrentFiles({
+    latestSession,
+    coachFeedback,
+    nextRun,
+    weeklySnapshot,
+    weatherSnapshot,
+    usefulReads,
+    archiveList,
+    publishedSessions: publishedSessionsSnapshot,
+    derivedInsights,
+    raceContext,
+    canonicalOutput,
+    reviewOutput,
+    einkSummary
+  });
+  console.log(`Prepared data/current from Pacer CMS snapshots at ${resolvePacerCmsSnapshotPath("latest-session.json")}.`);
 }
 
 async function prepareAuto(): Promise<void> {
-  const pacerExportPath = resolvePacerExportPath();
+  const pacerSnapshotPath = resolvePacerCmsSnapshotPath("latest-session.json");
 
-  if (await fileExists(pacerExportPath)) {
+  if (await fileExists(pacerSnapshotPath)) {
     try {
       await prepareFromPacer();
       return;

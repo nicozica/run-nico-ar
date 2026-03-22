@@ -1,0 +1,93 @@
+---
+import type { CanonicalSiteOutput, DerivedSessionInsight } from "../lib/data/types";
+
+interface Props {
+  canonicalOutput: CanonicalSiteOutput;
+  insight: DerivedSessionInsight | null;
+  sessionPath?: string | null;
+  variant?: "full" | "teaser" | "embedded";
+}
+
+const { canonicalOutput, insight, sessionPath = null, variant = "full" } = Astro.props;
+const teaserParagraph = canonicalOutput.signalParagraphs[0] ?? canonicalOutput.carryForward;
+const embeddedParagraphs = canonicalOutput.signalParagraphs.filter(Boolean).slice(0, 2);
+if (embeddedParagraphs.length === 0 && canonicalOutput.carryForward) {
+  embeddedParagraphs.push(canonicalOutput.carryForward);
+}
+---
+
+<section class={`panel panel--feature signal-panel ${variant === "teaser" ? "signal-panel--teaser band-module" : ""} ${variant === "embedded" ? "signal-panel--embedded" : ""}`} aria-labelledby="signal-panel-heading">
+  {variant === "embedded" ? (
+    <div class="signal-panel__embedded">
+      <h2 id="signal-panel-heading">{canonicalOutput.signalTitle}</h2>
+      <div class="signal-panel__embedded-copy">
+        {embeddedParagraphs.map((paragraph) => (
+          <p class="signal-panel__teaser-copy">{paragraph}</p>
+        ))}
+      </div>
+      {sessionPath && (
+        <a class="signal-panel__cta" href={sessionPath}>View full breakdown</a>
+      )}
+    </div>
+  ) : (
+    <div class="panel__header panel__header--compact">
+      <div>
+        <p class="eyebrow">Signal</p>
+        <h2 id="signal-panel-heading">{canonicalOutput.signalTitle}</h2>
+      </div>
+    </div>
+  )}
+
+  {variant === "teaser" && (
+    <div class="signal-panel__teaser">
+      <p class="signal-panel__teaser-copy">{teaserParagraph}</p>
+      {sessionPath && (
+        <a class="signal-panel__cta" href={sessionPath}>View full breakdown</a>
+      )}
+    </div>
+  )}
+
+  {variant === "full" && (
+    <>
+      <div class="signal-panel__reading">
+        {canonicalOutput.signalParagraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+
+      {insight && (
+        <dl class="signal-grid">
+          <div class="signal-grid__item">
+            <dt>Intent</dt>
+            <dd>{insight.sessionIntentDetected}</dd>
+          </div>
+          <div class="signal-grid__item">
+            <dt>Execution</dt>
+            <dd>{insight.executionQuality}</dd>
+          </div>
+          <div class="signal-grid__item">
+            <dt>Finish</dt>
+            <dd>{insight.finishPattern}</dd>
+          </div>
+          <div class="signal-grid__item">
+            <dt>Cost</dt>
+            <dd>{insight.effortCost}</dd>
+          </div>
+          <div class="signal-grid__item">
+            <dt>Drift</dt>
+            <dd>{insight.cardiacDrift.label}</dd>
+          </div>
+          <div class="signal-grid__item">
+            <dt>Heat</dt>
+            <dd>{insight.heatImpact.label}</dd>
+          </div>
+        </dl>
+      )}
+
+      <div class="signal-panel__carry">
+        <p class="eyebrow">Carry forward</p>
+        <p>{canonicalOutput.carryForward}</p>
+      </div>
+    </>
+  )}
+</section>

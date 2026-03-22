@@ -14,7 +14,8 @@
     "deploy:preview": "bash scripts/deploy-preview.sh",
     "data:prepare:auto": "node --experimental-strip-types scripts/prepare-data.ts auto",
     "data:prepare:pacer": "node --experimental-strip-types scripts/prepare-data.ts pacer",
-    "data:prepare:mocks": "node --experimental-strip-types scripts/prepare-data.ts mocks"
+    "data:prepare:mocks": "node --experimental-strip-types scripts/prepare-data.ts mocks",
+    "data:review:fixtures": "node --experimental-strip-types scripts/review-fixtures.ts"
   },
   "dependencies": {
     "@fontsource/barlow-condensed": "^5.2.6",

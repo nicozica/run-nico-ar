@@ -1,0 +1,12 @@
+[Unit]
+Description=Nightly timer for run.nico.ar rebuild and deploy
+
+[Timer]
+Unit=run-nico-ar-nightly.service
+OnCalendar=*-*-* 00:05:00
+Persistent=true
+RandomizedDelaySec=30s
+AccuracySec=1m
+
+[Install]
+WantedBy=timers.target

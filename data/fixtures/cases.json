@@ -1,0 +1,35 @@
+[
+  {
+    "slug": "tempo-overcooked-finish",
+    "title": "Tempo with overcooked finish",
+    "sessionId": 1,
+    "snapshotFile": "2026-03-12-tempo-overcooked-finish.json",
+    "expectedIntent": "Tempo session",
+    "expectedMinConfidence": "medium",
+    "reviewFocus": "Watch whether the engine distinguishes useful quality from a finish that starts to cost too much."
+  },
+  {
+    "slug": "long-run-too-hard-close",
+    "title": "Long run with too hard close",
+    "sessionId": 10,
+    "expectedIntent": "Long run",
+    "expectedMinConfidence": "medium",
+    "reviewFocus": "The key question is whether the close stays readable as stronger-than-ideal without flattening the whole run."
+  },
+  {
+    "slug": "easy-run-drifted-above-easy",
+    "title": "Easy run that drifted above easy",
+    "sessionId": 2,
+    "expectedIntent": "Easy run",
+    "expectedMinConfidence": "high",
+    "reviewFocus": "This case should stay clearly categorized as more than a pure easy day."
+  },
+  {
+    "slug": "cleaner-tempo-session",
+    "title": "Cleaner tempo session",
+    "sessionId": 12,
+    "expectedIntent": "Tempo session",
+    "expectedMinConfidence": "medium",
+    "reviewFocus": "This is the positive reference case: controlled quality with a calmer editorial read."
+  }
+]

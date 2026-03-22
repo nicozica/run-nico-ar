@@ -35,17 +35,13 @@ function getWeatherKind(summary: string): "clear" | "cloudy" | "overcast" | "rai
 }
 ---
 
-<section class="panel panel--accent" aria-labelledby="next-run-heading">
-  <div class="panel__header panel__header--compact">
-    <div>
-      <p class="eyebrow">Next run</p>
-      <h2 id="next-run-heading">{nextRun.name}</h2>
-    </div>
-  </div>
+<section class="panel panel--accent next-run-panel training-row-card" aria-labelledby="next-run-heading">
+  <p class="eyebrow">Next run</p>
+  <h2 id="next-run-heading">{nextRun.name}</h2>
 
-  <p class="panel-copy">{nextRun.goal}</p>
+  <p class="panel-copy next-run-panel__summary">{nextRun.goal}</p>
 
-  <dl class="next-run-stats">
+  <dl class="next-run-stats next-run-stats--integrated">
     <div class="next-run-stat">
       <dt>Estimated duration</dt>
       <dd>{nextRun.estimatedDuration}</dd>
@@ -57,7 +53,7 @@ function getWeatherKind(summary: string): "clear" | "cloudy" | "overcast" | "rai
   </dl>
 
   {nextRun.forecast && nextRun.forecast.length > 0 && (
-    <div class="forecast-block" aria-label="Next run forecast">
+    <div class="forecast-block forecast-block--integrated" aria-label="Next run forecast">
       <ul class="forecast-list">
         {nextRun.forecast.map((day) => (
           <li class="forecast-item">

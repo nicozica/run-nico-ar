@@ -12,6 +12,7 @@ export interface LatestSession {
   title: string;
   activityType: string;
   date: string;
+  startDateLocal: string | null;
   distanceKm: number | null;
   durationSeconds: number;
   durationLabel: string;
@@ -180,6 +181,115 @@ export interface WeatherSnapshot {
   nextRunForecast: ForecastDay[];
 }
 
+export type SignalConfidenceLevel = "high" | "medium" | "low";
+
+export type SignalSourceName =
+  | "session_summary"
+  | "laps"
+  | "streams"
+  | "tcx"
+  | "weather"
+  | "manual_notes";
+
+export interface SignalConfidenceMetadata {
+  signalConfidence: SignalConfidenceLevel;
+  dataSourcesUsed: SignalSourceName[];
+  missingSignals: SignalSourceName[];
+}
+
+export interface DerivedSignalNote {
+  label: string;
+  note: string;
+}
+
+export interface DerivedCardiacDrift {
+  label: string;
+  note: string;
+  heartRateDelta: number | null;
+  paceDeltaSecPerKm: number | null;
+}
+
+export interface DerivedNextRunSuggestion {
+  title: string;
+  summary: string;
+  durationMin: number | null;
+  durationMax: number | null;
+  paceMinSecPerKm: number | null;
+  paceMaxSecPerKm: number | null;
+  durationLabel: string | null;
+  paceRangeLabel: string | null;
+}
+
+export interface DerivedSessionInsight {
+  sessionId: number;
+  sourceActivityId: number;
+  slug: string;
+  sessionDate: string;
+  title: string;
+  signalHeadline: string;
+  signalSummary: string;
+  sessionIntentDetected: string;
+  blockStructure: string;
+  executionQuality: string;
+  finishPattern: string;
+  effortCost: string;
+  cardiacDrift: DerivedCardiacDrift;
+  heatImpact: DerivedSignalNote;
+  gpsConfidence: DerivedSignalNote;
+  signalConfidence: SignalConfidenceLevel;
+  dataSourcesUsed: SignalSourceName[];
+  missingSignals: SignalSourceName[];
+  carryForward: string;
+  nextRunSuggestion: DerivedNextRunSuggestion;
+}
+
+export interface DerivedInsights {
+  generatedAt: string;
+  latest: DerivedSessionInsight | null;
+  sessions: DerivedSessionInsight[];
+}
+
+export interface RaceDefinition {
+  slug: string;
+  title: string;
+  date: string;
+  distanceKm: number;
+  goalTimeMin?: number | null;
+  priority: "A" | "B" | "C";
+}
+
+export interface RaceContextNextRace extends RaceDefinition {
+  daysToRace: number;
+  targetPaceSecPerKm: number | null;
+  targetPaceLabel: string | null;
+}
+
+export interface RaceContext {
+  generatedAt: string;
+  nextRace: RaceContextNextRace | null;
+  mainGoal: RaceContextNextRace | null;
+  daysToRace: number | null;
+  targetPaceSecPerKm: number | null;
+  targetPaceLabel: string | null;
+  currentPhase: string;
+  focusLabel: string;
+  sessionRelevance: string;
+}
+
+export interface CanonicalSiteOutput {
+  signalTitle: string;
+  signalParagraphs: string[];
+  carryForward: string;
+  nextRunTitle: string;
+  nextRunSummary: string;
+  nextRunDurationMin: number;
+  nextRunDurationMax: number;
+  nextRunPaceMinSecPerKm: number;
+  nextRunPaceMaxSecPerKm: number;
+  weekTitle: string;
+  weekSummary: string;
+}
+
 export interface RunDashboardData {
   site: SiteCopy;
   latestSession: LatestSession;
@@ -189,6 +299,9 @@ export interface RunDashboardData {
   motivation: MotivationNote;
   usefulReads: UsefulRead[];
   einkSummary: EinkSummary;
+  derivedInsights: DerivedInsights;
+  raceContext: RaceContext;
+  canonicalOutput: CanonicalSiteOutput;
 }
 
 export interface PacerActivity {
@@ -196,6 +309,7 @@ export interface PacerActivity {
   name: string;
   sport_type?: string;
   type?: string;
+  workout_type?: number | null;
   start_date: string;
   start_date_local: string;
   timezone?: string;

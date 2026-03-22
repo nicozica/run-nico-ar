@@ -1,0 +1,28 @@
+---
+interface Props {
+  points: string;
+  class?: string;
+  width?: number;
+  height?: number;
+  pad?: number;
+  preserveAspectRatio?: string;
+}
+
+const {
+  points,
+  class: className,
+  width = 160,
+  height = 90,
+  pad = 10,
+  preserveAspectRatio = "xMidYMid meet"
+} = Astro.props;
+---
+
+<svg
+  class:list={["route-trace", className]}
+  viewBox={`${-pad} ${-pad} ${width + pad * 2} ${height + pad * 2}`}
+  preserveAspectRatio={preserveAspectRatio}
+  aria-hidden="true"
+>
+  <polyline class="route-trace__path" points={points} />
+</svg>

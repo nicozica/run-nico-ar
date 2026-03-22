@@ -1,6 +1,9 @@
 ---
 import LatestSessionPanel from "../components/LatestSessionPanel.astro";
+import LapsPreviewPanel from "../components/LapsPreviewPanel.astro";
 import NextRunPanel from "../components/NextRunPanel.astro";
+import RaceContextPanel from "../components/RaceContextPanel.astro";
+import SignalCardPanel from "../components/SignalCardPanel.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import UsefulReadsPanel from "../components/UsefulReadsPanel.astro";
@@ -9,30 +12,46 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { loadDashboardData } from "../lib/data/load-dashboard";
 
 const dashboard = await loadDashboardData();
+const latestSessionPath = dashboard.derivedInsights.latest
+  ? `/sessions/${dashboard.derivedInsights.latest.slug}/`
+  : null;
 ---
 
 <BaseLayout
-  title="nico://run | Training interpreted"
+  title="nico://run | training, interpreted"
   description={dashboard.site.heroBody}
 >
   <SiteHeader site={dashboard.site} currentPath="/" />
 
   <main id="content" class="page-shell">
-    <!-- Act 1: Latest run — the main story -->
-    <LatestSessionPanel
-      latestSession={dashboard.latestSession}
-      coachFeedback={dashboard.coachFeedback}
-    />
+    <section class="panel panel--hero featured-session" aria-labelledby="run-hero-heading">
+      <LatestSessionPanel
+        latestSession={dashboard.latestSession}
+        coachFeedback={dashboard.coachFeedback}
+        sessionPath={latestSessionPath}
+        variant="featured"
+      />
 
-    <!-- Act 2: Next run (primary) + Weekly context (secondary) -->
-    <!-- DOM order: NextRun first so it appears above Weekly on narrow screens -->
-    <div class="content-grid content-grid--context">
-      <NextRunPanel nextRun={dashboard.nextRun} />
+      <div class="featured-session__body">
+        <SignalCardPanel
+          canonicalOutput={dashboard.canonicalOutput}
+          insight={dashboard.derivedInsights.latest}
+          sessionPath={latestSessionPath}
+          variant="embedded"
+        />
+        <LapsPreviewPanel latestSession={dashboard.latestSession} variant="embedded" />
+      </div>
+    </section>
+
+    <div class="content-grid content-grid--support content-grid--training">
       <WeeklySnapshotPanel weeklySnapshot={dashboard.weeklySnapshot} />
+      <NextRunPanel nextRun={dashboard.nextRun} />
     </div>
 
-    <!-- Act 3: Reading context -->
-    <UsefulReadsPanel usefulReads={dashboard.usefulReads} />
+    <div class="content-grid content-grid--support">
+      <RaceContextPanel raceContext={dashboard.raceContext} />
+      <UsefulReadsPanel usefulReads={dashboard.usefulReads} variant="compact" />
+    </div>
   </main>
 
   <SiteFooter site={dashboard.site} />

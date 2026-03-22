@@ -3,9 +3,11 @@ import type { UsefulRead } from "../lib/data/types";
 
 interface Props {
   usefulReads: UsefulRead[];
+  variant?: "default" | "compact";
 }
 
-const { usefulReads } = Astro.props;
+const { usefulReads, variant = "default" } = Astro.props;
+const items = variant === "compact" ? usefulReads.slice(0, 5) : usefulReads;
 
 const topicClass: Record<string, string> = {
   running: "topic-badge--running",
@@ -15,19 +17,19 @@ const topicClass: Record<string, string> = {
 };
 ---
 
-<section class="panel" aria-labelledby="useful-reads-heading">
+<section class={`panel reads-panel ${variant === "compact" ? "reads-panel--compact" : ""}`} aria-labelledby="useful-reads-heading">
   <div class="panel__header">
     <div>
-      <p class="eyebrow">Useful reads</p>
-      <h2 id="useful-reads-heading">Worth reading</h2>
+      <p class="eyebrow">{variant === "compact" ? "Reads" : "Useful reads"}</p>
+      <h2 id="useful-reads-heading">{variant === "compact" ? "Mini feed" : "Worth reading"}</h2>
     </div>
 
-    <p class="panel__meta">Cached from RSS at build time</p>
+    {variant !== "compact" && <p class="panel__meta">Cached from RSS at build time</p>}
   </div>
 
-  {usefulReads.length > 0 ? (
+  {items.length > 0 ? (
     <ul class="reads-list">
-      {usefulReads.map((item) => (
+      {items.map((item) => (
         <li class="reads-item">
           <a class="reads-link" href={item.url} target="_blank" rel="noreferrer noopener">
             <span class="reads-link__title">{item.title}</span>

@@ -1,0 +1,63 @@
+---
+import RouteTrace from "../../components/RouteTrace.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import { loadArchivePageData } from "../../lib/data/load-archive";
+
+const runs = await loadArchivePageData();
+---
+
+<BaseLayout
+  title="nico://run | Runs"
+  description="Published runs for run.nico.ar"
+>
+  <SiteHeader site={runs.site} currentPath="/runs/" />
+
+  <main id="content" class="page-shell page-shell--narrow">
+    <header class="page-title">
+      <h1>RUNS</h1>
+    </header>
+
+    <section class="panel">
+      {runs.sessions.length === 0 ? (
+        <p class="panel-copy">No published runs yet.</p>
+      ) : (
+        <ol class="archive-list">
+          {runs.sessions.map((session) => (
+            <li class="archive-item">
+              <a class="archive-item__link" href={`/sessions/${session.slug}/`}>
+                <div class="archive-item__header">
+                  <div class="archive-item__heading">
+                    <p class="archive-item__date">{session.dateTimeLabel}</p>
+                    <h2>{session.title}</h2>
+                  </div>
+
+                  {session.routeSvgPoints && (
+                    <div class="archive-item__trace" aria-hidden="true">
+                      <RouteTrace
+                        points={session.routeSvgPoints}
+                        class="archive-item__trace-svg"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div class="archive-item__meta">
+                  <span>{session.distanceKm === null ? "—" : `${session.distanceKm.toFixed(1)} km`}</span>
+                  <span>{session.durationLabel}</span>
+                  <span>{session.paceLabel ?? "—"}</span>
+                </div>
+
+                {session.signalTitle && <p class="archive-item__signal">{session.signalTitle}</p>}
+                {session.nextRunTitle && <p class="archive-item__next">Next run: {session.nextRunTitle}</p>}
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  </main>
+
+  <SiteFooter site={runs.site} />
+</BaseLayout>

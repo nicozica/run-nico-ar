@@ -1,40 +1,33 @@
 ---
 import WeatherGlyph from "./WeatherGlyph.astro";
+import RouteTrace from "./RouteTrace.astro";
 import type { CoachFeedback, LatestSession } from "../lib/data/types";
+import { formatSessionDateLabel, formatSessionTimeLabel } from "../lib/data/session-display.ts";
 
 interface Props {
   latestSession: LatestSession;
   coachFeedback: CoachFeedback;
+  sessionPath?: string | null;
+  variant?: "home" | "detail" | "featured";
 }
 
-const { latestSession, coachFeedback } = Astro.props;
+const { latestSession, coachFeedback, sessionPath = null, variant = "home" } = Astro.props;
 
-// Format date: "2026-03-15" → "Sun 15 Mar"
-// Use noon UTC to avoid timezone shifts on the date boundary
-const sessionDate = new Date(`${latestSession.date}T12:00:00Z`);
-const dateLabel = sessionDate.toLocaleDateString("en-US", {
-  weekday: "short",
-  day: "numeric",
-  month: "short",
-});
+const dateLabel = formatSessionDateLabel(latestSession.date);
 
 const sessionTitle = latestSession.title.toUpperCase();
 
-// Eyebrow line: activity type · date · location (omit nulls)
-const eyebrowParts = [latestSession.activityType, dateLabel, latestSession.locationLabel].filter(Boolean);
+// Meta line: date · time · location (omit nulls)
+const eyebrowParts = [
+  dateLabel,
+  formatSessionTimeLabel(latestSession.startDateLocal),
+  latestSession.locationLabel
+].filter(Boolean);
 const eyebrow = eyebrowParts.join(" · ");
-
-// Personal note: prefer hand-written note, fall back to overall feeling
-const logEntry = latestSession.personalNote ?? latestSession.overallFeeling;
 
 // Coach callout text
 const calloutHeadline = coachFeedback.headline;
-const calloutParagraph = [coachFeedback.mainTakeaway, logEntry].filter(Boolean).join(" ");
-
-// Route points are normalized during data prep into a compact 160x90 space.
-// Keep the SVG viewBox aligned with that coordinate system and scale visually with CSS.
-const ROUTE_W = 160;
-const ROUTE_H = 90;
+const calloutParagraph = coachFeedback.summaryShort || coachFeedback.mainTakeaway;
 
 const hasRoute = Boolean(latestSession.routeSvgPoints);
 
@@ -65,30 +58,31 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
 }
 ---
 
-<section class="panel panel--hero run-hero" aria-labelledby="run-hero-heading">
+<section class={`${
+  variant === "featured"
+    ? "run-hero run-hero--featured"
+    : `panel panel--hero run-hero ${variant === "detail" ? "run-hero--detail" : "run-hero--home"}`
+}`} aria-labelledby="run-hero-heading">
   <div class="run-hero__header">
     {hasRoute && (
-      <svg
-        class="run-hero__trace"
-        viewBox={`0 0 ${ROUTE_W} ${ROUTE_H}`}
-        aria-hidden="true"
-        role="img"
-      >
-        <polyline
-          class="run-hero__trace-path"
+      <div class="run-hero__trace-wrap" aria-hidden="true">
+        <RouteTrace
           points={latestSession.routeSvgPoints!}
+          class="run-hero__trace"
+          preserveAspectRatio="xMaxYMid meet"
         />
-      </svg>
+      </div>
     )}
 
     <div class="run-hero__title-group">
-      <p class="eyebrow">{eyebrow}</p>
+      <p class="run-hero__meta-line">{eyebrow}</p>
       <h1 id="run-hero-heading" class="run-hero__title">{sessionTitle}</h1>
+      {variant !== "featured" && calloutParagraph && <p class="run-hero__dek">{calloutParagraph}</p>}
     </div>
 
   </div>
 
-  <dl class="run-stat-row run-stat-row--primary">
+  <dl class="run-stat-row run-stat-row--cover">
     <div class="run-stat run-stat--primary">
       <dt>Distance</dt>
       <dd>{latestSession.distanceKm === null ? "—" : `${latestSession.distanceKm.toFixed(1)} km`}</dd>
@@ -101,21 +95,6 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
       <dt>Pace</dt>
       <dd>{latestSession.paceLabel ?? "—"}</dd>
     </div>
-  </dl>
-
-  <dl class="run-stat-row run-stat-row--secondary">
-    <div class="run-stat">
-      <dt>Heart rate</dt>
-      <dd>
-        {latestSession.averageHeartRate === null
-          ? "—"
-          : `${latestSession.averageHeartRate} / ${latestSession.maxHeartRate ?? "—"} bpm`}
-      </dd>
-    </div>
-    <div class="run-stat">
-      <dt>Elevation</dt>
-      <dd>{latestSession.elevationMeters === null ? "—" : `+${latestSession.elevationMeters} m`}</dd>
-    </div>
     <div class="run-stat">
       <dt>Conditions</dt>
       <dd class="run-condition">
@@ -125,25 +104,30 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
     </div>
   </dl>
 
-  <blockquote class="coach-callout">
-    <p class="coach-callout__headline">{calloutHeadline}</p>
-    {calloutParagraph && <p class="coach-callout__body">{calloutParagraph}</p>}
-  </blockquote>
+  {variant === "detail" && (
+    <div class="coach-callout coach-callout--compact">
+      <p class="coach-callout__headline">{calloutHeadline}</p>
+      <p class="coach-callout__body">{coachFeedback.nextRecommendation}</p>
+    </div>
+  )}
 
-  {latestSession.laps.length > 0 && (
-    <div class="lap-section">
-      <p class="eyebrow lap-section__label">
-        Splits / {latestSession.laps.length} {latestSession.laps.length === 1 ? "lap" : "laps"}
-      </p>
+  {variant === "detail" && latestSession.laps.length > 0 && (
+    <div class="lap-preview">
+      <div class="lap-preview__header">
+        <p class="eyebrow lap-preview__label">Splits / {latestSession.laps.length} laps</p>
+        {sessionPath && (
+          <a class="lap-preview__link" href={sessionPath}>View full breakdown</a>
+        )}
+      </div>
       <div class="lap-table-wrap">
         <table class="lap-table">
           <thead>
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">km</th>
-              <th scope="col">Pace</th>
-              <th scope="col">Time</th>
-              <th scope="col">HR</th>
+              <th>#</th>
+              <th>Km</th>
+              <th>Pace</th>
+              <th>Time</th>
+              <th>HR</th>
             </tr>
           </thead>
           <tbody>
@@ -153,7 +137,7 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
                 <td>{lap.distanceKm === null ? "—" : lap.distanceKm.toFixed(1)}</td>
                 <td>{lap.paceLabel ?? "—"}</td>
                 <td>{lap.durationLabel}</td>
-                <td>{lap.averageHeartRate ?? "—"}</td>
+                <td>{lap.averageHeartRate === null ? "—" : lap.averageHeartRate}</td>
               </tr>
             ))}
           </tbody>

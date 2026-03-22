@@ -1,0 +1,16 @@
+{
+  "signalTitle": "Easy day, a touch above easy",
+  "signalParagraphs": [
+    "The run still helped the week, but it sat a little above the calm effort an easy day is supposed to protect.",
+    "With FILA Race getting closer, the main value now is keeping the easy days supportive enough for the more specific work to matter."
+  ],
+  "carryForward": "Bring the next aerobic run back under control and let the effort settle lower.",
+  "nextRunTitle": "Quiet aerobic run",
+  "nextRunSummary": "Keep the effort below this session's cost and use it to restore rhythm before the next quality touch.",
+  "nextRunDurationMin": 30,
+  "nextRunDurationMax": 40,
+  "nextRunPaceMinSecPerKm": 415,
+  "nextRunPaceMaxSecPerKm": 430,
+  "weekTitle": "Specific work, calm support",
+  "weekSummary": "The week looks better when the harder work lands once and the easy volume stays easy enough to absorb it."
+}

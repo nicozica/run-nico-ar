@@ -1,0 +1,63 @@
+---
+import type { LatestSession } from "../lib/data/types";
+
+interface Props {
+  latestSession: LatestSession;
+  variant?: "panel" | "embedded";
+}
+
+const { latestSession, variant = "panel" } = Astro.props;
+
+const laps = latestSession.laps.filter((lap) => lap.distanceKm !== null && lap.distanceKm > 0);
+---
+
+<section class={`laps-panel ${variant === "embedded" ? "laps-panel--embedded" : "band-module"}`} aria-labelledby="laps-preview-heading">
+  {variant === "embedded" ? (
+    <p id="laps-preview-heading" class="laps-panel__title">Laps</p>
+  ) : (
+    <div class="band-module__header">
+      <div>
+        <p class="eyebrow">Laps</p>
+        <h2 id="laps-preview-heading">Preview</h2>
+      </div>
+    </div>
+  )}
+
+  <div class="laps-rail">
+    <div class="lap-table-head" aria-hidden="true">
+      <table class="lap-table lap-table--rail lap-table--rail-head">
+        <colgroup>
+          <col class="lap-table__col lap-table__col--num" />
+          <col class="lap-table__col lap-table__col--pace" />
+          <col class="lap-table__col lap-table__col--time" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Pace</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <div class="laps-scroll">
+      <table class="lap-table lap-table--rail lap-table--rail-body">
+        <colgroup>
+          <col class="lap-table__col lap-table__col--num" />
+          <col class="lap-table__col lap-table__col--pace" />
+          <col class="lap-table__col lap-table__col--time" />
+        </colgroup>
+        <tbody>
+          {laps.map((lap) => (
+            <tr>
+              <td class="lap-table__num">{lap.lapNumber}</td>
+              <td>{lap.paceLabel ?? "—"}</td>
+              <td>{lap.durationLabel}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

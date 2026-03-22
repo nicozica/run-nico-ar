@@ -1,39 +1,43 @@
 # run.nico.ar
 
-Static Astro site for reading recent training with a lighter layer of interpretation.
+Static Astro site for reading recent training with a lighter interpretation layer.
 
-It is designed for:
+It is built to stay:
 
-- build on Raspberry Pi 5
-- static hosting on Raspberry Pi Zero 2 W
-- future e-ink summary consumption
-- local JSON ingestion from Pacer or similar exports
-- no production SSR and no client-side secret exposure
+- static-first
+- lightweight enough for Pi Zero hosting
+- build-friendly on a Raspberry Pi 5
+- compatible with local JSON exports from Pacer
+- free of client-side secrets and production SSR
 
 ## Philosophy
 
-`run.nico.ar` is not another live training dashboard.  
-It is a post-run reading layer: useful context, restrained visuals, and minimal runtime weight.
+`run.nico.ar` is not a live workout dashboard.
+
+It is the calmer layer that comes after the watch and after Strava: what the session meant, how the week is shaping up, what should carry forward, and how the next race changes the read.
 
 ## Stack
 
 - Astro
 - TypeScript
-- Astro server-side rendering at build time only
-- Plain CSS with global design tokens
-- Local JSON adapters and normalizers
+- plain CSS
+- build-time JSON adapters
+- no production backend
 
 ## Project structure
 
 ```text
-run/
+run-nico-ar/
   data/
-    current/        Generated build snapshots, gitignored
+    current/        Generated build snapshots, ignored by Git
     manual/         Editorial and human-maintained JSON
     mocks/          Fallback data for local development
+  deploy/
+    systemd/        Optional nightly rebuild units
   public/
   scripts/
     prepare-data.ts
+    deploy-nightly.sh
   src/
     components/
     layouts/
@@ -47,50 +51,185 @@ run/
   tsconfig.json
 ```
 
-## Data model
+## Data flow
 
-### Manual data
+The source of truth lives in the sibling Pacer repo:
 
-These files are source-controlled and meant for light editing:
+- SQLite session storage
+- published CMS snapshots under `../pacer/storage/json/cms/`
+- local Strava activity bundle under `../pacer/storage/json/activities.latest.json`
 
-- `data/manual/coach-feedback.json`
-- `data/manual/next-run.json`
-- `data/manual/motivation.json`
+At build time, `run-nico-ar` does this:
+
+1. reads published CMS snapshots from Pacer
+2. reads the local Strava activity bundle when it is available
+3. optionally reads cached local streams from `../pacer/storage/json/streams/<activityId>.json`
+4. optionally reads a TCX file if the published session references one and the file exists in Pacer storage
+5. derives technical signal notes into `derived-insights.json`
+6. derives race context into `race-context.json`
+7. generates the canonical site-facing contract into `site-output.json`
+8. derives helper JSON for the site and e-ink endpoints from that canonical output
+9. builds a fully static site and e-ink JSON endpoints
+
+There is no runtime database access and no production API dependency from the public site.
+
+## Manual data
+
+These files are source-controlled and intentionally small:
+
 - `data/manual/site-copy.json`
-- `data/manual/session-notes.json`
+- `data/manual/motivation.json`
+- `data/manual/useful-reads-sources.json`
+- `data/manual/races.json`
 
-### Mock data
+`races.json` is the only race-calendar input for the site.
+It is not part of the daily workflow and does not add new per-session form fields.
 
-These files keep the site buildable before real integrations are ready:
+Example shape:
 
-- `data/mocks/pacer-export.json`
-- `data/mocks/latest-session.json`
-- `data/mocks/weekly-summary.json`
-- `data/mocks/eink-summary.json`
+```json
+[
+  {
+    "slug": "fila-race",
+    "title": "FILA Race",
+    "date": "2026-04-19",
+    "distanceKm": 21,
+    "priority": "B"
+  },
+  {
+    "slug": "maratana",
+    "title": "MaraTANA",
+    "date": "2026-04-26",
+    "distanceKm": 15,
+    "priority": "B"
+  },
+  {
+    "slug": "carrera-maya",
+    "title": "Carrera Maya",
+    "date": "2026-05-25",
+    "distanceKm": 10,
+    "goalTimeMin": 55,
+    "priority": "A"
+  }
+]
+```
 
-### Generated data
+If `races.json` is empty, the site falls back to a general-build race context.
 
-These files are produced by `scripts/prepare-data.ts` and are ignored by Git:
+## Generated data
 
-- `data/current/latest-session.json`
-- `data/current/weekly-summary.json`
-- `data/current/eink-summary.json`
+`scripts/prepare-data.ts` writes these build-time snapshots into `data/current/`:
 
-The site reads `data/current` first and falls back to `data/mocks` when generated files are missing.
+- `latest-session.json`
+- `published-sessions.json`
+- `archive-list.json`
+- `weekly-summary.json`
+- `next-run.json`
+- `weather.json`
+- `useful-reads.json`
+- `coach-feedback.json`
+- `derived-insights.json`
+- `race-context.json`
+- `site-output.json`
+- `eink-summary.json`
+
+### Derived insights
+
+`derived-insights.json` is deterministic and built from data already present in the ecosystem:
+
+- manual session type, legs, sleep, restedness, extra notes
+- Strava activity summary
+- published lap summaries
+- route trace
+- local stream cache when present
+- TCX file when present
+
+It currently infers:
+
+- `sessionIntentDetected`
+- `blockStructure`
+- `executionQuality`
+- `finishPattern`
+- `effortCost`
+- `cardiacDrift`
+- `heatImpact`
+- `gpsConfidence`
+- `carryForward`
+- `nextRunSuggestion`
+
+`derived-insights.json` is the technical engine output.
+It can be more diagnostic and does not define the final frontend contract on its own.
+
+### Race context
+
+`race-context.json` combines the latest published session with `data/manual/races.json` and derives:
+
+- `nextRace`
+- `daysToRace`
+- `targetPaceSecPerKm`
+- `targetPaceLabel`
+- `currentPhase`
+- `focusLabel`
+- `sessionRelevance`
+
+### Canonical site output
+
+`site-output.json` is the final site-facing JSON contract.
+
+It is always generated in this exact schema:
+
+```json
+{
+  "signalTitle": "",
+  "signalParagraphs": [],
+  "carryForward": "",
+  "nextRunTitle": "",
+  "nextRunSummary": "",
+  "nextRunDurationMin": 0,
+  "nextRunDurationMax": 0,
+  "nextRunPaceMinSecPerKm": 0,
+  "nextRunPaceMaxSecPerKm": 0,
+  "weekTitle": "",
+  "weekSummary": ""
+}
+```
+
+The separation is intentional:
+
+- `derived-insights.json`: technical engine output
+- `race-context.json`: race-calendar interpretation
+- `site-output.json`: final editorial frontend contract
+- `coach-feedback.json`, `next-run.json`, `weekly-summary.json`, `eink-summary.json`: helper outputs derived from that contract
+
+## Fallback behavior
+
+The pipeline prefers the richest available local source, in this order:
+
+1. published CMS snapshots from Pacer
+2. local Strava bundle for activity context
+3. local stream cache, if available
+4. local TCX file, if available
+5. existing published laps and summary fields
+6. mock files in `data/mocks/`
+
+If streams or TCX files are missing, the site still builds cleanly.
+The heuristics fall back to lap summaries plus weather/manual notes rather than failing the build.
 
 ## Environment
 
-Copy `.env.example` to `.env` only if you need to override defaults:
+Copy `.env.example` to `.env` only if you need to override local defaults:
 
 ```env
 PACER_EXPORT_PATH=../pacer/storage/json/activities.latest.json
+PACER_CMS_DIR=../pacer/storage/json/cms
+PACER_STORAGE_DIR=../pacer/storage
 RUN_DATA_SOURCE=auto
 ```
 
 Available `RUN_DATA_SOURCE` values:
 
-- `auto`: prefer real Pacer export, otherwise use mocks
-- `pacer`: require the Pacer export
+- `auto`: prefer real Pacer data, otherwise use mocks
+- `pacer`: require the Pacer snapshots
 - `mocks`: always use mock data
 
 ## Install
@@ -101,18 +240,13 @@ npm install
 
 ## Local development
 
-Auto mode is the default for `dev` and `build`.
-
 ```bash
 npm run dev
 ```
 
-If `../pacer/storage/json/activities.latest.json` exists, the project imports it first.
-If it does not exist or cannot be normalized, the project writes mock snapshots into `data/current/`.
+`dev` runs `scripts/prepare-data.ts` first, then starts Astro.
 
 ## Data preparation commands
-
-Use these commands to prepare static snapshots explicitly:
 
 ```bash
 npm run data:prepare:auto
@@ -120,23 +254,51 @@ npm run data:prepare:pacer
 npm run data:prepare:mocks
 ```
 
+## Refresh from Pacer and rebuild
+
+Typical local refresh flow:
+
+```bash
+cd /srv/repos/personal/argensonix/labs/pacer
+npm run strava:fetch
+npm run sessions:publish
+
+cd /srv/repos/personal/argensonix/labs/run-nico-ar
+npm run data:prepare:pacer
+npm run build
+```
+
+High-level flow:
+
+```text
+Pacer CMS snapshots
+  + local Strava bundle
+  + optional streams / TCX
+    -> scripts/prepare-data.ts
+      -> derived-insights.json
+      -> race-context.json
+      -> site-output.json
+      -> coach-feedback.json / next-run.json / weekly-summary.json / eink-summary.json
+        -> Astro build
+          -> dist/
+```
+
+If you use the existing `Save and publish` flow in Pacer, the publish hook already rebuilds and deploys the public site separately.
+
 ## Build
 
 ```bash
 npm run build
 ```
 
-This generates a fully static `dist/` directory, including:
+This produces a fully static `dist/` directory, including:
 
-- homepage HTML
-- `/concept`
+- `/`
+- `/runs/`
+- `/about/`
+- static session pages under `/sessions/<slug>/`
 - `/eink-summary.json`
-
-## Preview
-
-```bash
-npm run preview
-```
+- `/eink-summary-v2.json`
 
 ## Checks
 
@@ -144,104 +306,31 @@ npm run preview
 npm run check
 ```
 
-## Real Pacer integration
-
-Current integration strategy is import-by-file, not runtime API coupling.
-
-1. Keep Pacer running separately in `/srv/repos/personal/argensonix/labs/pacer`.
-2. Refresh its export file:
-
-```bash
-cd /srv/repos/personal/argensonix/labs/pacer
-npm run strava:fetch
-```
-
-3. Prepare Run snapshots:
-
-```bash
-cd /srv/repos/personal/argensonix/labs/run
-npm run data:prepare:pacer
-```
-
-4. Build the static site:
-
-```bash
-npm run build
-```
-
-### Notes about weather
-
-- If the latest chosen session is also the latest activity in the Pacer export, the importer uses Pacer's `latest_activity_temp_stream` average.
-- Otherwise it falls back to `data/manual/session-notes.json`.
-- No live weather request happens in production.
-
-## How mocks work
-
-If real data is not ready yet:
-
-```bash
-npm run data:prepare:mocks
-npm run build
-```
-
-This keeps the UI, contracts, and static output working while adapters mature.
-
 ## Deploy by rsync
 
-Example static deploy to a Pi Zero host:
+Production deploy remains a plain static sync:
 
 ```bash
-rsync -avz --delete dist/ pizero:/srv/www/run.nico.ar/
+rsync -avz --delete dist/ pipita:/srv/data/www/run.nico.ar/
 ```
 
-You can add your own SSH config or remote path conventions on top of this, but the site itself only needs plain static file hosting.
+## Nightly refresh
 
-## Preview deploy to Pipita
+This repo also includes a simple nightly rebuild/deploy path for forecast freshness:
 
-Preview deploy is kept intentionally simple and does not change site logic.
+- script: `scripts/deploy-nightly.sh`
+- user service: `deploy/systemd/run-nico-ar-nightly.service`
+- user timer: `deploy/systemd/run-nico-ar-nightly.timer`
 
-Target directory on Pipita:
+That nightly path rebuilds from the latest already-exported local data and rsyncs the result to Pipita.
 
-```text
-/srv/data/www/run-preview.nico.ar
-```
+## Static deployment compatibility
 
-Helper script:
+The full flow stays compatible with static hosting because:
 
-```bash
-bash scripts/deploy-preview.sh
-```
+- Pacer exports JSON locally
+- `run-nico-ar` derives interpretation at build time
+- Astro renders static HTML and JSON
+- deployment is just `rsync` of `dist/`
 
-What it does:
-
-- runs `npm install` only if `node_modules/` is missing
-- runs `npm run build`
-- ensures the preview directory exists on Pipita
-- rsyncs `dist/` into `/srv/data/www/run-preview.nico.ar`
-
-If your SSH host alias is different, pass it explicitly:
-
-```bash
-bash scripts/deploy-preview.sh pipita
-```
-
-Equivalent npm command:
-
-```bash
-npm run deploy:preview
-```
-
-If you want the raw commands instead of the helper script:
-
-```bash
-npm install
-npm run build
-ssh pipita "mkdir -p /srv/data/www/run-preview.nico.ar"
-rsync -avz --delete dist/ pipita:/srv/data/www/run-preview.nico.ar/
-```
-
-## Next integration steps
-
-- Extend the importer with richer lap and block analysis once Strava or Garmin exports are normalized further.
-- Add optional private upload workflows without changing the static production architecture.
-- Feed the generated `dist/eink-summary.json` into a dedicated e-ink view or polling device.
+No part of the public site needs live secrets, runtime DB access, or server-side session processing in production.

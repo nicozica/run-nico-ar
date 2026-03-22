@@ -230,6 +230,7 @@ function createLatestSession(
     title: activity.name,
     activityType: getActivityType(activity),
     date: formatDate(activity.start_date_local || activity.start_date),
+    startDateLocal: activity.start_date_local || activity.start_date || null,
     distanceKm: activity.distance > 0 ? roundOneDecimal(activity.distance / 1000) : null,
     durationSeconds: Math.round(activity.moving_time),
     durationLabel: formatDuration(Math.round(activity.moving_time)),

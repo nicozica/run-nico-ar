@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-03-21T00:00:00.000Z",
+  "nextRace": {
+    "slug": "fila-race",
+    "title": "FILA Race",
+    "date": "2026-04-19",
+    "distanceKm": 21,
+    "priority": "B",
+    "daysToRace": 31,
+    "targetPaceSecPerKm": null,
+    "targetPaceLabel": null
+  },
+  "mainGoal": {
+    "slug": "carrera-maya",
+    "title": "Carrera Maya",
+    "date": "2026-05-25",
+    "distanceKm": 10,
+    "goalTimeMin": 55,
+    "priority": "A",
+    "daysToRace": 67,
+    "targetPaceSecPerKm": 330,
+    "targetPaceLabel": "5:30 /km"
+  },
+  "daysToRace": 31,
+  "targetPaceSecPerKm": null,
+  "targetPaceLabel": null,
+  "currentPhase": "Specific build",
+  "focusLabel": "Specific sessions matter, but only if the easy days stay easy",
+  "sessionRelevance": "This run matters as support work for FILA Race. Its job is to protect the more specific sessions, not compete with them."
+}

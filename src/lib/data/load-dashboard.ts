@@ -1,15 +1,17 @@
 import path from "node:path";
-import { buildEinkSummary, mergeLatestSessionWithNotes, mergeWeeklySnapshotWithNotes } from "./normalize.ts";
+import { buildEinkSummary } from "./normalize.ts";
 import { readJsonFile } from "./json.ts";
 import { currentDataDir, manualDataDir, mockDataDir } from "./paths.ts";
 import type {
+  CanonicalSiteOutput,
   CoachFeedback,
+  DerivedInsights,
   EinkSummary,
   LatestSession,
   MotivationNote,
   NextRun,
+  RaceContext,
   RunDashboardData,
-  SessionNotes,
   SiteCopy,
   UsefulRead,
   WeatherSnapshot,
@@ -51,27 +53,31 @@ export async function loadDashboardData(): Promise<RunDashboardData> {
     coachFeedback,
     nextRun,
     motivation,
-    sessionNotes,
-    latestSessionBase,
-    weeklySnapshotBase,
+    latestSession,
+    weeklySnapshot,
     weatherSnapshot,
     usefulReads,
-    einkSummaryBase
+    einkSummaryBase,
+    derivedInsights,
+    raceContext,
+    canonicalOutput
   ] = await Promise.all([
     loadRequiredManualFile<SiteCopy>("site-copy.json"),
-    loadRequiredManualFile<CoachFeedback>("coach-feedback.json"),
-    loadRequiredManualFile<NextRun>("next-run.json"),
+    loadGeneratedOrMock<CoachFeedback>("coach-feedback.json")
+      .catch(() => loadRequiredManualFile<CoachFeedback>("coach-feedback.json")),
+    loadGeneratedOrMock<NextRun>("next-run.json")
+      .catch(() => loadRequiredManualFile<NextRun>("next-run.json")),
     loadRequiredManualFile<MotivationNote>("motivation.json"),
-    loadRequiredManualFile<SessionNotes>("session-notes.json"),
     loadGeneratedOrMock<LatestSession>("latest-session.json"),
     loadGeneratedOrMock<WeeklySnapshot>("weekly-summary.json"),
     loadGeneratedOrMock<WeatherSnapshot>("weather.json"),
     loadGeneratedOrMock<UsefulRead[]>("useful-reads.json"),
-    loadGeneratedOrMock<EinkSummary>("eink-summary.json")
+    loadGeneratedOrMock<EinkSummary>("eink-summary.json"),
+    loadGeneratedOrMock<DerivedInsights>("derived-insights.json"),
+    loadGeneratedOrMock<RaceContext>("race-context.json"),
+    loadGeneratedOrMock<CanonicalSiteOutput>("site-output.json")
   ]);
 
-  const latestSession = mergeLatestSessionWithNotes(latestSessionBase, sessionNotes);
-  const weeklySnapshot = mergeWeeklySnapshotWithNotes(weeklySnapshotBase, sessionNotes);
   const nextRunWithForecast: NextRun = {
     ...nextRun,
     forecast: weatherSnapshot?.nextRunForecast ?? []
@@ -95,6 +101,9 @@ export async function loadDashboardData(): Promise<RunDashboardData> {
     nextRun: nextRunWithForecast,
     motivation,
     usefulReads,
-    einkSummary
+    einkSummary,
+    derivedInsights,
+    raceContext,
+    canonicalOutput
   };
 }

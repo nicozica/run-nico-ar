@@ -21,8 +21,9 @@ const {
     </a>
 
     <nav class="site-nav" aria-label="Primary">
-      <a class:list={["site-nav__link", currentPath === "/" && "is-active"]} href="/">Home</a>
-      <a class:list={["site-nav__link", currentPath === "/concept/" && "is-active"]} href="/concept/">Concept</a>
+      <a class:list={["site-nav__link", "site-nav__link--desktop-only", currentPath === "/" && "is-active"]} href="/">Home</a>
+      <a class:list={["site-nav__link", currentPath === "/runs/" && "is-active"]} href="/runs/">Runs</a>
+      <a class:list={["site-nav__link", currentPath === "/about/" && "is-active"]} href="/about/">About</a>
     </nav>
   </div>
 </header>

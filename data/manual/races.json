@@ -1,0 +1,24 @@
+[
+  {
+    "slug": "fila-race",
+    "title": "FILA Race",
+    "date": "2026-04-19",
+    "distanceKm": 21,
+    "priority": "B"
+  },
+  {
+    "slug": "maratana",
+    "title": "MaraTANA",
+    "date": "2026-04-26",
+    "distanceKm": 15,
+    "priority": "B"
+  },
+  {
+    "slug": "carrera-maya",
+    "title": "Carrera Maya",
+    "date": "2026-05-25",
+    "distanceKm": 10,
+    "goalTimeMin": 55,
+    "priority": "A"
+  }
+]

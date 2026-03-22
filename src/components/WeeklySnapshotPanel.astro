@@ -9,13 +9,11 @@ const { weeklySnapshot } = Astro.props;
 const maxDistance = Math.max(...weeklySnapshot.dailyDistanceKm.map((d) => d.distanceKm), 1);
 ---
 
-<section class="panel weekly-panel" aria-labelledby="weekly-heading">
-  <div class="panel__header panel__header--compact">
-    <div>
-      <p class="eyebrow">This week</p>
-      <h2 id="weekly-heading">{weeklySnapshot.trainingStatus}</h2>
-    </div>
-  </div>
+<section class="panel weekly-panel training-row-card" aria-labelledby="weekly-heading">
+  <p class="eyebrow">This week</p>
+  <h2 id="weekly-heading">{weeklySnapshot.trainingStatus}</h2>
+
+  <p class="weekly-summary">{weeklySnapshot.summary}</p>
 
   <dl class="weekly-meta">
     <div class="weekly-meta__item">
@@ -32,10 +30,7 @@ const maxDistance = Math.max(...weeklySnapshot.dailyDistanceKm.map((d) => d.dist
     </div>
   </dl>
 
-  <p class="weekly-summary">{weeklySnapshot.summary}</p>
-
-  <!-- 7-day trend bars; zero-distance days show no value label -->
-  <div class="trend" aria-label="Daily km this week">
+  <div class="trend trend--integrated" aria-label="Daily km this week">
     {weeklySnapshot.dailyDistanceKm.map((entry) => (
       <div class="trend__item">
         <span
@@ -43,10 +38,10 @@ const maxDistance = Math.max(...weeklySnapshot.dailyDistanceKm.map((d) => d.dist
           style={`--bar-scale: ${entry.distanceKm / maxDistance};`}
         ></span>
         <div class="trend__meta">
-          <span class="trend__label">{entry.label}</span>
           {entry.distanceKm > 0 && (
             <span class="trend__value">{entry.distanceKm.toFixed(1)}</span>
           )}
+          <span class="trend__label">{entry.label}</span>
         </div>
       </div>
     ))}

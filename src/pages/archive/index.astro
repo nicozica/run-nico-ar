@@ -1,5 +1,5 @@
 ---
-const destination = "/about/";
+const destination = "/runs/";
 ---
 
 <html lang="en">
@@ -8,9 +8,9 @@ const destination = "/about/";
     <meta http-equiv="refresh" content={`0;url=${destination}`} />
     <meta name="robots" content="noindex" />
     <link rel="canonical" href={new URL(destination, Astro.site ?? "https://run.nico.ar")} />
-    <title>Redirecting to About</title>
+    <title>Redirecting to Runs</title>
   </head>
   <body>
-    <p><a href={destination}>Continue to About</a></p>
+    <p><a href={destination}>Continue to Runs</a></p>
   </body>
 </html>

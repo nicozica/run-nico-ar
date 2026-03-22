@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-03-21T00:00:00.000Z",
+  "latest": {
+    "sessionId": 0,
+    "sourceActivityId": 0,
+    "slug": "mock-morning-run",
+    "sessionDate": "2026-03-19",
+    "title": "Morning Run",
+    "signalHeadline": "Easy on paper, costlier in practice",
+    "signalSummary": "The run still counts as aerobic work, but it asked for more than a true easy slot should.",
+    "sessionIntentDetected": "Easy run",
+    "blockStructure": "Continuous aerobic running, with a few uneven patches that broke the rhythm.",
+    "executionQuality": "Easy day drifted above easy",
+    "finishPattern": "Even finish",
+    "effortCost": "Manageable cost",
+    "cardiacDrift": {
+      "label": "Moderate drift",
+      "note": "Heart rate rose through the second half without a cheaper pace profile.",
+      "heartRateDelta": 6,
+      "paceDeltaSecPerKm": 4
+    },
+    "heatImpact": {
+      "label": "Warm but manageable",
+      "note": "Conditions added a little load, but they were not the whole story."
+    },
+    "gpsConfidence": {
+      "label": "Mostly clean",
+      "note": "Route and lap data look stable enough for a confident broad read."
+    },
+    "signalConfidence": "medium",
+    "dataSourcesUsed": [
+      "session_summary",
+      "laps",
+      "weather",
+      "manual_notes"
+    ],
+    "missingSignals": [
+      "streams",
+      "tcx"
+    ],
+    "carryForward": "Bring the next aerobic run back under control and let the heart rate sit lower.",
+    "nextRunSuggestion": {
+      "title": "Quiet aerobic run",
+      "summary": "Keep the effort below this session's cost and use it to restore rhythm.",
+      "durationMin": 30,
+      "durationMax": 40,
+      "paceMinSecPerKm": 415,
+      "paceMaxSecPerKm": 430,
+      "durationLabel": "30-40 min",
+      "paceRangeLabel": "6:55-7:10 /km"
+    }
+  },
+  "sessions": []
+}

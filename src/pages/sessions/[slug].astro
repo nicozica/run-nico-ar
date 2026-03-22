@@ -1,0 +1,68 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LatestSessionPanel from "../../components/LatestSessionPanel.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import { loadPublishedSessionEntries, loadSessionPageData, type SessionPageData } from "../../lib/data/load-sessions";
+
+export async function getStaticPaths() {
+  const sessions = await loadPublishedSessionEntries();
+
+  return sessions.map((session) => ({
+    params: { slug: session.slug }
+  }));
+}
+
+const page = await loadSessionPageData(Astro.params.slug ?? "");
+
+if (!page) {
+  throw new Error(`Unknown session slug: ${Astro.params.slug ?? ""}`);
+}
+
+const detailPage = page as SessionPageData;
+const detailTitle = `${detailPage.title} | nico://run`;
+---
+
+<BaseLayout
+  title={detailTitle}
+  description={`Published session detail for ${detailPage.title}`}
+>
+  <SiteHeader site={detailPage.site} currentPath="/runs/" />
+
+  <main id="content" class="page-shell page-shell--narrow">
+    <LatestSessionPanel
+      latestSession={detailPage.latestSession}
+      coachFeedback={detailPage.coachFeedback}
+      variant="detail"
+    />
+
+    <section class="panel session-reading">
+      <div class="session-reading__column">
+        <div class="session-reading__header">
+          <p class="eyebrow">Reading</p>
+          <h2>{detailPage.coachFeedback.headline}</h2>
+        </div>
+
+        <div class="session-reading__body">
+          {detailPage.aiParagraphs.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+
+          {detailPage.carryForward && (
+            <p class="session-reading__callout">
+              <strong>Carry forward.</strong> {detailPage.carryForward}
+            </p>
+          )}
+
+          {detailPage.nextRunTitle && detailPage.nextRunSummary && (
+            <p class="session-reading__callout">
+              <strong>What followed.</strong> {detailPage.nextRunTitle}. {detailPage.nextRunSummary}
+            </p>
+          )}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter site={detailPage.site} />
+</BaseLayout>
