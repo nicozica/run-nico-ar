@@ -13,11 +13,11 @@ const laps = latestSession.laps.filter((lap) => lap.distanceKm !== null && lap.d
 
 <section class={`laps-panel ${variant === "embedded" ? "laps-panel--embedded" : "band-module"}`} aria-labelledby="laps-preview-heading">
   {variant === "embedded" ? (
-    <p id="laps-preview-heading" class="laps-panel__title">Laps</p>
+    <p id="laps-preview-heading" class="laps-panel__title">Splits</p>
   ) : (
     <div class="band-module__header">
       <div>
-        <p class="eyebrow">Laps</p>
+        <p class="eyebrow">Splits</p>
         <h2 id="laps-preview-heading">Preview</h2>
       </div>
     </div>
@@ -33,9 +33,9 @@ const laps = latestSession.laps.filter((lap) => lap.distanceKm !== null && lap.d
         </colgroup>
         <thead>
           <tr>
-            <th>#</th>
-            <th>Pace</th>
-            <th>Time</th>
+            <th><span class="lap-table__th-label">#</span></th>
+            <th><span class="lap-table__th-label">Pace</span></th>
+            <th><span class="lap-table__th-label">Time</span></th>
           </tr>
         </thead>
       </table>

@@ -8,10 +8,23 @@ interface Props {
   latestSession: LatestSession;
   coachFeedback: CoachFeedback;
   sessionPath?: string | null;
+  readingParagraphs?: string[];
+  carryForward?: string | null;
+  nextRunTitle?: string | null;
+  nextRunSummary?: string | null;
   variant?: "home" | "detail" | "featured";
 }
 
-const { latestSession, coachFeedback, sessionPath = null, variant = "home" } = Astro.props;
+const {
+  latestSession,
+  coachFeedback,
+  sessionPath = null,
+  readingParagraphs = [],
+  carryForward = null,
+  nextRunTitle = null,
+  nextRunSummary = null,
+  variant = "home"
+} = Astro.props;
 
 const dateLabel = formatSessionDateLabel(latestSession.date);
 
@@ -26,9 +39,7 @@ const eyebrowParts = [
 const eyebrow = eyebrowParts.join(" · ");
 
 // Coach callout text
-const calloutHeadline = coachFeedback.headline;
 const calloutParagraph = coachFeedback.summaryShort || coachFeedback.mainTakeaway;
-
 const hasRoute = Boolean(latestSession.routeSvgPoints);
 
 function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | "overcast" | "rain" | "storm" | "mixed" {
@@ -77,7 +88,7 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
     <div class="run-hero__title-group">
       <p class="run-hero__meta-line">{eyebrow}</p>
       <h1 id="run-hero-heading" class="run-hero__title">{sessionTitle}</h1>
-      {variant !== "featured" && calloutParagraph && <p class="run-hero__dek">{calloutParagraph}</p>}
+      {variant === "home" && calloutParagraph && <p class="run-hero__dek">{calloutParagraph}</p>}
     </div>
 
   </div>
@@ -104,17 +115,10 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
     </div>
   </dl>
 
-  {variant === "detail" && (
-    <div class="coach-callout coach-callout--compact">
-      <p class="coach-callout__headline">{calloutHeadline}</p>
-      <p class="coach-callout__body">{coachFeedback.nextRecommendation}</p>
-    </div>
-  )}
-
   {variant === "detail" && latestSession.laps.length > 0 && (
     <div class="lap-preview">
       <div class="lap-preview__header">
-        <p class="eyebrow lap-preview__label">Splits / {latestSession.laps.length} laps</p>
+        <p class="eyebrow lap-preview__label">Splits / {latestSession.laps.length} splits</p>
         {sessionPath && (
           <a class="lap-preview__link" href={sessionPath}>View full breakdown</a>
         )}
@@ -142,6 +146,35 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
             ))}
           </tbody>
         </table>
+      </div>
+    </div>
+  )}
+
+  {variant === "detail" && (
+    <div class="session-reading session-reading--embedded">
+      <div class="session-reading__column">
+        <div class="session-reading__header">
+          <p class="eyebrow">Reading</p>
+          <h2>{coachFeedback.headline}</h2>
+        </div>
+
+        <div class="session-reading__body">
+          {readingParagraphs.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+
+          {carryForward && (
+            <p class="session-reading__callout">
+              <strong>Carry forward.</strong> {carryForward}
+            </p>
+          )}
+
+          {nextRunTitle && nextRunSummary && (
+            <p class="session-reading__callout">
+              <strong>What followed.</strong> {nextRunTitle}. {nextRunSummary}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   )}

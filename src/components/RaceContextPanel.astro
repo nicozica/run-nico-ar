@@ -10,46 +10,46 @@ const nextRace = raceContext.nextRace;
 ---
 
 <section class="panel panel--feature race-context-panel" aria-labelledby="race-context-heading">
-  <div class="panel__header panel__header--compact">
-    <div>
-      <p class="eyebrow">Next race</p>
-      <h2 id="race-context-heading">{nextRace ? nextRace.title : "General build"}</h2>
-    </div>
+  <div class="panel-heading panel-heading--tight">
+    <p class="eyebrow">Next race</p>
+    <h2 id="race-context-heading">{nextRace ? nextRace.title : "General build"}</h2>
+    {nextRace && (
+      <p class="race-context-panel__subtitle">
+        <span>{nextRace.date}</span>
+        <span aria-hidden="true">·</span>
+        <span>{nextRace.distanceKm.toFixed(1)} km</span>
+      </p>
+    )}
   </div>
 
   {nextRace ? (
-    <div class="race-context-panel__race">
-      <div class="race-context-panel__overview">
-        <div class="race-context-panel__countdown">
-          <span class="race-context-panel__days">{nextRace.daysToRace}</span>
-          <span class="race-context-panel__days-label">days to race</span>
+    <div class="race-context-panel__status">
+      <div class="race-context-panel__countdown">
+        <span class="race-context-panel__days">{nextRace.daysToRace}</span>
+        <span class="race-context-panel__days-label">days to race</span>
+      </div>
+
+      <div class="race-context-panel__support">
+        <div class="race-context-panel__phase-block">
+          <p class="race-context-panel__meta-label">Current phase</p>
+          <p class="race-context-panel__phase-value">{raceContext.currentPhase}</p>
         </div>
 
-        <div class="race-context-panel__info">
-          <p class="race-context-panel__meta">
-            <span>{nextRace.date}</span>
-            <span>{nextRace.distanceKm.toFixed(1)} km</span>
-          </p>
-
-          <dl class="race-context-panel__stats">
-            <div>
-              <dt>Phase</dt>
-              <dd>{raceContext.currentPhase}</dd>
-            </div>
-            {raceContext.mainGoal && (
-              <div>
-                <dt>Main goal</dt>
-                <dd>{raceContext.mainGoal.title}</dd>
-              </div>
-            )}
-            {nextRace.targetPaceLabel && (
-              <div>
-                <dt>Target pace</dt>
-                <dd>{nextRace.targetPaceLabel}</dd>
-              </div>
-            )}
-          </dl>
-        </div>
+        {raceContext.mainGoal && (
+          <div class="race-context-panel__goal-block">
+            <p class="race-context-panel__meta-label">Main goal</p>
+            <p class="race-context-panel__goal-title">{raceContext.mainGoal.title}</p>
+            <p class="race-context-panel__goal-meta">
+              <span>{raceContext.mainGoal.daysToRace} days out</span>
+              {raceContext.mainGoal.targetPaceLabel && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>{raceContext.mainGoal.targetPaceLabel}</span>
+                </>
+              )}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   ) : (
@@ -58,9 +58,17 @@ const nextRace = raceContext.nextRace;
     </p>
   )}
 
-  <div class="race-context-panel__relevance">
-    <p class="eyebrow">Why it matters now</p>
-    <p class="race-context-panel__focus">{raceContext.focusLabel}</p>
-    <p>{raceContext.sessionRelevance}</p>
-  </div>
+  {nextRace && (
+    <div class="race-context-panel__relevance">
+      <p class="race-context-panel__focus">{raceContext.focusLabel}</p>
+      <p>{raceContext.sessionRelevance}</p>
+    </div>
+  )}
+
+  {!nextRace && (
+    <div class="race-context-panel__relevance">
+      <p class="race-context-panel__focus">{raceContext.focusLabel}</p>
+      <p>{raceContext.sessionRelevance}</p>
+    </div>
+  )}
 </section>

@@ -9,7 +9,7 @@ import {
   toLatestSession,
   type PacerCmsLatestSession
 } from "./pacer-cms.ts";
-import type { CoachFeedback, LatestSession, SiteCopy } from "./types.ts";
+import type { CanonicalSiteOutput, CoachFeedback, LatestSession, SiteCopy } from "./types.ts";
 
 export interface PublishedSessionEntry {
   slug: string;
@@ -26,6 +26,14 @@ export interface PublishedSessionEntry {
 
 export interface SessionPageData extends PublishedSessionEntry {
   site: SiteCopy;
+}
+
+interface SessionEditorialOverrides {
+  coachFeedback?: CoachFeedback;
+  aiParagraphs?: string[];
+  carryForward?: string | null;
+  nextRunTitle?: string | null;
+  nextRunSummary?: string | null;
 }
 
 async function loadRequiredManualFile<T>(fileName: string): Promise<T> {
@@ -57,10 +65,14 @@ async function loadGeneratedOrMock<T>(fileName: string): Promise<T> {
   return mock;
 }
 
-function toPublishedSessionEntry(snapshot: PacerCmsLatestSession): PublishedSessionEntry {
+function toPublishedSessionEntry(
+  snapshot: PacerCmsLatestSession,
+  overrides: SessionEditorialOverrides = {}
+): PublishedSessionEntry {
   const nextRun = buildFallbackNextRun(snapshot);
   const latestSession = toLatestSession(snapshot);
   const coachFeedback = toCoachFeedback(snapshot, nextRun);
+  const aiParagraphs = snapshot.ai.signalParagraphs.filter((paragraph) => paragraph.trim().length > 0);
 
   return {
     slug: buildSessionSlug(snapshot.sessionDate, snapshot.title, snapshot.manual.sessionType),
@@ -68,18 +80,22 @@ function toPublishedSessionEntry(snapshot: PacerCmsLatestSession): PublishedSess
     sessionDate: snapshot.sessionDate,
     title: selectEditorialSessionTitle(snapshot.title, snapshot.manual.sessionType),
     latestSession,
-    coachFeedback,
-    aiParagraphs: snapshot.ai.signalParagraphs.filter((paragraph) => paragraph.trim().length > 0),
-    carryForward: snapshot.ai.carryForward || null,
-    nextRunTitle: snapshot.ai.nextRunTitle || nextRun?.title || null,
-    nextRunSummary: snapshot.ai.nextRunSummary || nextRun?.summary || null
+    coachFeedback: overrides.coachFeedback ?? coachFeedback,
+    aiParagraphs: overrides.aiParagraphs && overrides.aiParagraphs.length > 0 ? overrides.aiParagraphs : aiParagraphs,
+    carryForward: overrides.carryForward ?? (snapshot.ai.carryForward || null),
+    nextRunTitle: overrides.nextRunTitle ?? (snapshot.ai.nextRunTitle || nextRun?.title || null),
+    nextRunSummary: overrides.nextRunSummary ?? (snapshot.ai.nextRunSummary || nextRun?.summary || null)
   };
 }
 
 export async function loadPublishedSessionEntries(): Promise<PublishedSessionEntry[]> {
-  const snapshots = await loadGeneratedOrMock<PacerCmsLatestSession[]>("published-sessions.json");
+  const [snapshots, canonicalOutput, currentCoachFeedback] = await Promise.all([
+    loadGeneratedOrMock<PacerCmsLatestSession[]>("published-sessions.json"),
+    loadGeneratedOrMock<CanonicalSiteOutput>("site-output.json").catch(() => null),
+    loadGeneratedOrMock<CoachFeedback>("coach-feedback.json").catch(() => null)
+  ]);
 
-  return snapshots
+  const sortedSnapshots = snapshots
     .slice()
     .sort((a, b) => {
       const dateOrder = b.sessionDate.localeCompare(a.sessionDate);
@@ -88,8 +104,21 @@ export async function loadPublishedSessionEntries(): Promise<PublishedSessionEnt
       }
 
       return b.sessionId - a.sessionId;
-    })
-    .map((snapshot) => toPublishedSessionEntry(snapshot));
+    });
+
+  return sortedSnapshots.map((snapshot, index) => {
+    if (index !== 0 || !canonicalOutput) {
+      return toPublishedSessionEntry(snapshot);
+    }
+
+    return toPublishedSessionEntry(snapshot, {
+      coachFeedback: currentCoachFeedback ?? undefined,
+      aiParagraphs: canonicalOutput.signalParagraphs.filter((paragraph) => paragraph.trim().length > 0),
+      carryForward: canonicalOutput.carryForward || null,
+      nextRunTitle: canonicalOutput.nextRunTitle || null,
+      nextRunSummary: canonicalOutput.nextRunSummary || null
+    });
+  });
 }
 
 export async function loadSessionPageData(slug: string): Promise<SessionPageData | null> {

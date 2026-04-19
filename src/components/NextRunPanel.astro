@@ -36,8 +36,10 @@ function getWeatherKind(summary: string): "clear" | "cloudy" | "overcast" | "rai
 ---
 
 <section class="panel panel--accent next-run-panel training-row-card" aria-labelledby="next-run-heading">
-  <p class="eyebrow">Next run</p>
-  <h2 id="next-run-heading">{nextRun.name}</h2>
+  <div class="panel-heading panel-heading--tight">
+    <p class="eyebrow">Next run</p>
+    <h2 id="next-run-heading">{nextRun.name}</h2>
+  </div>
 
   <p class="panel-copy next-run-panel__summary">{nextRun.goal}</p>
 

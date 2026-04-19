@@ -19,7 +19,7 @@ const topicClass: Record<string, string> = {
 
 <section class={`panel reads-panel ${variant === "compact" ? "reads-panel--compact" : ""}`} aria-labelledby="useful-reads-heading">
   <div class="panel__header">
-    <div>
+    <div class={variant === "compact" ? "panel-heading panel-heading--tight" : "panel-heading"}>
       <p class="eyebrow">{variant === "compact" ? "Reads" : "Useful reads"}</p>
       <h2 id="useful-reads-heading">{variant === "compact" ? "Mini feed" : "Worth reading"}</h2>
     </div>

@@ -8,6 +8,7 @@ import {
 } from "../src/lib/data/editorial-output.ts";
 import {
   buildFallbackNextRun,
+  toNextRun,
   toLatestSession,
   toWeatherActivity,
   toWeeklySnapshot,
@@ -38,6 +39,26 @@ import type {
 } from "../src/lib/data/types.ts";
 
 type Mode = "auto" | "pacer" | "mocks";
+
+function buildAuthoritativeCanonicalOutput(input: {
+  canonicalOutput: CanonicalSiteOutput;
+  nextRunSnapshot: PacerCmsNextRun;
+  weeklySummarySnapshot: PacerCmsWeeklySummary;
+}): CanonicalSiteOutput {
+  const { canonicalOutput, nextRunSnapshot, weeklySummarySnapshot } = input;
+
+  return {
+    ...canonicalOutput,
+    nextRunTitle: nextRunSnapshot.title || canonicalOutput.nextRunTitle,
+    nextRunSummary: nextRunSnapshot.summary || canonicalOutput.nextRunSummary,
+    nextRunDurationMin: nextRunSnapshot.durationMin ?? canonicalOutput.nextRunDurationMin,
+    nextRunDurationMax: nextRunSnapshot.durationMax ?? canonicalOutput.nextRunDurationMax,
+    nextRunPaceMinSecPerKm: nextRunSnapshot.paceMinSecPerKm ?? canonicalOutput.nextRunPaceMinSecPerKm,
+    nextRunPaceMaxSecPerKm: nextRunSnapshot.paceMaxSecPerKm ?? canonicalOutput.nextRunPaceMaxSecPerKm,
+    weekTitle: weeklySummarySnapshot.title ?? canonicalOutput.weekTitle,
+    weekSummary: weeklySummarySnapshot.summary ?? canonicalOutput.weekSummary
+  };
+}
 
 function isMode(value: string | undefined): value is Mode {
   return value === "auto" || value === "pacer" || value === "mocks";
@@ -88,6 +109,38 @@ function buildMockArchiveList(): PacerCmsArchiveList {
 
 function buildMockPublishedSessions(): PacerCmsLatestSession[] {
   return [];
+}
+
+function reconcileLatestSnapshot(
+  latestSnapshot: PacerCmsLatestSession,
+  publishedSessions: PacerCmsLatestSession[]
+): PacerCmsLatestSession {
+  if (latestSnapshot.startDateLocal) {
+    return latestSnapshot;
+  }
+
+  const matchingPublishedSession = publishedSessions.find((session) => {
+    if (session.sessionId === latestSnapshot.sessionId) {
+      return true;
+    }
+
+    if (session.sourceActivityId === latestSnapshot.sourceActivityId) {
+      return true;
+    }
+
+    return session.sessionDate === latestSnapshot.sessionDate
+      && session.title === latestSnapshot.title
+      && session.sport === latestSnapshot.sport;
+  });
+
+  if (!matchingPublishedSession?.startDateLocal) {
+    return latestSnapshot;
+  }
+
+  return {
+    ...latestSnapshot,
+    startDateLocal: matchingPublishedSession.startDateLocal
+  };
 }
 
 async function writeCurrentFiles(input: {
@@ -326,36 +379,39 @@ async function prepareFromPacer(): Promise<void> {
     throw new Error(`Pacer CMS snapshot not found at ${resolvePacerCmsSnapshotPath("published-sessions.json")}`);
   }
 
+  const latestSnapshotResolved = reconcileLatestSnapshot(latestSnapshot, publishedSessionsSnapshot);
   const nextRunSnapshot = nextRunSnapshotRaw
-    ?? buildFallbackNextRun(latestSnapshot)
-    ?? buildPlaceholderNextRun(latestSnapshot);
-  const latestSession = toLatestSession(latestSnapshot);
+    ?? buildFallbackNextRun(latestSnapshotResolved)
+    ?? buildPlaceholderNextRun(latestSnapshotResolved);
+  const latestSession = toLatestSession(latestSnapshotResolved);
   const races = await loadManualFile<RaceDefinition[]>("races.json")
     .catch(() => []);
   const derivedInsights = await buildDerivedInsights(publishedSessionsSnapshot);
   const raceContext = buildRaceContext({
-    latestSessionDate: latestSnapshot.sessionDate,
+    latestSessionDate: latestSnapshotResolved.sessionDate,
     derivedInsight: derivedInsights.latest,
     races
   });
   const canonicalOutput = buildCanonicalSiteOutput({
-    latestSnapshot,
+    latestSnapshot: latestSnapshotResolved,
     nextRunSnapshot,
     weeklySummarySnapshot,
     derivedInsight: derivedInsights.latest,
     raceContext
   });
-  const weatherSnapshot = await loadWeatherSnapshot(latestSnapshot, latestSession);
-  const nextRun = buildNextRunFromCanonical({
+  const authoritativeCanonicalOutput = buildAuthoritativeCanonicalOutput({
     canonicalOutput,
+    nextRunSnapshot,
+    weeklySummarySnapshot
+  });
+  const weatherSnapshot = await loadWeatherSnapshot(latestSnapshotResolved, latestSession);
+  const nextRun = {
+    ...toNextRun(nextRunSnapshot),
     forecast: weatherSnapshot.nextRunForecast
-  });
-  const weeklySnapshot = applyCanonicalWeekSummary({
-    weeklySnapshot: toWeeklySnapshot(weeklySummarySnapshot),
-    canonicalOutput
-  });
+  };
+  const weeklySnapshot = toWeeklySnapshot(weeklySummarySnapshot);
   const coachFeedback = buildCoachFeedbackFromCanonical({
-    canonicalOutput,
+    canonicalOutput: authoritativeCanonicalOutput,
     raceContext
   });
   const usefulReads = await prepareUsefulReadsFromFeeds();
@@ -369,12 +425,12 @@ async function prepareFromPacer(): Promise<void> {
     nextRun
   });
   const reviewOutput = buildReviewOutput({
-    latestSnapshot,
+    latestSnapshot: latestSnapshotResolved,
     nextRunSnapshot,
     weeklySummarySnapshot,
     derivedInsight: derivedInsights.latest,
     raceContext,
-    canonicalOutput
+    canonicalOutput: authoritativeCanonicalOutput
   });
 
   await writeCurrentFiles({
@@ -388,7 +444,7 @@ async function prepareFromPacer(): Promise<void> {
     publishedSessions: publishedSessionsSnapshot,
     derivedInsights,
     raceContext,
-    canonicalOutput,
+    canonicalOutput: authoritativeCanonicalOutput,
     reviewOutput,
     einkSummary
   });

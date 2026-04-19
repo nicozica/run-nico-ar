@@ -10,8 +10,10 @@ const maxDistance = Math.max(...weeklySnapshot.dailyDistanceKm.map((d) => d.dist
 ---
 
 <section class="panel weekly-panel training-row-card" aria-labelledby="weekly-heading">
-  <p class="eyebrow">This week</p>
-  <h2 id="weekly-heading">{weeklySnapshot.trainingStatus}</h2>
+  <div class="panel-heading panel-heading--tight">
+    <p class="eyebrow">This week</p>
+    <h2 id="weekly-heading">{weeklySnapshot.trainingStatus}</h2>
+  </div>
 
   <p class="weekly-summary">{weeklySnapshot.summary}</p>
 
@@ -37,11 +39,11 @@ const maxDistance = Math.max(...weeklySnapshot.dailyDistanceKm.map((d) => d.dist
           class="trend__bar"
           style={`--bar-scale: ${entry.distanceKm / maxDistance};`}
         ></span>
-        <div class="trend__meta">
+      <div class="trend__meta">
+          <span class="trend__label">{entry.label}</span>
           {entry.distanceKm > 0 && (
             <span class="trend__value">{entry.distanceKm.toFixed(1)}</span>
           )}
-          <span class="trend__label">{entry.label}</span>
         </div>
       </div>
     ))}

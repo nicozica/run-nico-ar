@@ -10,10 +10,11 @@ import UsefulReadsPanel from "../components/UsefulReadsPanel.astro";
 import WeeklySnapshotPanel from "../components/WeeklySnapshotPanel.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { loadDashboardData } from "../lib/data/load-dashboard";
+import { buildSessionSlug } from "../lib/data/pacer-cms";
 
 const dashboard = await loadDashboardData();
-const latestSessionPath = dashboard.derivedInsights.latest
-  ? `/sessions/${dashboard.derivedInsights.latest.slug}/`
+const latestSessionPath = dashboard.latestSession
+  ? `/sessions/${buildSessionSlug(dashboard.latestSession.date, dashboard.latestSession.title, null)}/`
   : null;
 ---
 
@@ -48,7 +49,7 @@ const latestSessionPath = dashboard.derivedInsights.latest
       <NextRunPanel nextRun={dashboard.nextRun} />
     </div>
 
-    <div class="content-grid content-grid--support">
+    <div class="content-grid content-grid--support content-grid--support-secondary">
       <RaceContextPanel raceContext={dashboard.raceContext} />
       <UsefulReadsPanel usefulReads={dashboard.usefulReads} variant="compact" />
     </div>

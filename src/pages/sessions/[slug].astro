@@ -33,35 +33,12 @@ const detailTitle = `${detailPage.title} | nico://run`;
     <LatestSessionPanel
       latestSession={detailPage.latestSession}
       coachFeedback={detailPage.coachFeedback}
+      readingParagraphs={detailPage.aiParagraphs}
+      carryForward={detailPage.carryForward}
+      nextRunTitle={detailPage.nextRunTitle}
+      nextRunSummary={detailPage.nextRunSummary}
       variant="detail"
     />
-
-    <section class="panel session-reading">
-      <div class="session-reading__column">
-        <div class="session-reading__header">
-          <p class="eyebrow">Reading</p>
-          <h2>{detailPage.coachFeedback.headline}</h2>
-        </div>
-
-        <div class="session-reading__body">
-          {detailPage.aiParagraphs.map((paragraph) => (
-            <p>{paragraph}</p>
-          ))}
-
-          {detailPage.carryForward && (
-            <p class="session-reading__callout">
-              <strong>Carry forward.</strong> {detailPage.carryForward}
-            </p>
-          )}
-
-          {detailPage.nextRunTitle && detailPage.nextRunSummary && (
-            <p class="session-reading__callout">
-              <strong>What followed.</strong> {detailPage.nextRunTitle}. {detailPage.nextRunSummary}
-            </p>
-          )}
-        </div>
-      </div>
-    </section>
   </main>
 
   <SiteFooter site={detailPage.site} />
