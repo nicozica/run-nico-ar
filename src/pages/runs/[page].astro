@@ -5,12 +5,24 @@ import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import { loadArchivePageData } from "../../lib/data/load-archive";
 
-const runs = await loadArchivePageData();
+export async function getStaticPaths() {
+  const firstPage = await loadArchivePageData();
+
+  return firstPage.pagination.pages
+    .filter((page) => page.page > 1)
+    .map((page) => ({
+      params: { page: String(page.page) }
+    }));
+}
+
+const pageNumber = Number.parseInt(Astro.params.page ?? "1", 10);
+const runs = await loadArchivePageData(Number.isFinite(pageNumber) ? pageNumber : 1);
+const pageTitle = `nico://run | Runs page ${runs.pagination.currentPage}`;
 ---
 
 <BaseLayout
-  title="nico://run | Runs"
-  description="Published runs for run.nico.ar"
+  title={pageTitle}
+  description={`Published runs for run.nico.ar, page ${runs.pagination.currentPage}`}
 >
   <SiteHeader site={runs.site} currentPath="/runs/" />
 

@@ -1,5 +1,7 @@
 import type { DerivedSessionInsight, RaceContext, RaceDefinition } from "./types.ts";
 
+const SITE_TIMEZONE = "America/Argentina/Buenos_Aires";
+
 function roundPaceSeconds(value: number | null): number | null {
   if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) {
     return null;
@@ -23,6 +25,25 @@ function formatPaceLabel(value: number | null): string | null {
 function parseRaceDate(date: string): Date | null {
   const parsed = new Date(`${date}T00:00:00Z`);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function currentSiteDate(): string {
+  const formatter = new Intl.DateTimeFormat("en", {
+    timeZone: SITE_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  });
+  const parts = formatter.formatToParts(new Date());
+  const year = parts.find((part) => part.type === "year")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const day = parts.find((part) => part.type === "day")?.value;
+
+  if (!year || !month || !day) {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  return `${year}-${month}-${day}`;
 }
 
 function dayDiff(referenceDate: string, targetDate: string): number | null {
@@ -94,13 +115,17 @@ function distanceLabel(distanceKm: number): string {
   return `${distanceKm.toFixed(0)}K`;
 }
 
-function chooseNextRace(referenceDate: string, races: RaceDefinition[]) {
+function chooseNextRace(referenceDate: string, completedThroughDate: string, races: RaceDefinition[]) {
   return races
     .map((race) => ({
       race,
       daysToRace: dayDiff(referenceDate, race.date)
     }))
-    .filter((entry) => entry.daysToRace !== null && entry.daysToRace >= 0)
+    .filter((entry) => (
+      entry.daysToRace !== null
+      && entry.daysToRace >= 0
+      && entry.race.date > completedThroughDate
+    ))
     .sort((left, right) => {
       const priorityOrder = { A: 0, B: 1, C: 2 } as const;
       const dayOrder = (left.daysToRace ?? 9_999) - (right.daysToRace ?? 9_999);
@@ -113,13 +138,17 @@ function chooseNextRace(referenceDate: string, races: RaceDefinition[]) {
     })[0] ?? null;
 }
 
-function chooseMainGoal(referenceDate: string, races: RaceDefinition[]) {
+function chooseMainGoal(referenceDate: string, completedThroughDate: string, races: RaceDefinition[]) {
   return races
     .map((race) => ({
       race,
       daysToRace: dayDiff(referenceDate, race.date)
     }))
-    .filter((entry) => entry.daysToRace !== null && entry.daysToRace >= 0)
+    .filter((entry) => (
+      entry.daysToRace !== null
+      && entry.daysToRace >= 0
+      && entry.race.date > completedThroughDate
+    ))
     .sort((left, right) => {
       const priorityOrder = { A: 0, B: 1, C: 2 } as const;
       const priorityDiff = priorityOrder[left.race.priority] - priorityOrder[right.race.priority];
@@ -155,6 +184,10 @@ function buildSessionRelevance(
 
   const raceLabel = distanceLabel(nextRace.distanceKm);
 
+  if (insight.sessionIntentDetected === "Race") {
+    return `The last race is now banked. The build can shift toward ${nextRace.title}, with the next useful signal coming from how well recovery turns back into ${raceLabel} rhythm.`;
+  }
+
   if (insight.sessionIntentDetected === "Long run") {
     return `This one matters directly for ${nextRace.title}. In this ${currentPhase.toLowerCase()}, the main value is building ${raceLabel} endurance without turning the finish into another quality effort.`;
   }
@@ -175,9 +208,10 @@ export function buildRaceContext(input: {
   derivedInsight: DerivedSessionInsight | null;
   races: RaceDefinition[];
 }): RaceContext {
-  const { latestSessionDate, derivedInsight, races } = input;
-  const nextRaceEntry = chooseNextRace(latestSessionDate, races);
-  const mainGoalEntry = chooseMainGoal(latestSessionDate, races);
+  const { derivedInsight, latestSessionDate, races } = input;
+  const referenceDate = currentSiteDate();
+  const nextRaceEntry = chooseNextRace(referenceDate, latestSessionDate, races);
+  const mainGoalEntry = chooseMainGoal(referenceDate, latestSessionDate, races);
   const daysToRace = nextRaceEntry?.daysToRace ?? null;
   const targetPaceSecPerKm = nextRaceEntry?.race.goalTimeMin
     ? roundPaceSeconds((nextRaceEntry.race.goalTimeMin * 60) / nextRaceEntry.race.distanceKm)

@@ -29,7 +29,7 @@ interface SegmentSample {
   distanceM: number | null;
 }
 
-type SessionIntent = "easy" | "long" | "tempo" | "steady";
+type SessionIntent = "easy" | "long" | "tempo" | "race" | "steady";
 
 const GPS_NOTE_RE = /\bgps\b|pifia|pace.*(wrong|off|jump|weird)|trace/i;
 const HEAT_NOTE_RE = /\bheat\b|calor|humid|hot|sud[eé]|sol/i;
@@ -346,6 +346,10 @@ function getSignalSamples(
 function detectSessionIntent(snapshot: PacerCmsLatestSession, activity: PacerActivity | null): SessionIntent {
   const manualValue = `${snapshot.manual.sessionType} ${snapshot.title}`.toLowerCase();
 
+  if (manualValue.includes("race")) {
+    return "race";
+  }
+
   if (manualValue.includes("easy") || manualValue.includes("recovery") || manualValue.includes("reset")) {
     return "easy";
   }
@@ -377,6 +381,8 @@ function intentLabel(intent: SessionIntent): string {
       return "Long run";
     case "tempo":
       return "Tempo session";
+    case "race":
+      return "Race";
     default:
       return "Steady run";
   }
@@ -639,6 +645,10 @@ function buildBlockStructure(intent: SessionIntent, snapshot: PacerCmsLatestSess
       : "Continuous endurance running with a mostly even aerobic shape.";
   }
 
+  if (intent === "race") {
+    return "Race effort with the full route reading as one continuous performance rather than a training block.";
+  }
+
   if (intent === "easy") {
     return shortLapCount >= 2
       ? "Mostly easy running, with a few uneven patches that broke the rhythm."
@@ -724,6 +734,16 @@ function buildExecutionQuality(
       : "Tempo work looked controlled and repeatable";
   }
 
+  if (intent === "race") {
+    if (finishPattern === "Faded late") {
+      return "Race effort was honest, with the cost showing late";
+    }
+
+    return effortCost === "High cost"
+      ? "Race effort landed, with real cost to absorb"
+      : "Race effort landed cleanly";
+  }
+
   return effortCost === "High cost"
     ? "Useful work, but costlier than ideal"
     : "Steady work landed cleanly";
@@ -749,6 +769,10 @@ function buildCarryForward(
       : "Keep the next run quiet so the quality stays useful instead of expensive.";
   }
 
+  if (intent === "race") {
+    return "Treat the race as the hard session it was: absorb it first, then let the next goal shape the build.";
+  }
+
   return effortCost === "High cost"
     ? "Protect the next session and keep it genuinely light."
     : "Carry the rhythm forward without chasing more work than the week needs.";
@@ -756,6 +780,24 @@ function buildCarryForward(
 
 function buildNextRunSuggestion(intent: SessionIntent, snapshot: PacerCmsLatestSession, carryForward: string): DerivedNextRunSuggestion {
   const basePace = snapshot.paceSecPerKm ?? null;
+
+  if (intent === "race") {
+    const durationMin = 25;
+    const durationMax = 40;
+    const paceMinSecPerKm = basePace === null ? null : basePace + 60;
+    const paceMaxSecPerKm = basePace === null ? null : basePace + 90;
+
+    return {
+      title: "Recovery Run",
+      summary: carryForward,
+      durationMin,
+      durationMax,
+      paceMinSecPerKm,
+      paceMaxSecPerKm,
+      durationLabel: formatDurationLabel(durationMin, durationMax),
+      paceRangeLabel: formatPaceRangeLabel(basePace, 60, 90)
+    };
+  }
 
   if (intent === "tempo" || intent === "long") {
     const durationMin = 35;
@@ -827,6 +869,10 @@ function buildSignalHeadline(intent: SessionIntent, executionQuality: string, fi
     return "Tempo signal, mostly on target";
   }
 
+  if (intent === "race") {
+    return "Race effort with a real performance signal";
+  }
+
   if (intent === "long") {
     return "Long run, mostly controlled";
   }
@@ -856,6 +902,10 @@ function buildSignalSummary(
     return effortCost === "High cost"
       ? "The work landed, but the session drifted toward a more expensive quality day than ideal."
       : "The work looked purposeful enough to count as quality without turning the whole day ragged.";
+  }
+
+  if (intent === "race") {
+    return "This was a full race effort, so the main read is performance plus recovery cost rather than training neatness.";
   }
 
   return "The session pushed the week forward in a readable, mostly controlled way.";

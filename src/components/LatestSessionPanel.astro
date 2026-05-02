@@ -29,6 +29,15 @@ const {
 const dateLabel = formatSessionDateLabel(latestSession.date);
 
 const sessionTitle = latestSession.title.toUpperCase();
+const titleEmojiTokenPattern = /^(?:[\u{1F1E6}-\u{1F1FF}]{2}|\p{Emoji_Presentation}|\p{Extended_Pictographic}\uFE0F?)$/u;
+const titleEmojiSplitPattern = /([\u{1F1E6}-\u{1F1FF}]{2}|\p{Emoji_Presentation}|\p{Extended_Pictographic}\uFE0F?)/gu;
+const sessionTitleParts = sessionTitle
+  .split(titleEmojiSplitPattern)
+  .filter((part) => part.length > 0)
+  .map((part) => ({
+    text: part,
+    isEmoji: titleEmojiTokenPattern.test(part)
+  }));
 
 // Meta line: date · time · location (omit nulls)
 const eyebrowParts = [
@@ -41,6 +50,7 @@ const eyebrow = eyebrowParts.join(" · ");
 // Coach callout text
 const calloutParagraph = coachFeedback.summaryShort || coachFeedback.mainTakeaway;
 const hasRoute = Boolean(latestSession.routeSvgPoints);
+const isRace = latestSession.statusLabel?.trim().toLowerCase() === "race";
 
 function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | "overcast" | "rain" | "storm" | "mixed" {
   const value = (label ?? "").toLowerCase();
@@ -87,7 +97,13 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
 
     <div class="run-hero__title-group">
       <p class="run-hero__meta-line">{eyebrow}</p>
-      <h1 id="run-hero-heading" class="run-hero__title">{sessionTitle}</h1>
+      <h1 id="run-hero-heading" class="run-hero__title">
+        {sessionTitleParts.map((part) => part.isEmoji
+          ? <span class="run-hero__title-emoji">{part.text}</span>
+          : part.text
+        )}
+      </h1>
+      {isRace && <p class="race-badge race-badge--hero">Race</p>}
       {variant === "home" && calloutParagraph && <p class="run-hero__dek">{calloutParagraph}</p>}
     </div>
 

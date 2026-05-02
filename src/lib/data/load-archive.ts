@@ -9,7 +9,7 @@ import {
 import { formatSessionDateLabel, formatSessionTimeLabel } from "./session-display.ts";
 import type { SiteCopy } from "./types.ts";
 
-interface ArchiveSessionCard {
+export interface ArchiveSessionCard {
   slug: string;
   sessionId: number;
   sessionDate: string;
@@ -17,6 +17,7 @@ interface ArchiveSessionCard {
   dateTimeLabel: string;
   title: string;
   sport: string;
+  sessionType: string | null;
   distanceKm: number | null;
   durationLabel: string;
   paceLabel: string | null;
@@ -25,11 +26,28 @@ interface ArchiveSessionCard {
   routeSvgPoints: string | null;
 }
 
+export interface ArchivePagination {
+  currentPage: number;
+  pageSize: number;
+  totalPages: number;
+  totalSessions: number;
+  previousPath: string | null;
+  nextPath: string | null;
+  pages: Array<{
+    page: number;
+    path: string;
+    isCurrent: boolean;
+  }>;
+}
+
 export interface ArchivePageData {
   site: SiteCopy;
   count: number;
   sessions: ArchiveSessionCard[];
+  pagination: ArchivePagination;
 }
+
+const DEFAULT_PAGE_SIZE = 10;
 
 function roundOneDecimal(value: number): number {
   return Number(value.toFixed(1));
@@ -102,6 +120,7 @@ function toArchiveSessionCard(session: PacerCmsLatestSession): ArchiveSessionCar
     dateTimeLabel: timeLabel ? `${dateLabel} · ${timeLabel}` : dateLabel,
     title: selectEditorialSessionTitle(session.title, session.manual.sessionType),
     sport: session.sport,
+    sessionType: session.manual.sessionType || null,
     distanceKm: typeof session.distanceM === "number" && session.distanceM > 0
       ? roundOneDecimal(session.distanceM / 1000)
       : null,
@@ -113,13 +132,40 @@ function toArchiveSessionCard(session: PacerCmsLatestSession): ArchiveSessionCar
   };
 }
 
-export async function loadArchivePageData(): Promise<ArchivePageData> {
+function buildPagePath(page: number): string {
+  return page <= 1 ? "/runs/" : `/runs/${page}/`;
+}
+
+function buildPagination(totalSessions: number, currentPage: number, pageSize: number): ArchivePagination {
+  const totalPages = Math.max(1, Math.ceil(totalSessions / pageSize));
+  const normalizedPage = Math.min(Math.max(1, currentPage), totalPages);
+
+  return {
+    currentPage: normalizedPage,
+    pageSize,
+    totalPages,
+    totalSessions,
+    previousPath: normalizedPage > 1 ? buildPagePath(normalizedPage - 1) : null,
+    nextPath: normalizedPage < totalPages ? buildPagePath(normalizedPage + 1) : null,
+    pages: Array.from({ length: totalPages }, (_, index) => {
+      const page = index + 1;
+
+      return {
+        page,
+        path: buildPagePath(page),
+        isCurrent: page === normalizedPage
+      };
+    })
+  };
+}
+
+export async function loadArchivePageData(page = 1, pageSize = DEFAULT_PAGE_SIZE): Promise<ArchivePageData> {
   const [site, publishedSessions] = await Promise.all([
     loadRequiredManualFile<SiteCopy>("site-copy.json"),
     loadGeneratedOrMock<PacerCmsLatestSession[]>("published-sessions.json")
   ]);
 
-  const sessions = [...publishedSessions]
+  const allSessions = [...publishedSessions]
     .sort((a, b) => {
       const dateOrder = b.sessionDate.localeCompare(a.sessionDate);
       if (dateOrder !== 0) {
@@ -129,10 +175,14 @@ export async function loadArchivePageData(): Promise<ArchivePageData> {
       return b.sessionId - a.sessionId;
     })
     .map((session) => toArchiveSessionCard(session));
+  const pagination = buildPagination(allSessions.length, page, pageSize);
+  const start = (pagination.currentPage - 1) * pagination.pageSize;
+  const sessions = allSessions.slice(start, start + pagination.pageSize);
 
   return {
     site,
-    count: sessions.length,
-    sessions
+    count: allSessions.length,
+    sessions,
+    pagination
   };
 }

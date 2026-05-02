@@ -1,0 +1,87 @@
+---
+import RouteTrace from "./RouteTrace.astro";
+import type { ArchivePagination, ArchiveSessionCard } from "../lib/data/load-archive";
+
+interface Props {
+  sessions: ArchiveSessionCard[];
+  pagination: ArchivePagination;
+}
+
+const { sessions, pagination } = Astro.props;
+---
+
+<section class="panel">
+  {sessions.length === 0 ? (
+    <p class="panel-copy">No published runs yet.</p>
+  ) : (
+    <>
+      <ol class="archive-list">
+        {sessions.map((session) => (
+          <li class="archive-item">
+            <a class="archive-item__link" href={`/sessions/${session.slug}/`}>
+              <div class="archive-item__header">
+                <div class="archive-item__heading">
+                  <p class="archive-item__date">{session.dateTimeLabel}</p>
+                  <h2>{session.title}</h2>
+                </div>
+
+                {session.routeSvgPoints && (
+                  <div class="archive-item__trace" aria-hidden="true">
+                    <RouteTrace
+                      points={session.routeSvgPoints}
+                      class="archive-item__trace-svg"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div class="archive-item__meta">
+                {session.sessionType === "Race" && <span class="race-badge race-badge--archive">Race</span>}
+                <span>{session.distanceKm === null ? "—" : `${session.distanceKm.toFixed(1)} km`}</span>
+                <span>{session.durationLabel}</span>
+                <span>{session.paceLabel ?? "—"}</span>
+              </div>
+
+              {session.signalTitle && <p class="archive-item__signal">{session.signalTitle}</p>}
+              {session.nextRunTitle && <p class="archive-item__next">Next run: {session.nextRunTitle}</p>}
+            </a>
+          </li>
+        ))}
+      </ol>
+
+      {pagination.totalPages > 1 && (
+        <nav class="pagination" aria-label="Runs pages">
+          <a
+            class:list={["pagination__step", !pagination.previousPath && "is-disabled"]}
+            href={pagination.previousPath ?? undefined}
+            aria-disabled={pagination.previousPath ? undefined : "true"}
+          >
+            Previous
+          </a>
+
+          <ol class="pagination__pages">
+            {pagination.pages.map((page) => (
+              <li>
+                <a
+                  class:list={["pagination__page", page.isCurrent && "is-current"]}
+                  href={page.path}
+                  aria-current={page.isCurrent ? "page" : undefined}
+                >
+                  {page.page}
+                </a>
+              </li>
+            ))}
+          </ol>
+
+          <a
+            class:list={["pagination__step", !pagination.nextPath && "is-disabled"]}
+            href={pagination.nextPath ?? undefined}
+            aria-disabled={pagination.nextPath ? undefined : "true"}
+          >
+            Next
+          </a>
+        </nav>
+      )}
+    </>
+  )}
+</section>
