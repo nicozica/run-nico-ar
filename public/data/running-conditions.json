@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-04-01T09:00:00Z",
+  "location": "Buenos Aires",
+  "summaryTitle": "Running conditions placeholder",
+  "summaryText": "This placeholder should be replaced by the external collector without rebuilding the site.",
+  "bestWindow": {
+    "start": "2026-05-02T17:00:00-03:00",
+    "end": "2026-05-02T18:00:00-03:00",
+    "score": 100,
+    "label": "Great",
+    "temperatureC": 14.2,
+    "windSpeedKmh": 12.9,
+    "precipitationProbabilityPercent": 0
+  },
+  "current": {
+    "temperatureC": 15,
+    "conditionText": "Clear sky",
+    "windSpeedKmh": 14,
+    "humidityPercent": 72
+  }
+}

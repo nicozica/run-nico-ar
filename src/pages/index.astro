@@ -3,6 +3,7 @@ import LatestSessionPanel from "../components/LatestSessionPanel.astro";
 import LapsPreviewPanel from "../components/LapsPreviewPanel.astro";
 import NextRunPanel from "../components/NextRunPanel.astro";
 import RaceContextPanel from "../components/RaceContextPanel.astro";
+import RunningConditionsWidget from "../components/RunningConditionsWidget.astro";
 import SignalCardPanel from "../components/SignalCardPanel.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
@@ -44,14 +45,22 @@ const latestSessionPath = dashboard.latestSession
       </div>
     </section>
 
-    <div class="content-grid content-grid--support content-grid--training">
-      <WeeklySnapshotPanel weeklySnapshot={dashboard.weeklySnapshot} />
-      <NextRunPanel nextRun={dashboard.nextRun} />
-    </div>
-
-    <div class="content-grid content-grid--support content-grid--support-secondary">
-      <RaceContextPanel raceContext={dashboard.raceContext} />
-      <UsefulReadsPanel usefulReads={dashboard.usefulReads} variant="compact" />
+    <div class="content-grid content-grid--support content-grid--home">
+      <div class="home-grid__weekly">
+        <WeeklySnapshotPanel weeklySnapshot={dashboard.weeklySnapshot} />
+      </div>
+      <div class="home-grid__next">
+        <NextRunPanel nextRun={dashboard.nextRun} />
+      </div>
+      <div class="home-grid__conditions">
+        <RunningConditionsWidget forecast={dashboard.nextRun.forecast} />
+      </div>
+      <div class="home-grid__race">
+        <RaceContextPanel raceContext={dashboard.raceContext} />
+      </div>
+      <div class="home-grid__reads">
+        <UsefulReadsPanel usefulReads={dashboard.usefulReads} variant="compact" />
+      </div>
     </div>
   </main>
 

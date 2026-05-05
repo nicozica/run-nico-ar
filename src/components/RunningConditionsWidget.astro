@@ -1,0 +1,364 @@
+---
+import WeatherGlyph from "./WeatherGlyph.astro";
+import type { ForecastDay } from "../lib/data/types";
+
+interface Props {
+  forecast?: ForecastDay[];
+}
+
+const { forecast = [] } = Astro.props;
+const widgetId = `running-conditions-${Math.random().toString(36).slice(2, 8)}`;
+
+function getWeatherKind(summary: string): "clear" | "cloudy" | "overcast" | "rain" | "storm" | "mixed" {
+  const value = summary.toLowerCase();
+
+  if (value.includes("storm")) {
+    return "storm";
+  }
+
+  if (value.includes("rain")) {
+    return "rain";
+  }
+
+  if (value.includes("overcast")) {
+    return "overcast";
+  }
+
+  if (value.includes("cloud")) {
+    return "cloudy";
+  }
+
+  if (value.includes("clear") || value.includes("warm") || value.includes("cool")) {
+    return "clear";
+  }
+
+  return "mixed";
+}
+---
+
+<section class="panel panel--accent running-conditions-card" data-running-conditions-widget id={widgetId} aria-labelledby={`${widgetId}-heading`}>
+  <div class="panel-heading panel-heading--tight">
+    <p class="eyebrow">Weather</p>
+    <h2 id={`${widgetId}-heading`}>Best time to run</h2>
+  </div>
+
+  <div class="running-conditions-note" aria-live="polite">
+    <div class="running-conditions-best" data-best-window hidden>
+      <p class="running-conditions-best__time" data-best-window-time></p>
+      <p class="running-conditions-note__metrics" data-best-window-metrics></p>
+    </div>
+  </div>
+
+  {forecast.length > 0 && (
+    <div class="forecast-block forecast-block--conditions" aria-label="Running forecast">
+      <ul class="forecast-list forecast-list--compact">
+        {forecast.map((day) => (
+          <li class="forecast-item">
+            <span class="forecast-item__day">{day.label}</span>
+            <WeatherGlyph kind={getWeatherKind(day.summary)} className="forecast-item__icon" />
+            <div class="forecast-item__temps">
+              <span class="forecast-item__temp forecast-item__temp--min">{day.temperatureMinC === null ? "—" : `${day.temperatureMinC}°`}</span>
+              <span class="forecast-item__temp forecast-item__temp--max">{day.temperatureMaxC === null ? "—" : `${day.temperatureMaxC}°`}</span>
+            </div>
+            <span class="forecast-item__summary">{day.summary}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  <div class="running-conditions-current">
+    <p class="running-conditions-note__label">Current conditions</p>
+    <p class="running-conditions-note__summary" data-current-conditions>Waiting for conditions</p>
+  </div>
+
+  <p class="running-conditions-note__meta">
+    <span data-conditions-freshness>Snapshot unavailable</span>
+    <span aria-hidden="true">·</span>
+    <span>Provided by <a href="https://aires.nico.ar" target="_blank" rel="noreferrer">Aires Pulse</a></span>
+  </p>
+</section>
+
+<script is:inline>
+  (() => {
+    const STALE_MINUTES = 180;
+    const endpoint = "/data/running-conditions.json";
+
+    function getBuenosAiresDateParts(date) {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Argentina/Buenos_Aires",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(date);
+
+      return {
+        year: Number(parts.find((part) => part.type === "year")?.value),
+        month: Number(parts.find((part) => part.type === "month")?.value),
+        day: Number(parts.find((part) => part.type === "day")?.value)
+      };
+    }
+
+    function dateKey(parts) {
+      return Date.UTC(parts.year, parts.month - 1, parts.day);
+    }
+
+    function formatWindowTimeRange(start, end) {
+      const formatter = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "America/Argentina/Buenos_Aires",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+
+      try {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+
+        if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+          return null;
+        }
+
+        return `${formatter.format(startDate)}–${formatter.format(endDate)}`;
+      } catch {
+        return null;
+      }
+    }
+
+    function formatNaturalWindowTime(start) {
+      try {
+        const startDate = new Date(start);
+
+        if (Number.isNaN(startDate.getTime())) {
+          return null;
+        }
+
+        const parts = new Intl.DateTimeFormat("en-US", {
+          timeZone: "America/Argentina/Buenos_Aires",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        }).formatToParts(startDate);
+        const hour = parts.find((part) => part.type === "hour")?.value;
+        const minute = parts.find((part) => part.type === "minute")?.value;
+        const dayPeriod = parts.find((part) => part.type === "dayPeriod")?.value;
+
+        if (!hour || !minute || !dayPeriod) {
+          return null;
+        }
+
+        return minute === "00" ? `${hour} ${dayPeriod}` : `${hour}:${minute} ${dayPeriod}`;
+      } catch {
+        return null;
+      }
+    }
+
+    function isOneHourWindow(start, end) {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+
+      if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+        return false;
+      }
+
+      return endDate.getTime() - startDate.getTime() === 60 * 60 * 1000;
+    }
+
+    function formatWindowDayLabel(start) {
+      const startDate = new Date(start);
+
+      if (Number.isNaN(startDate.getTime())) {
+        return null;
+      }
+
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(today.getDate() + 1);
+      const startKey = dateKey(getBuenosAiresDateParts(startDate));
+      const todayKey = dateKey(getBuenosAiresDateParts(today));
+      const tomorrowKey = dateKey(getBuenosAiresDateParts(tomorrow));
+
+      if (startKey === todayKey) {
+        return "Today";
+      }
+
+      if (startKey === tomorrowKey) {
+        return "Tomorrow";
+      }
+
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Argentina/Buenos_Aires",
+        weekday: "short"
+      }).format(startDate);
+    }
+
+    function formatWindowHeadline(bestWindow, timeRange) {
+      const dayLabel = bestWindow ? formatWindowDayLabel(bestWindow.start) : null;
+      const naturalTime = bestWindow && isOneHourWindow(bestWindow.start, bestWindow.end)
+        ? formatNaturalWindowTime(bestWindow.start)
+        : null;
+
+      if (dayLabel && naturalTime) {
+        return `${dayLabel} at ${naturalTime}`;
+      }
+
+      return dayLabel && timeRange ? `${dayLabel} · ${timeRange}` : null;
+    }
+
+    function formatFreshness(generatedAt) {
+      const generated = new Date(generatedAt);
+
+      if (Number.isNaN(generated.getTime())) {
+        return {
+          label: "Freshness unavailable",
+          isStale: true
+        };
+      }
+
+      const diffMs = Date.now() - generated.getTime();
+      const diffMinutes = Math.max(0, Math.round(diffMs / 60000));
+
+      if (diffMinutes < 2) {
+        return { label: "Updated just now", isStale: false };
+      }
+
+      if (diffMinutes < 60) {
+        return {
+          label: `Updated ${diffMinutes} min ago`,
+          isStale: diffMinutes > STALE_MINUTES
+        };
+      }
+
+      const diffHours = Math.round(diffMinutes / 60);
+      return {
+        label: `Updated ${diffHours}h ago`,
+        isStale: diffMinutes > STALE_MINUTES
+      };
+    }
+
+    function formatNumber(value, unit, digits = 0) {
+      if (typeof value !== "number" || !Number.isFinite(value)) {
+        return null;
+      }
+
+      return `${value.toFixed(digits)}${unit}`;
+    }
+
+    function joinSegments(values) {
+      return values.filter(Boolean).join(" · ");
+    }
+
+    function formatRainLine(value) {
+      const formatted = formatNumber(value, "%", 0);
+      return formatted ? `${formatted} rain` : null;
+    }
+
+    function formatWindLine(value) {
+      const formatted = formatNumber(value, " km/h", 1);
+      return formatted ? `${formatted} wind` : null;
+    }
+
+    function formatConditionText(value) {
+      return typeof value === "string" && value.trim()
+        ? value.trim().toLowerCase()
+        : null;
+    }
+
+    function formatCurrentMetrics(current) {
+      if (!current) {
+        return null;
+      }
+
+      return joinSegments([
+        formatNumber(current.temperatureC, "°C", 1),
+        formatConditionText(current.conditionText),
+        formatWindLine(current.windSpeedKmh),
+        formatRainLine(current.precipitationProbabilityPercent)
+      ]);
+    }
+
+    function formatBestMetrics(bestWindow) {
+      if (!bestWindow) {
+        return null;
+      }
+
+      return joinSegments([
+        formatNumber(bestWindow.temperatureC, "°C", 1),
+        formatWindLine(bestWindow.windSpeedKmh),
+        formatRainLine(bestWindow.precipitationProbabilityPercent)
+      ]);
+    }
+
+    function applyFallback(root, summary, freshnessLabel) {
+      const currentNode = root.querySelector("[data-current-conditions]");
+      const bestNode = root.querySelector("[data-best-window]");
+      const freshnessNode = root.querySelector("[data-conditions-freshness]");
+
+      root.dataset.conditionsState = "fallback";
+      if (currentNode) currentNode.textContent = summary;
+      if (bestNode) bestNode.hidden = true;
+      if (freshnessNode) freshnessNode.textContent = freshnessLabel;
+    }
+
+    async function hydrateWidget(root) {
+      try {
+        const response = await fetch(endpoint, { cache: "no-store" });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const payload = await response.json();
+        const freshnessState = formatFreshness(payload.generatedAt);
+
+        if (freshnessState.isStale) {
+          applyFallback(
+            root,
+            "Conditions snapshot needs refresh",
+            `${freshnessState.label} · stale`
+          );
+          return;
+        }
+
+        const currentNode = root.querySelector("[data-current-conditions]");
+        const bestNode = root.querySelector("[data-best-window]");
+        const bestTimeNode = root.querySelector("[data-best-window-time]");
+        const bestMetricsNode = root.querySelector("[data-best-window-metrics]");
+        const freshnessNode = root.querySelector("[data-conditions-freshness]");
+        const current = payload?.current ?? null;
+        const bestWindow = payload?.bestWindow ?? null;
+        const timeRange = bestWindow
+          ? formatWindowTimeRange(payload.bestWindow.start, payload.bestWindow.end)
+          : null;
+
+        root.dataset.conditionsState = "live";
+        if (freshnessNode) freshnessNode.textContent = freshnessState.label;
+        if (currentNode) {
+          currentNode.textContent = formatCurrentMetrics(current) ?? "Current conditions unavailable";
+        }
+
+        if (!bestWindow) {
+          if (bestNode) bestNode.hidden = true;
+          return;
+        }
+
+        if (bestNode) bestNode.hidden = false;
+        if (bestTimeNode) bestTimeNode.textContent = formatWindowHeadline(bestWindow, timeRange) ?? "Window time unavailable";
+        if (bestMetricsNode) {
+          bestMetricsNode.textContent = formatBestMetrics(bestWindow) ?? "Window conditions unavailable";
+        }
+      } catch (error) {
+        console.warn("Running conditions widget failed to load.", error);
+        applyFallback(
+          root,
+          "Running conditions unavailable",
+          "Live snapshot unavailable"
+        );
+      }
+    }
+
+    document
+      .querySelectorAll("[data-running-conditions-widget]")
+      .forEach((root) => hydrateWidget(root));
+  })();
+</script>

@@ -58,6 +58,10 @@ a {
   color: inherit;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 a:focus-visible,
 button:focus-visible,
 summary:focus-visible {
@@ -1225,7 +1229,8 @@ p {
 .training-row-card > .weekly-meta,
 .training-row-card > .next-run-stats--integrated,
 .training-row-card > .trend--integrated,
-.training-row-card > .forecast-block--integrated {
+.training-row-card > .forecast-block--integrated,
+.training-row-card > .next-run-workout {
   margin: 0;
 }
 
@@ -1402,7 +1407,7 @@ p {
   display: block;
   width: clamp(2.35rem, 78%, 3.15rem);
   min-height: 0.5rem;
-  height: calc(5.2rem * var(--bar-scale) + 0.5rem);
+  height: calc(5.9rem * var(--bar-scale) + 0.5rem);
   border-radius: 0.44rem 0.44rem 0.14rem 0.14rem;
   background: var(--orange);
   box-shadow: 0 10px 16px -18px rgba(43, 38, 34, 0.24);
@@ -1442,6 +1447,188 @@ p {
   border-top: 1px solid rgba(70, 58, 48, 0.09);
 }
 
+.running-conditions-card {
+  display: grid;
+  align-content: start;
+  gap: 0.78rem;
+}
+
+.running-conditions-card .panel-heading,
+.running-conditions-card .running-conditions-note,
+.running-conditions-card .forecast-block {
+  margin: 0;
+}
+
+.running-conditions-card h2 {
+  font-size: clamp(1.55rem, 3vw, 2.05rem);
+  line-height: 0.98;
+}
+
+.running-conditions-note {
+  display: grid;
+  gap: 0.56rem;
+  margin-top: 0;
+  padding-top: 0.08rem;
+  border-top: 0;
+}
+
+.running-conditions-current {
+  display: grid;
+  gap: 0.24rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.running-conditions-best {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.04rem 0 0.1rem;
+}
+
+.running-conditions-best__time {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.96rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.forecast-block--conditions {
+  display: grid;
+  gap: 0.46rem;
+  padding: 0.7rem 0.72rem 0.58rem;
+  border: 1px solid rgba(70, 58, 48, 0.08);
+  border-radius: calc(var(--radius) - 0.85rem);
+  background: rgba(70, 58, 48, 0.035);
+}
+
+.running-conditions-note__label,
+.running-conditions-note__summary,
+.running-conditions-note__metrics,
+.running-conditions-note__meta {
+  margin: 0;
+}
+
+.running-conditions-note__label {
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+.running-conditions-best .running-conditions-note__label {
+  color: var(--orange);
+  font-family: var(--font-label);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.forecast-block__label {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.running-conditions-note__summary {
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.running-conditions-note__metrics {
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.running-conditions-best .running-conditions-note__metrics {
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.running-conditions-note__meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.34rem;
+  margin-top: 0.05rem;
+  padding-top: 0.62rem;
+  border-top: 1px solid rgba(70, 58, 48, 0.08);
+  color: var(--ink-muted);
+  font-size: 0.74rem;
+  line-height: 1.3;
+}
+
+.running-conditions-note__meta a {
+  color: inherit;
+  text-decoration-color: rgba(161, 64, 0, 0.35);
+  text-underline-offset: 0.12em;
+}
+
+.running-conditions-note__meta a:hover,
+.running-conditions-note__meta a:focus-visible {
+  color: var(--ink);
+  text-decoration-color: rgba(161, 64, 0, 0.62);
+}
+
+.running-conditions-note[data-conditions-state="fallback"] .running-conditions-note__summary {
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.next-run-workout {
+  display: grid;
+  gap: 0.34rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(70, 58, 48, 0.09);
+}
+
+.next-run-workout__label,
+.next-run-workout__type,
+.next-run-workout__blocks {
+  margin: 0;
+}
+
+.next-run-workout__type {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.next-run-workout__blocks {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-soft);
+  font-family: var(--font-label);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.42;
+}
+
+.next-run-workout__block {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.next-run-workout__block--nested {
+  padding-left: 0.85rem;
+  color: var(--ink-muted);
+}
+
 .forecast-list {
   list-style: none;
   margin: 0;
@@ -1449,6 +1636,10 @@ p {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.85rem;
+}
+
+.forecast-list--compact {
+  gap: 0.65rem;
 }
 
 .forecast-item {
@@ -1596,117 +1787,211 @@ p {
   font-weight: 700;
 }
 
-.race-context-panel__subtitle {
-  display: flex;
-  gap: 0.45rem;
-  margin: 0.2rem 0 0;
-  color: var(--ink-muted);
-  font-size: 0.88rem;
-  font-weight: 600;
+.race-context-panel {
+  display: grid;
+  gap: 0.82rem;
+  border-color: rgba(161, 64, 0, 0.16);
+  align-items: stretch;
+  height: 100%;
 }
 
-.race-context-panel__status {
+.race-context-panel__hero,
+.race-context-panel__activity-card {
+  padding: 1rem 1.08rem;
+  border: 1px solid rgba(70, 58, 48, 0.11);
+  border-radius: calc(var(--radius) - 0.35rem);
+  background: rgba(251, 248, 243, 0.62);
+}
+
+.race-context-panel__hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 9.75rem) minmax(0, 1fr);
-  gap: 1.3rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
   align-items: center;
+  min-height: 0;
+  width: 100%;
 }
 
-.race-context-panel__support {
+.race-context-panel__hero {
   display: grid;
-  gap: 0;
-  align-content: start;
-  padding-left: 1rem;
-  border-left: 1px solid rgba(17, 23, 35, 0.08);
+  align-self: stretch;
+  height: 100%;
 }
 
-.race-context-panel__phase-block,
-.race-context-panel__goal-block {
-  display: grid;
-  gap: 0.22rem;
-  padding: 0.2rem 0;
+.race-context-panel__hero-copy {
+  min-width: 0;
 }
 
-.race-context-panel__goal-block {
-  margin-top: 0.65rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid rgba(17, 23, 35, 0.08);
-}
-
-.race-context-panel__meta-label {
-  margin: 0;
-  color: var(--ink-muted);
-  font-family: var(--font-label);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.race-context-panel__phase-value,
-.race-context-panel__goal-title {
-  margin: 0;
-  color: var(--ink);
-  font-size: 1.12rem;
-  font-weight: 800;
-  line-height: 1.15;
+.race-context-panel h2,
+.weekly-panel h2,
+.next-run-panel h2 {
+  max-width: none;
   text-wrap: pretty;
 }
 
-.race-context-panel__goal-meta {
-  margin: 0;
-  display: flex;
-  gap: 0.42rem;
-  flex-wrap: wrap;
+.race-context-panel__race-title {
+  font-size: clamp(1.55rem, 3vw, 2.05rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.race-context-panel__date-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.34rem 0 0;
   color: var(--ink-muted);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
 }
 
-.race-context-panel__focus {
-  margin: 0 0 0.35rem;
-  color: var(--ink);
-  font-weight: 700;
+.race-context-panel__calendar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: rgba(110, 102, 94, 0.9);
+}
+
+.race-context-panel__calendar svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.race-context-panel__days-away {
+  margin: 0.56rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 .race-context-panel__countdown {
   display: grid;
+  justify-self: end;
   justify-items: center;
-  align-content: center;
-  gap: 0.16rem;
   text-align: center;
+  align-content: center;
+  align-self: center;
+  min-width: 5.75rem;
+  padding: 0;
 }
 
-.race-context-panel__days {
+.race-context-panel__countdown-value {
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(3rem, 7vw, 4.8rem);
-  font-weight: 800;
-  line-height: 0.88;
-  letter-spacing: -0.06em;
+  font-size: clamp(2.7rem, 4.4vw, 3.6rem);
+  font-weight: 780;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
 }
 
-.race-context-panel__days-label {
-  color: var(--ink-muted);
+.race-context-panel__countdown-label {
+  margin-top: 0.32rem;
+  color: var(--ink-soft);
   font-family: var(--font-label);
-  font-size: 0.74rem;
+  font-size: 0.69rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.race-context-panel {
-  border-color: rgba(161, 64, 0, 0.16);
+.race-context-panel__cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.95rem;
+  align-items: stretch;
 }
 
-.weekly-panel h2 {
-  max-width: none;
+.race-context-panel__activity-card {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 0.14rem;
+  height: 100%;
+}
+
+.race-context-panel__activity-card > .eyebrow {
+  margin-bottom: 0;
+}
+
+.race-context-panel__activity-copy {
+  min-width: 0;
+}
+
+.race-context-panel__activity-copy h3 {
+  margin: 0 0 0.16rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.55vw, 1.38rem);
+  font-weight: 750;
+  line-height: 1.06;
+  letter-spacing: -0.038em;
   text-wrap: pretty;
 }
 
-.next-run-panel h2,
-.race-context-panel h2 {
-  max-width: 12ch;
+.race-context-panel__activity-copy p {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.race-context-panel__activity-spacer {
+  min-height: 0;
+}
+
+.race-context-panel__metrics {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  align-self: end;
+  padding-top: 0.62rem;
+  border-top: 1px solid rgba(70, 58, 48, 0.11);
+}
+
+.race-context-panel__metric {
+  display: grid;
+  gap: 0.08rem;
+  padding: 0.03rem 0.68rem;
+}
+
+.race-context-panel__metric:first-child {
+  padding-left: 0;
+}
+
+.race-context-panel__metric + .race-context-panel__metric {
+  border-left: 1px solid rgba(70, 58, 48, 0.11);
+}
+
+.race-context-panel__metric dt {
+  margin: 0;
+  color: var(--ink-muted);
+  font-family: var(--font-label);
+  font-size: 0.62rem;
+  font-weight: 580;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.race-context-panel__metric dd {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(0.96rem, 1.28vw, 1.12rem);
+  font-weight: 620;
+  line-height: 0.96;
+  letter-spacing: -0.03em;
+}
+
+.race-context-panel__empty {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  min-height: 3.2rem;
 }
 
 .next-run-panel h2 {
@@ -1855,6 +2140,14 @@ p {
   gap: 1rem;
 }
 
+.content-grid--home {
+  align-items: start;
+}
+
+.content-grid--home > * {
+  min-width: 0;
+}
+
 .weekly-meta__item {
   margin: 0;
   padding-right: 0.9rem;
@@ -1890,7 +2183,7 @@ p {
   padding-top: 0.8rem;
   border-top: 1px solid rgba(70, 58, 48, 0.09);
   align-items: end;
-  min-height: 6.1rem;
+  min-height: 6.7rem;
 }
 
 .next-run-stats--integrated {
@@ -2153,6 +2446,90 @@ p {
     align-items: stretch;
   }
 
+  .content-grid--home {
+    align-items: start;
+  }
+
+  .home-grid__race,
+  .home-grid__conditions {
+    align-self: stretch;
+    height: 100%;
+  }
+
+  .home-grid__weekly {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .home-grid__next {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .home-grid__conditions {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .home-grid__race {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .home-grid__reads {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .home-grid__reads .reads-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1.6rem;
+    position: relative;
+  }
+
+  .home-grid__reads .reads-list::before {
+    content: "";
+    position: absolute;
+    top: 0.15rem;
+    bottom: 0.15rem;
+    left: 50%;
+    width: 1px;
+    background: rgba(70, 58, 48, 0.08);
+    transform: translateX(-0.5px);
+  }
+
+  .home-grid__reads .reads-item {
+    min-width: 0;
+    padding: 0.52rem 0;
+    border-top: 1px solid rgba(70, 58, 48, 0.07);
+  }
+
+  .home-grid__reads .reads-item:nth-child(1),
+  .home-grid__reads .reads-item:nth-child(2) {
+    border-top: 0;
+    padding-top: 0.15rem;
+  }
+
+  .home-grid__reads .reads-link {
+    padding: 0;
+  }
+
+  .home-grid__reads .reads-item + .reads-item {
+    padding-top: 0.52rem;
+  }
+
+  .race-context-panel {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .race-context-panel__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .running-conditions-card {
+    height: 100%;
+  }
+
   .content-grid--support-secondary {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
@@ -2171,22 +2548,33 @@ p {
     min-height: 0;
   }
 
-  .race-context-panel__status {
-    grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr);
-    gap: 0.75rem 1.2rem;
-    align-items: center;
-  }
-
-  .race-context-panel__support {
-    padding-left: 0.85rem;
-  }
-
   .concept-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .session-layout {
     grid-template-columns: 1.2fr 0.85fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .race-context-panel__hero-grid {
+    grid-template-columns: 1fr;
+    gap: 0.78rem;
+  }
+
+  .race-context-panel__countdown {
+    justify-items: start;
+    min-width: 0;
+    padding: 0;
+  }
+
+  .race-context-panel__countdown-value {
+    font-size: 2.45rem;
+  }
+
+  .race-context-panel__countdown-label {
+    margin-top: 0.2rem;
   }
 }
 
@@ -2400,9 +2788,9 @@ p {
   }
 
   .forecast-item {
-    grid-template-columns: 2.2rem 1.6rem 1fr auto;
+    grid-template-columns: 3.4rem 2.75rem auto minmax(0, 1fr);
     align-items: center;
-    gap: 0.55rem;
+    gap: 0.72rem;
     padding: 0.45rem 0;
     text-align: left;
     justify-items: start;
@@ -2410,7 +2798,12 @@ p {
   }
 
   .forecast-item__temps {
-    gap: 0.45rem;
+    gap: 0.56rem;
+  }
+
+  .forecast-item__summary {
+    justify-self: end;
+    text-align: right;
   }
 
   .forecast-item:first-child {
@@ -2529,7 +2922,7 @@ p {
   }
 
   .trend--integrated {
-    min-height: 7.8rem;
+    min-height: 8.45rem;
   }
 
   .content-grid--training {

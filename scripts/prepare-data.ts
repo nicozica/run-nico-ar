@@ -20,7 +20,7 @@ import {
 import { buildRaceContext } from "../src/lib/data/race-context.ts";
 import { buildFixtureWeeklySummarySnapshot, buildReviewOutput } from "../src/lib/data/review-output.ts";
 import { fileExists, readJsonFile, writeJsonFile } from "../src/lib/data/json.ts";
-import { currentDataDir, manualDataDir, mockDataDir, resolvePacerCmsSnapshotPath } from "../src/lib/data/paths.ts";
+import { currentDataDir, manualDataDir, mockDataDir, resolvePacerCmsSnapshotPath, resolvePacerExportPath } from "../src/lib/data/paths.ts";
 import { buildDerivedInsights } from "../src/lib/data/signal-engine.ts";
 import { loadUsefulReadSources, refreshUsefulReads } from "../src/lib/data/useful-reads.ts";
 import { fetchWeatherSnapshot } from "../src/lib/data/weather.ts";
@@ -31,7 +31,12 @@ import type {
   EinkSummary,
   LatestSession,
   NextRun,
+  PacerActivity,
+  PacerCmsActivityContext,
+  PacerCmsActivityContextItem,
+  PacerExport,
   RaceContext,
+  RaceContextRecentActivity,
   RaceDefinition,
   UsefulRead,
   WeatherSnapshot,
@@ -39,6 +44,253 @@ import type {
 } from "../src/lib/data/types.ts";
 
 type Mode = "auto" | "pacer" | "mocks";
+const SITE_TIMEZONE = "America/Argentina/Buenos_Aires";
+const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function currentSiteDate(): string {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: SITE_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  });
+
+  const parts = formatter.formatToParts(new Date());
+  const year = parts.find((part) => part.type === "year")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const day = parts.find((part) => part.type === "day")?.value;
+
+  if (!year || !month || !day) {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateString(value: string): Date {
+  return new Date(`${value}T00:00:00Z`);
+}
+
+function shiftDateString(value: string, deltaDays: number): string {
+  const date = parseDateString(value);
+  date.setUTCDate(date.getUTCDate() + deltaDays);
+  return date.toISOString().slice(0, 10);
+}
+
+function roundOneDecimal(value: number): number {
+  return Number(value.toFixed(1));
+}
+
+function formatCompactDuration(seconds: number | null | undefined): string {
+  const safeSeconds = Math.max(0, Math.round(seconds ?? 0));
+  const hours = Math.floor(safeSeconds / 3600);
+  const minutes = Math.round((safeSeconds % 3600) / 60);
+
+  if (hours > 0) {
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+  }
+
+  return `${minutes} min`;
+}
+
+function formatDistanceKm(distanceMeters: number | null | undefined): string {
+  return `${((distanceMeters ?? 0) / 1000).toFixed(1)} km`;
+}
+
+function formatHeartRate(value: number | null | undefined): string {
+  if (!value || !Number.isFinite(value)) {
+    return "—";
+  }
+
+  return `${Math.round(value)} bpm`;
+}
+
+function formatCalories(value: number | null | undefined): string {
+  if (!value || !Number.isFinite(value)) {
+    return "—";
+  }
+
+  return `${Math.round(value)} kcal`;
+}
+
+function extractDateKey(value: string | null | undefined): string {
+  return value?.slice(0, 10) ?? currentSiteDate();
+}
+
+function activitySport(activity: PacerActivity): string {
+  return activity.sport_type || activity.type || "";
+}
+
+function isRideActivity(activity: PacerActivity): boolean {
+  return ["Ride", "VirtualRide", "EBikeRide", "GravelRide"].includes(activitySport(activity));
+}
+
+function isRunLikeActivity(activity: PacerActivity): boolean {
+  return ["Run", "TrailRun"].includes(activitySport(activity));
+}
+
+function isTrainingActivity(activity: PacerActivity): boolean {
+  const sport = activitySport(activity);
+
+  if (!sport || isRunLikeActivity(activity) || isRideActivity(activity)) {
+    return false;
+  }
+
+  return !["Walk", "Hike"].includes(sport);
+}
+
+function toRecentTrainingActivity(activity: PacerActivity | undefined): RaceContextRecentActivity | null {
+  if (!activity) {
+    return null;
+  }
+
+  return {
+    title: activity.name,
+    date: extractDateKey(activity.start_date_local || activity.start_date),
+    metrics: [
+      { label: "Duration", value: formatCompactDuration(activity.moving_time) },
+      { label: "Avg HR", value: formatHeartRate(activity.average_heartrate) },
+      { label: "Calories", value: formatCalories(activity.calories) }
+    ]
+  };
+}
+
+function toRecentRideActivity(activity: PacerActivity | undefined): RaceContextRecentActivity | null {
+  if (!activity) {
+    return null;
+  }
+
+  return {
+    title: activity.name,
+    date: extractDateKey(activity.start_date_local || activity.start_date),
+    metrics: [
+      { label: "Distance", value: formatDistanceKm(activity.distance) },
+      { label: "Moving time", value: formatCompactDuration(activity.moving_time) },
+      { label: "Avg HR", value: formatHeartRate(activity.average_heartrate) }
+    ]
+  };
+}
+
+async function loadSupplementalRaceActivities(): Promise<{
+  latestTraining: RaceContextRecentActivity | null;
+  latestRide: RaceContextRecentActivity | null;
+}> {
+  const activityContextSnapshot = await loadPacerCmsFile<PacerCmsActivityContext>("activity-context.json");
+
+  if (activityContextSnapshot) {
+    const mapItem = (item: PacerCmsActivityContextItem | null): RaceContextRecentActivity | null => {
+      if (!item) {
+        return null;
+      }
+
+      return {
+        title: item.title,
+        date: extractDateKey(item.startDateLocal),
+        metrics: item.metrics.map((metric) => {
+          switch (metric.label) {
+            case "duration":
+              return { label: "Duration", value: formatCompactDuration(metric.value) };
+            case "avgHr":
+              return { label: "Avg HR", value: formatHeartRate(metric.value) };
+            case "calories":
+              return { label: "Calories", value: formatCalories(metric.value) };
+            case "distance":
+              return { label: "Distance", value: formatDistanceKm(metric.value) };
+            case "movingTime":
+              return { label: "Moving time", value: formatCompactDuration(metric.value) };
+            default:
+              return null;
+          }
+        }).filter((metric): metric is { label: string; value: string } => metric !== null)
+      };
+    };
+
+    return {
+      latestTraining: mapItem(activityContextSnapshot.latestTraining),
+      latestRide: mapItem(activityContextSnapshot.latestRide)
+    };
+  }
+
+  const exportData = await readJsonFile<PacerExport>(resolvePacerExportPath());
+  const activities = exportData?.activities ?? [];
+  const latestTraining = activities.find(isTrainingActivity);
+  const latestRide = activities.find(isRideActivity);
+
+  return {
+    latestTraining: toRecentTrainingActivity(latestTraining),
+    latestRide: toRecentRideActivity(latestRide)
+  };
+}
+
+function deriveRollingTrainingStatus(totalKm: number, runCount: number): string {
+  if (totalKm >= 35 || runCount >= 5) {
+    return "Building well";
+  }
+
+  if (totalKm >= 20 || runCount >= 3) {
+    return "Steady base";
+  }
+
+  return "Light but consistent";
+}
+
+function deriveRollingWeeklySummary(totalKm: number, runCount: number): string {
+  return `${totalKm.toFixed(1)} km across ${runCount} run${runCount === 1 ? "" : "s"}. Enough work to keep the week readable while the next session comes into focus.`;
+}
+
+function rebaseWeeklySummarySnapshot(
+  snapshot: PacerCmsWeeklySummary,
+  publishedSessions: PacerCmsLatestSession[]
+): PacerCmsWeeklySummary {
+  const windowEnd = currentSiteDate();
+  const windowStart = shiftDateString(windowEnd, -6);
+  const startTime = parseDateString(windowStart).getTime();
+  const endTime = parseDateString(windowEnd).getTime();
+
+  const runsInWindow = publishedSessions.filter((session) => {
+    const sessionTime = parseDateString(session.sessionDate).getTime();
+    return sessionTime >= startTime && sessionTime <= endTime;
+  });
+
+  const bars = Array.from({ length: 7 }, (_, index) => {
+    const date = shiftDateString(windowStart, index);
+    const dateObject = parseDateString(date);
+    const totalDistanceKm = runsInWindow
+      .filter((session) => session.sessionDate === date)
+      .reduce((sum, session) => sum + ((session.distanceM ?? 0) / 1000), 0);
+
+    return {
+      date,
+      label: DAY_LABELS[dateObject.getUTCDay()],
+      distanceKm: roundOneDecimal(totalDistanceKm)
+    };
+  });
+
+  const totalKm = roundOneDecimal(runsInWindow.reduce((sum, session) => {
+    return sum + ((session.distanceM ?? 0) / 1000);
+  }, 0));
+  const totalRuns = runsInWindow.length;
+  const totalTimeS = runsInWindow.reduce((sum, session) => {
+    return sum + (session.movingTimeS ?? 0);
+  }, 0);
+
+  return {
+    ...snapshot,
+    snapshotDate: windowEnd,
+    windowStart,
+    windowEnd,
+    totalKm,
+    totalRuns,
+    totalTimeS,
+    title: snapshot.snapshotDate === windowEnd
+      ? snapshot.title
+      : deriveRollingTrainingStatus(totalKm, totalRuns),
+    summary: snapshot.snapshotDate === windowEnd
+      ? snapshot.summary
+      : deriveRollingWeeklySummary(totalKm, totalRuns),
+    bars
+  };
+}
 
 function buildAuthoritativeCanonicalOutput(input: {
   canonicalOutput: CanonicalSiteOutput;
@@ -96,6 +348,7 @@ function buildPlaceholderNextRun(latestSnapshot: PacerCmsLatestSession): PacerCm
     durationMax: null,
     paceMinSecPerKm: null,
     paceMaxSecPerKm: null,
+    workout: null,
     updatedAt: latestSnapshot.updatedAt
   };
 }
@@ -247,6 +500,11 @@ async function prepareFromMocks(): Promise<void> {
     canonicalOutput,
     raceContext
   });
+  const raceContextWithActivities: RaceContext = {
+    ...raceContext,
+    latestTraining: raceContext.latestTraining ?? null,
+    latestRide: raceContext.latestRide ?? null
+  };
   const einkSummary = buildEinkSummary({
     latestSession,
     weeklySnapshot,
@@ -309,7 +567,7 @@ async function prepareFromMocks(): Promise<void> {
       })
     },
     derivedInsight: derivedInsights.latest,
-    raceContext,
+    raceContext: raceContextWithActivities,
     canonicalSiteOutput: canonicalOutput,
     confidenceMetadata: derivedInsights.latest
       ? {
@@ -330,7 +588,7 @@ async function prepareFromMocks(): Promise<void> {
     archiveList: buildMockArchiveList(),
     publishedSessions: buildMockPublishedSessions(),
     derivedInsights,
-    raceContext,
+    raceContext: raceContextWithActivities,
     canonicalOutput,
     reviewOutput,
     einkSummary
@@ -380,6 +638,10 @@ async function prepareFromPacer(): Promise<void> {
   }
 
   const latestSnapshotResolved = reconcileLatestSnapshot(latestSnapshot, publishedSessionsSnapshot);
+  const weeklySummarySnapshotRebased = rebaseWeeklySummarySnapshot(
+    weeklySummarySnapshot,
+    publishedSessionsSnapshot
+  );
   const nextRunSnapshot = nextRunSnapshotRaw
     ?? buildFallbackNextRun(latestSnapshotResolved)
     ?? buildPlaceholderNextRun(latestSnapshotResolved);
@@ -387,29 +649,35 @@ async function prepareFromPacer(): Promise<void> {
   const races = await loadManualFile<RaceDefinition[]>("races.json")
     .catch(() => []);
   const derivedInsights = await buildDerivedInsights(publishedSessionsSnapshot);
-  const raceContext = buildRaceContext({
+  const raceContextBase = buildRaceContext({
     latestSessionDate: latestSnapshotResolved.sessionDate,
     derivedInsight: derivedInsights.latest,
     races
   });
+  const supplementalActivities = await loadSupplementalRaceActivities();
+  const raceContext: RaceContext = {
+    ...raceContextBase,
+    latestTraining: supplementalActivities.latestTraining,
+    latestRide: supplementalActivities.latestRide
+  };
   const canonicalOutput = buildCanonicalSiteOutput({
     latestSnapshot: latestSnapshotResolved,
     nextRunSnapshot,
-    weeklySummarySnapshot,
+    weeklySummarySnapshot: weeklySummarySnapshotRebased,
     derivedInsight: derivedInsights.latest,
     raceContext
   });
   const authoritativeCanonicalOutput = buildAuthoritativeCanonicalOutput({
     canonicalOutput,
     nextRunSnapshot,
-    weeklySummarySnapshot
+    weeklySummarySnapshot: weeklySummarySnapshotRebased
   });
   const weatherSnapshot = await loadWeatherSnapshot(latestSnapshotResolved, latestSession);
   const nextRun = {
     ...toNextRun(nextRunSnapshot),
     forecast: weatherSnapshot.nextRunForecast
   };
-  const weeklySnapshot = toWeeklySnapshot(weeklySummarySnapshot);
+  const weeklySnapshot = toWeeklySnapshot(weeklySummarySnapshotRebased);
   const coachFeedback = buildCoachFeedbackFromCanonical({
     canonicalOutput: authoritativeCanonicalOutput,
     raceContext
@@ -427,7 +695,7 @@ async function prepareFromPacer(): Promise<void> {
   const reviewOutput = buildReviewOutput({
     latestSnapshot: latestSnapshotResolved,
     nextRunSnapshot,
-    weeklySummarySnapshot,
+    weeklySummarySnapshot: weeklySummarySnapshotRebased,
     derivedInsight: derivedInsights.latest,
     raceContext,
     canonicalOutput: authoritativeCanonicalOutput

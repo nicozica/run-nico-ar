@@ -71,7 +71,13 @@ export interface NextRun {
   estimatedDuration: string;
   paceRange: string;
   goal: string;
+  workout?: NextRunWorkout | null;
   forecast?: ForecastDay[];
+}
+
+export interface NextRunWorkout {
+  type: string;
+  blocks: string[];
 }
 
 export interface UsefulRead {
@@ -264,6 +270,36 @@ export interface RaceContextNextRace extends RaceDefinition {
   targetPaceLabel: string | null;
 }
 
+export interface RaceContextActivityMetric {
+  label: string;
+  value: string;
+}
+
+export interface RaceContextRecentActivity {
+  title: string;
+  date: string;
+  metrics: RaceContextActivityMetric[];
+}
+
+export interface PacerCmsActivityContextMetric {
+  label: "duration" | "avgHr" | "calories" | "distance" | "movingTime";
+  value: number | null;
+}
+
+export interface PacerCmsActivityContextItem {
+  sourceActivityId: number | null;
+  title: string;
+  sport: string;
+  startDateLocal: string;
+  metrics: PacerCmsActivityContextMetric[];
+}
+
+export interface PacerCmsActivityContext {
+  generatedAt: string;
+  latestTraining: PacerCmsActivityContextItem | null;
+  latestRide: PacerCmsActivityContextItem | null;
+}
+
 export interface RaceContext {
   generatedAt: string;
   nextRace: RaceContextNextRace | null;
@@ -274,6 +310,8 @@ export interface RaceContext {
   currentPhase: string;
   focusLabel: string;
   sessionRelevance: string;
+  latestTraining: RaceContextRecentActivity | null;
+  latestRide: RaceContextRecentActivity | null;
 }
 
 export interface CanonicalSiteOutput {
@@ -320,6 +358,8 @@ export interface PacerActivity {
   average_heartrate?: number;
   max_heartrate?: number;
   average_speed: number;
+  calories?: number;
+  kilojoules?: number;
   // Strava route map — present on full activity objects
   map?: {
     summary_polyline?: string;

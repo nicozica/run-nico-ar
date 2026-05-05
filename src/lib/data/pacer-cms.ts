@@ -83,6 +83,10 @@ export interface PacerCmsNextRun {
   durationMax: number | null;
   paceMinSecPerKm: number | null;
   paceMaxSecPerKm: number | null;
+  workout?: {
+    type: string;
+    blocks: string[];
+  } | null;
   updatedAt: string;
 }
 
@@ -367,7 +371,13 @@ export function toNextRun(snapshot: PacerCmsNextRun): NextRun {
     name: snapshot.title || "Next run",
     estimatedDuration: formatDurationRange(snapshot.durationMin, snapshot.durationMax),
     paceRange: formatPaceRange(snapshot.paceMinSecPerKm, snapshot.paceMaxSecPerKm),
-    goal: snapshot.summary || "Keep the next run simple and controlled."
+    goal: snapshot.summary || "Keep the next run simple and controlled.",
+    workout: snapshot.workout && snapshot.workout.blocks.length > 0
+      ? {
+        type: snapshot.workout.type,
+        blocks: snapshot.workout.blocks
+      }
+      : null
   };
 }
 

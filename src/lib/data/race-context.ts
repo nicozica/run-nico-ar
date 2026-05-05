@@ -244,6 +244,8 @@ export function buildRaceContext(input: {
     targetPaceLabel: formatPaceLabel(targetPaceSecPerKm),
     currentPhase: phase.currentPhase,
     focusLabel: phase.focusLabel,
+    latestTraining: null,
+    latestRide: null,
     sessionRelevance: buildSessionRelevance(derivedInsight, nextRaceEntry
       ? {
         ...nextRaceEntry.race,

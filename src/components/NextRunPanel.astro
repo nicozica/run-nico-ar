@@ -1,5 +1,4 @@
 ---
-import WeatherGlyph from "./WeatherGlyph.astro";
 import type { NextRun } from "../lib/data/types";
 
 interface Props {
@@ -8,37 +7,42 @@ interface Props {
 
 const { nextRun } = Astro.props;
 
-function getWeatherKind(summary: string): "clear" | "cloudy" | "overcast" | "rain" | "storm" | "mixed" {
-  const value = summary.toLowerCase();
+const editorialTitlesByWorkoutType: Record<string, string> = {
+  "Easy Run": "Easy aerobic miles",
+  "Long Run": "Steady endurance work",
+  Hills: "Strength on the climb",
+  "Interval Session": "Controlled speed work",
+  Race: "Race day execution",
+  "Recovery Run": "Keep it light",
+  Strides: "Fast but relaxed",
+  "Tempo Session": "Sustained controlled effort",
+  "Time Trial": "Benchmark effort",
+};
 
-  if (value.includes("storm")) {
-    return "storm";
-  }
-
-  if (value.includes("rain")) {
-    return "rain";
-  }
-
-  if (value.includes("overcast")) {
-    return "overcast";
-  }
-
-  if (value.includes("cloud")) {
-    return "cloudy";
-  }
-
-  if (value.includes("clear") || value.includes("warm") || value.includes("cool")) {
-    return "clear";
-  }
-
-  return "mixed";
+function normalizeSessionLabel(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/sessions/g, "session")
+    .replace(/runs/g, "run")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }
+
+const workoutType = nextRun.workout?.type ?? null;
+const shouldUseEditorialFallback = workoutType
+  ? normalizeSessionLabel(nextRun.name) === normalizeSessionLabel(workoutType)
+  : false;
+const displayTitle = shouldUseEditorialFallback
+  ? workoutType
+    ? editorialTitlesByWorkoutType[workoutType] ?? nextRun.name
+    : nextRun.name
+  : nextRun.name;
 ---
 
 <section class="panel panel--accent next-run-panel training-row-card" aria-labelledby="next-run-heading">
   <div class="panel-heading panel-heading--tight">
     <p class="eyebrow">Next run</p>
-    <h2 id="next-run-heading">{nextRun.name}</h2>
+    <h2 id="next-run-heading">{displayTitle}</h2>
   </div>
 
   <p class="panel-copy next-run-panel__summary">{nextRun.goal}</p>
@@ -54,21 +58,17 @@ function getWeatherKind(summary: string): "clear" | "cloudy" | "overcast" | "rai
     </div>
   </dl>
 
-  {nextRun.forecast && nextRun.forecast.length > 0 && (
-    <div class="forecast-block forecast-block--integrated" aria-label="Next run forecast">
-      <ul class="forecast-list">
-        {nextRun.forecast.map((day) => (
-          <li class="forecast-item">
-            <span class="forecast-item__day">{day.label}</span>
-            <WeatherGlyph kind={getWeatherKind(day.summary)} className="forecast-item__icon" />
-            <div class="forecast-item__temps">
-              <span class="forecast-item__temp forecast-item__temp--min">{day.temperatureMinC === null ? "—" : `${day.temperatureMinC}°`}</span>
-              <span class="forecast-item__temp forecast-item__temp--max">{day.temperatureMaxC === null ? "—" : `${day.temperatureMaxC}°`}</span>
-            </div>
-            <span class="forecast-item__summary">{day.summary}</span>
+  {nextRun.workout && nextRun.workout.blocks.length > 0 && (
+    <div class="next-run-workout" aria-label="Workout">
+      <p class="eyebrow next-run-workout__label">Workout</p>
+      <p class="next-run-workout__type">{nextRun.workout.type}</p>
+      <ol class="next-run-workout__blocks">
+        {nextRun.workout.blocks.map((block) => (
+          <li class={block.startsWith("  ") ? "next-run-workout__block next-run-workout__block--nested" : "next-run-workout__block"}>
+            {block.trim()}
           </li>
         ))}
-      </ul>
+      </ol>
     </div>
   )}
 </section>

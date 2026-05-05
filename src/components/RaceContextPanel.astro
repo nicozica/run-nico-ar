@@ -7,59 +7,107 @@ interface Props {
 
 const { raceContext } = Astro.props;
 const nextRace = raceContext.nextRace;
+
+function formatRaceDate(date: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC"
+  }).format(new Date(`${date}T00:00:00Z`));
+}
+
+function formatActivityDate(date: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC"
+  }).format(new Date(`${date}T00:00:00Z`));
+}
 ---
 
 <section class="panel panel--feature race-context-panel" aria-labelledby="race-context-heading">
-  <div class="panel-heading panel-heading--tight">
-    <p class="eyebrow">Next race</p>
-    <h2 id="race-context-heading">{nextRace ? nextRace.title : "Open calendar"}</h2>
-    <p class="race-context-panel__subtitle">
-      {nextRace ? (
+  <div class="race-context-panel__cards">
+    <article class="race-context-panel__activity-card">
+      <p class="eyebrow">Latest training</p>
+      {raceContext.latestTraining ? (
         <>
-          <span>{nextRace.date}</span>
-          <span aria-hidden="true">·</span>
-          <span>{nextRace.distanceKm.toFixed(1)} km</span>
+          <div class="race-context-panel__activity-copy">
+            <h3>{raceContext.latestTraining.title}</h3>
+            <p>{formatActivityDate(raceContext.latestTraining.date)}</p>
+          </div>
+          <div class="race-context-panel__activity-spacer" aria-hidden="true"></div>
+
+          <dl class="race-context-panel__metrics">
+            {raceContext.latestTraining.metrics.map((metric) => (
+              <div class="race-context-panel__metric">
+                <dt>{metric.label}</dt>
+                <dd>{metric.value}</dd>
+              </div>
+            ))}
+          </dl>
         </>
       ) : (
-        <span>No upcoming race set</span>
+        <p class="race-context-panel__empty">No recent training found</p>
       )}
-    </p>
+    </article>
+
+    <article class="race-context-panel__activity-card">
+      <p class="eyebrow">Latest ride</p>
+      {raceContext.latestRide ? (
+        <>
+          <div class="race-context-panel__activity-copy">
+            <h3>{raceContext.latestRide.title}</h3>
+            <p>{formatActivityDate(raceContext.latestRide.date)}</p>
+          </div>
+          <div class="race-context-panel__activity-spacer" aria-hidden="true"></div>
+
+          <dl class="race-context-panel__metrics">
+            {raceContext.latestRide.metrics.map((metric) => (
+              <div class="race-context-panel__metric">
+                <dt>{metric.label}</dt>
+                <dd>{metric.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </>
+      ) : (
+        <p class="race-context-panel__empty">No recent ride found</p>
+      )}
+    </article>
   </div>
 
-  <div class="race-context-panel__status">
-    <div class="race-context-panel__countdown">
-      <span class="race-context-panel__days">{nextRace ? nextRace.daysToRace : "—"}</span>
-      <span class="race-context-panel__days-label">days to race</span>
-    </div>
-
-    <div class="race-context-panel__support">
-      <div class="race-context-panel__phase-block">
-        <p class="race-context-panel__meta-label">Current phase</p>
-        <p class="race-context-panel__phase-value">{raceContext.currentPhase}</p>
+  <div class="race-context-panel__hero">
+    <div class="race-context-panel__hero-grid">
+      <div class="panel-heading panel-heading--tight race-context-panel__hero-copy">
+        <p class="eyebrow">Next race</p>
+        <h2 id="race-context-heading" class="race-context-panel__race-title">{nextRace ? nextRace.title : "Open calendar"}</h2>
+        <p class="race-context-panel__date-row">
+          <span class="race-context-panel__calendar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" focusable="false">
+              <rect x="3.5" y="5.5" width="17" height="15" rx="2.5"></rect>
+              <path d="M7.5 3.5v4M16.5 3.5v4M3.5 9.5h17"></path>
+            </svg>
+          </span>
+          {nextRace ? (
+            <>
+              <span>{formatRaceDate(nextRace.date)}</span>
+              <span aria-hidden="true">·</span>
+              <span>{nextRace.distanceKm.toFixed(1)} km</span>
+            </>
+          ) : (
+            <span>No upcoming race set</span>
+          )}
+        </p>
       </div>
 
-      <div class="race-context-panel__goal-block">
-        <p class="race-context-panel__meta-label">Main goal</p>
-        <p class="race-context-panel__goal-title">{raceContext.mainGoal ? raceContext.mainGoal.title : "Not scheduled"}</p>
-        {raceContext.mainGoal ? (
-          <p class="race-context-panel__goal-meta">
-            <span>{raceContext.mainGoal.daysToRace} days out</span>
-            {raceContext.mainGoal.targetPaceLabel && (
-              <>
-                <span aria-hidden="true">·</span>
-                <span>{raceContext.mainGoal.targetPaceLabel}</span>
-              </>
-            )}
-          </p>
-        ) : (
-          <p class="race-context-panel__goal-meta">Keep the build flexible</p>
-        )}
-      </div>
+      {nextRace && (
+        <div class="race-context-panel__countdown" aria-label={`${nextRace.daysToRace} days to race`}>
+          <span class="race-context-panel__countdown-value">{nextRace.daysToRace}</span>
+          <span class="race-context-panel__countdown-label">Days away</span>
+        </div>
+      )}
     </div>
-  </div>
-
-  <div class="race-context-panel__relevance">
-    <p class="race-context-panel__focus">{raceContext.focusLabel}</p>
-    <p>{raceContext.sessionRelevance}</p>
   </div>
 </section>
