@@ -6,6 +6,13 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import { loadArchivePageData } from "../../lib/data/load-archive";
 
 const runs = await loadArchivePageData();
+const activityViews = [
+  { value: "runs", label: "Runs", href: "/runs" },
+  { value: "gym", label: "Gym", href: "/runs?view=gym" },
+  { value: "rides", label: "Rides", href: "/runs?view=rides" },
+  { value: "other", label: "Other", href: "/runs?view=other" },
+  { value: "all", label: "All", href: "/runs?view=all" }
+];
 ---
 
 <BaseLayout
@@ -17,10 +24,264 @@ const runs = await loadArchivePageData();
   <main id="content" class="page-shell page-shell--narrow">
     <header class="page-title">
       <h1>RUNS</h1>
+      <div class="runs-view-menu" data-activity-menu>
+        <button
+          class="runs-view-menu__button"
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          data-activity-menu-button
+        >
+          View: <span data-activity-menu-label>Runs</span>
+        </button>
+        <div class="runs-view-menu__list" role="listbox" data-activity-menu-list hidden>
+          {activityViews.map((view) => (
+            <a
+              class="runs-view-menu__option"
+              href={view.href}
+              role="option"
+              data-activity-option={view.value}
+            >
+              {view.label}
+            </a>
+          ))}
+        </div>
+      </div>
     </header>
 
-    <RunsArchivePanel sessions={runs.sessions} pagination={runs.pagination} />
+    <RunsArchivePanel sessions={runs.sessions} activityLog={runs.activityLog} pagination={runs.pagination} />
   </main>
 
   <SiteFooter site={runs.site} />
+
+  <script>
+    const labels = new Map([
+      ["runs", "Runs"],
+      ["gym", "Gym"],
+      ["rides", "Rides"],
+      ["other", "Other"],
+      ["all", "All"]
+    ]);
+    const views = new Set(labels.keys());
+    const params = new URLSearchParams(window.location.search);
+    const requestedView = params.get("view") || "runs";
+    const activeView = views.has(requestedView) ? requestedView : "runs";
+    const pageSize = 10;
+    const requestedPage = Number.parseInt(params.get("page") || "1", 10);
+
+    document.querySelectorAll("[data-archive-view]").forEach((view) => {
+      const isActive = view.getAttribute("data-archive-view") === activeView;
+      view.toggleAttribute("hidden", !isActive);
+    });
+
+    function buildActivityPagePath(view: string, page: number): string {
+      const query = new URLSearchParams();
+      query.set("view", view);
+      if (page > 1) {
+        query.set("page", String(page));
+      }
+      return `/runs?${query.toString()}`;
+    }
+
+    function getCompactPageItems(currentPage: number, totalPages: number): Array<number | "ellipsis"> {
+      if (totalPages <= 5) {
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
+      }
+
+      const pages = new Set([1, totalPages, currentPage]);
+
+      if (currentPage <= 2) {
+        pages.add(2);
+        pages.add(3);
+      } else if (currentPage === 3) {
+        pages.add(2);
+        pages.add(4);
+      } else if (currentPage >= totalPages - 1) {
+        pages.add(totalPages - 2);
+        pages.add(totalPages - 1);
+      } else if (currentPage === totalPages - 2) {
+        pages.add(totalPages - 3);
+        pages.add(totalPages - 1);
+      } else {
+        pages.add(currentPage - 1);
+        pages.add(currentPage + 1);
+      }
+
+      const sortedPages = Array.from(pages)
+        .filter((page) => page >= 1 && page <= totalPages)
+        .sort((a, b) => a - b);
+      const items: Array<number | "ellipsis"> = [];
+
+      sortedPages.forEach((page, index) => {
+        const previous = sortedPages[index - 1];
+        if (previous && page - previous > 1) {
+          items.push("ellipsis");
+        }
+        items.push(page);
+      });
+
+      return items;
+    }
+
+    function renderActivityPagination(view: HTMLElement, activePage: number, totalPages: number): void {
+      const target = view.querySelector("[data-activity-pagination]");
+      if (!(target instanceof HTMLElement)) {
+        return;
+      }
+
+      target.replaceChildren();
+
+      if (totalPages <= 1) {
+        return;
+      }
+
+      const nav = document.createElement("nav");
+      nav.className = "pagination";
+      nav.setAttribute("aria-label", "Activity log pages");
+
+      const previous = document.createElement("a");
+      previous.className = "pagination__step";
+      previous.textContent = "Previous";
+      if (activePage <= 1) {
+        previous.classList.add("is-disabled");
+        previous.setAttribute("aria-disabled", "true");
+      } else {
+        previous.href = buildActivityPagePath(activeView, activePage - 1);
+      }
+      nav.append(previous);
+
+      const pages = document.createElement("ol");
+      pages.className = "pagination__pages";
+
+      getCompactPageItems(activePage, totalPages).forEach((page) => {
+        const item = document.createElement("li");
+
+        if (page === "ellipsis") {
+          const ellipsis = document.createElement("span");
+          ellipsis.className = "pagination__ellipsis";
+          ellipsis.setAttribute("aria-hidden", "true");
+          ellipsis.textContent = "…";
+          item.append(ellipsis);
+          pages.append(item);
+          return;
+        }
+
+        const link = document.createElement("a");
+        link.className = "pagination__page";
+        link.href = buildActivityPagePath(activeView, page);
+        link.textContent = String(page);
+
+        if (page === activePage) {
+          link.classList.add("is-current");
+          link.setAttribute("aria-current", "page");
+        }
+
+        item.append(link);
+        pages.append(item);
+      });
+
+      nav.append(pages);
+
+      const next = document.createElement("a");
+      next.className = "pagination__step";
+      next.textContent = "Next";
+      if (activePage >= totalPages) {
+        next.classList.add("is-disabled");
+        next.setAttribute("aria-disabled", "true");
+      } else {
+        next.href = buildActivityPagePath(activeView, activePage + 1);
+      }
+      nav.append(next);
+      target.append(nav);
+    }
+
+    if (activeView !== "runs") {
+      const activePanel = document.querySelector(`[data-archive-view="${activeView}"]`);
+      if (activePanel instanceof HTMLElement) {
+        const items = Array.from(activePanel.querySelectorAll<HTMLElement>(".archive-list > .archive-item"));
+        const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+        const activePage = Number.isFinite(requestedPage)
+          ? Math.min(Math.max(requestedPage, 1), totalPages)
+          : 1;
+        const start = (activePage - 1) * pageSize;
+        const end = start + pageSize;
+
+        items.forEach((item, index) => {
+          item.toggleAttribute("hidden", index < start || index >= end);
+        });
+
+        renderActivityPagination(activePanel, activePage, totalPages);
+      }
+    }
+
+    const menu = document.querySelector("[data-activity-menu]");
+    const button = document.querySelector("[data-activity-menu-button]");
+    const list = document.querySelector("[data-activity-menu-list]");
+    const label = document.querySelector("[data-activity-menu-label]");
+    const options = Array.from(document.querySelectorAll<HTMLElement>("[data-activity-option]"));
+
+    if (
+      menu instanceof HTMLElement
+      && button instanceof HTMLButtonElement
+      && list instanceof HTMLElement
+      && label instanceof HTMLElement
+    ) {
+      label.textContent = labels.get(activeView) ?? "Runs";
+
+      options.forEach((option) => {
+        const isSelected = option.getAttribute("data-activity-option") === activeView;
+        option.setAttribute("aria-selected", String(isSelected));
+        option.setAttribute("tabindex", isSelected ? "0" : "-1");
+      });
+
+      const setOpen = (open: boolean) => {
+        button.setAttribute("aria-expanded", String(open));
+        list.toggleAttribute("hidden", !open);
+      };
+
+      const focusOption = (delta: number) => {
+        const currentIndex = options.findIndex((option) => option === document.activeElement);
+        const activeIndex = options.findIndex((option) => option.getAttribute("data-activity-option") === activeView);
+        const baseIndex = currentIndex >= 0 ? currentIndex : Math.max(activeIndex, 0);
+        const nextIndex = (baseIndex + delta + options.length) % options.length;
+        options[nextIndex]?.focus();
+      };
+
+      button.addEventListener("click", () => {
+        const isOpen = button.getAttribute("aria-expanded") === "true";
+        setOpen(!isOpen);
+        if (!isOpen) {
+          const selected = options.find((option) => option.getAttribute("aria-selected") === "true");
+          selected?.focus();
+        }
+      });
+
+      button.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          setOpen(true);
+          focusOption(event.key === "ArrowDown" ? 1 : -1);
+        }
+      });
+
+      list.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          setOpen(false);
+          button.focus();
+        }
+
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          focusOption(event.key === "ArrowDown" ? 1 : -1);
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        if (event.target instanceof Node && !menu.contains(event.target)) {
+          setOpen(false);
+        }
+      });
+    }
+  </script>
 </BaseLayout>

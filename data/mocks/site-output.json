@@ -9,6 +9,7 @@
   "nextRunSummary": "Keep the effort below this session's cost and use it to restore rhythm before the next quality touch.",
   "nextRunDurationMin": 30,
   "nextRunDurationMax": 40,
+  "nextRunDistanceKm": 6.0,
   "nextRunPaceMinSecPerKm": 415,
   "nextRunPaceMaxSecPerKm": 430,
   "weekTitle": "Specific work, calm support",

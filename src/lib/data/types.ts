@@ -69,6 +69,7 @@ export interface ForecastDay {
 export interface NextRun {
   name: string;
   estimatedDuration: string;
+  estimatedDistanceKm: number | null;
   paceRange: string;
   goal: string;
   workout?: NextRunWorkout | null;
@@ -170,6 +171,33 @@ export type EinkSummaryV2Screen =
 export interface EinkSummaryV2 {
   meta: EinkSummaryV2Meta;
   screens: EinkSummaryV2Screen[];
+}
+
+export interface EinkSummaryV3 {
+  meta: {
+    version: 3;
+    updated: string;
+  };
+  last_run: {
+    type: string;
+    km: string;
+    date: string;
+  };
+  next: {
+    name: string;
+    detail: string;
+    goal: string;
+  };
+  week: {
+    km: string;
+    runs: string;
+    time: string;
+  };
+  weather: {
+    day: string;
+    temp: string;
+    note: string;
+  };
 }
 
 export interface SessionNotes {
@@ -282,7 +310,7 @@ export interface RaceContextRecentActivity {
 }
 
 export interface PacerCmsActivityContextMetric {
-  label: "duration" | "avgHr" | "calories" | "distance" | "movingTime";
+  label: "duration" | "avgHr" | "maxHr" | "distance" | "movingTime";
   value: number | null;
 }
 
@@ -322,6 +350,7 @@ export interface CanonicalSiteOutput {
   nextRunSummary: string;
   nextRunDurationMin: number;
   nextRunDurationMax: number;
+  nextRunDistanceKm: number;
   nextRunPaceMinSecPerKm: number;
   nextRunPaceMaxSecPerKm: number;
   weekTitle: string;
@@ -382,4 +411,31 @@ export interface PacerExport {
   activities: PacerActivity[];
   latest_activity_laps?: PacerLap[];
   latest_activity_temp_stream?: number[] | null;
+}
+
+export interface ActivityLogItem {
+  id: number | null;
+  source: "strava";
+  title: string;
+  type: string;
+  sportType: string | null;
+  startDate: string;
+  startDateLocal: string | null;
+  distanceM: number | null;
+  movingTimeS: number | null;
+  elapsedTimeS: number | null;
+  averageHeartrate: number | null;
+  maxHeartrate: number | null;
+  calories: number | null;
+  elevationGainM: number | null;
+  paceSecPerKm: number | null;
+  averageSpeedMps: number | null;
+  routeSvgPoints?: string | null;
+  stravaUrl: string | null;
+}
+
+export interface ActivityLogExport {
+  generatedAt: string;
+  count: number;
+  activities: ActivityLogItem[];
 }

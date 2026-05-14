@@ -41,6 +41,10 @@ function formatDurationRange(minValue: number, maxValue: number): string {
   return `${Math.max(minValue, maxValue)} min`;
 }
 
+function formatDistanceKm(value: number): number {
+  return Number(value.toFixed(1));
+}
+
 function formatPaceLabel(value: number): string | null {
   if (value <= 0) {
     return null;
@@ -77,6 +81,16 @@ function toNumericValue(...values: Array<number | null | undefined>): number {
   for (const value of values) {
     if (typeof value === "number" && Number.isFinite(value) && value > 0) {
       return Math.round(value);
+    }
+  }
+
+  return 0;
+}
+
+function toOptionalDistanceValue(...values: Array<number | null | undefined>): number {
+  for (const value of values) {
+    if (typeof value === "number" && Number.isFinite(value) && value > 0) {
+      return formatDistanceKm(value);
     }
   }
 
@@ -239,6 +253,10 @@ export function buildCanonicalSiteOutput(input: {
       ai.nextRunDurationMax,
       derivedInsight?.nextRunSuggestion.durationMax
     ),
+    nextRunDistanceKm: toOptionalDistanceValue(
+      nextRunSnapshot?.distanceKm,
+      ai.nextRunDistanceKm
+    ),
     nextRunPaceMinSecPerKm: toNumericValue(
       nextRunSnapshot?.paceMinSecPerKm,
       ai.nextRunPaceMinSecPerKm,
@@ -288,6 +306,9 @@ export function buildNextRunFromCanonical(input: {
       canonicalOutput.nextRunDurationMin,
       canonicalOutput.nextRunDurationMax
     ),
+    estimatedDistanceKm: canonicalOutput.nextRunDistanceKm > 0
+      ? canonicalOutput.nextRunDistanceKm
+      : null,
     paceRange: formatPaceRange(
       canonicalOutput.nextRunPaceMinSecPerKm,
       canonicalOutput.nextRunPaceMaxSecPerKm

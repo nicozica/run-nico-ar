@@ -18,6 +18,13 @@ export async function getStaticPaths() {
 const pageNumber = Number.parseInt(Astro.params.page ?? "1", 10);
 const runs = await loadArchivePageData(Number.isFinite(pageNumber) ? pageNumber : 1);
 const pageTitle = `nico://run | Runs page ${runs.pagination.currentPage}`;
+const activityViews = [
+  { value: "runs", label: "Runs", href: "/runs" },
+  { value: "gym", label: "Gym", href: "/runs?view=gym" },
+  { value: "rides", label: "Rides", href: "/runs?view=rides" },
+  { value: "other", label: "Other", href: "/runs?view=other" },
+  { value: "all", label: "All", href: "/runs?view=all" }
+];
 ---
 
 <BaseLayout
@@ -29,10 +36,70 @@ const pageTitle = `nico://run | Runs page ${runs.pagination.currentPage}`;
   <main id="content" class="page-shell page-shell--narrow">
     <header class="page-title">
       <h1>RUNS</h1>
+      <div class="runs-view-menu" data-activity-menu>
+        <button
+          class="runs-view-menu__button"
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          data-activity-menu-button
+        >
+          View: <span data-activity-menu-label>Runs</span>
+        </button>
+        <div class="runs-view-menu__list" role="listbox" data-activity-menu-list hidden>
+          {activityViews.map((view) => (
+            <a
+              class="runs-view-menu__option"
+              href={view.href}
+              role="option"
+              data-activity-option={view.value}
+              aria-selected={view.value === "runs" ? "true" : "false"}
+            >
+              {view.label}
+            </a>
+          ))}
+        </div>
+      </div>
     </header>
 
-    <RunsArchivePanel sessions={runs.sessions} pagination={runs.pagination} />
+    <RunsArchivePanel sessions={runs.sessions} activityLog={runs.activityLog} pagination={runs.pagination} />
   </main>
 
   <SiteFooter site={runs.site} />
+
+  <script>
+    const menu = document.querySelector("[data-activity-menu]");
+    const button = document.querySelector("[data-activity-menu-button]");
+    const list = document.querySelector("[data-activity-menu-list]");
+    const options = Array.from(document.querySelectorAll<HTMLElement>("[data-activity-option]"));
+
+    if (menu instanceof HTMLElement && button instanceof HTMLButtonElement && list instanceof HTMLElement) {
+      const setOpen = (open: boolean) => {
+        button.setAttribute("aria-expanded", String(open));
+        list.toggleAttribute("hidden", !open);
+      };
+
+      button.addEventListener("click", () => {
+        const isOpen = button.getAttribute("aria-expanded") === "true";
+        setOpen(!isOpen);
+        if (!isOpen) {
+          options.find((option) => option.getAttribute("aria-selected") === "true")?.focus();
+        }
+      });
+
+      list.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          setOpen(false);
+          button.focus();
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        if (event.target instanceof Node && !menu.contains(event.target)) {
+          setOpen(false);
+        }
+      });
+    }
+  </script>
 </BaseLayout>

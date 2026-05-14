@@ -1,87 +1,183 @@
 ---
-import RouteTrace from "./RouteTrace.astro";
-import type { ArchivePagination, ArchiveSessionCard } from "../lib/data/load-archive";
+import ArchiveRawActivityItem from "./ArchiveRawActivityItem.astro";
+import ArchiveSessionItem from "./ArchiveSessionItem.astro";
+import type {
+  ArchiveActivityCard,
+  ArchivePagination,
+  ArchiveRawActivityCard,
+  ArchiveSessionCard
+} from "../lib/data/load-archive";
 
 interface Props {
   sessions: ArchiveSessionCard[];
+  activityLog: {
+    all: ArchiveActivityCard[];
+    gym: ArchiveRawActivityCard[];
+    rides: ArchiveRawActivityCard[];
+    other: ArchiveRawActivityCard[];
+  };
   pagination: ArchivePagination;
 }
 
-const { sessions, pagination } = Astro.props;
+const { sessions, activityLog, pagination } = Astro.props;
+
+function getCompactPageItems(currentPage: number, totalPages: number): Array<number | "ellipsis"> {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  const pages = new Set([1, totalPages, currentPage]);
+
+  if (currentPage <= 2) {
+    pages.add(2);
+    pages.add(3);
+  } else if (currentPage === 3) {
+    pages.add(2);
+    pages.add(4);
+  } else if (currentPage >= totalPages - 1) {
+    pages.add(totalPages - 2);
+    pages.add(totalPages - 1);
+  } else if (currentPage === totalPages - 2) {
+    pages.add(totalPages - 3);
+    pages.add(totalPages - 1);
+  } else {
+    pages.add(currentPage - 1);
+    pages.add(currentPage + 1);
+  }
+
+  const sortedPages = Array.from(pages)
+    .filter((page) => page >= 1 && page <= totalPages)
+    .sort((a, b) => a - b);
+  const items: Array<number | "ellipsis"> = [];
+
+  sortedPages.forEach((page, index) => {
+    const previous = sortedPages[index - 1];
+    if (previous && page - previous > 1) {
+      items.push("ellipsis");
+    }
+    items.push(page);
+  });
+
+  return items;
+}
+
+function formatRawMeta(activity: ArchiveRawActivityCard): string[] {
+  const meta = [
+    activity.distanceKm === null ? null : `${activity.distanceKm.toFixed(1)} km`,
+    activity.durationLabel,
+    activity.averageHeartRate === null ? null : `${activity.averageHeartRate} bpm avg`,
+    activity.maxHeartRate === null ? null : `${activity.maxHeartRate} bpm max`,
+    activity.elevationGainM === null ? null : `+${activity.elevationGainM} m`,
+    activity.paceLabel
+  ];
+
+  return meta.filter((item): item is string => Boolean(item && item !== "—"));
+}
+
+const runPageLookup = new Map(pagination.pages.map((page) => [page.page, page]));
+const runPageItems = getCompactPageItems(pagination.currentPage, pagination.totalPages)
+  .map((item) => item === "ellipsis"
+    ? { kind: "ellipsis" as const }
+    : { kind: "page" as const, page: runPageLookup.get(item) }
+  )
+  .filter((item) => item.kind === "ellipsis" || Boolean(item.page));
 ---
 
 <section class="panel">
-  {sessions.length === 0 ? (
-    <p class="panel-copy">No published runs yet.</p>
-  ) : (
-    <>
-      <ol class="archive-list">
-        {sessions.map((session) => (
-          <li class="archive-item">
-            <a class="archive-item__link" href={`/sessions/${session.slug}/`}>
-              <div class="archive-item__header">
-                <div class="archive-item__heading">
-                  <p class="archive-item__date">{session.dateTimeLabel}</p>
-                  <h2>{session.title}</h2>
-                </div>
+  <div class="archive-view" data-archive-view="runs">
+    {sessions.length === 0 ? (
+      <p class="panel-copy">No published runs yet.</p>
+    ) : (
+      <>
+        <ol class="archive-list">
+          {sessions.map((session) => <ArchiveSessionItem session={session} />)}
+        </ol>
 
-                {session.routeSvgPoints && (
-                  <div class="archive-item__trace" aria-hidden="true">
-                    <RouteTrace
-                      points={session.routeSvgPoints}
-                      class="archive-item__trace-svg"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div class="archive-item__meta">
-                {session.sessionType === "Race" && <span class="race-badge race-badge--archive">Race</span>}
-                <span>{session.distanceKm === null ? "—" : `${session.distanceKm.toFixed(1)} km`}</span>
-                <span>{session.durationLabel}</span>
-                <span>{session.paceLabel ?? "—"}</span>
-              </div>
-
-              {session.signalTitle && <p class="archive-item__signal">{session.signalTitle}</p>}
-              {session.nextRunTitle && <p class="archive-item__next">Next run: {session.nextRunTitle}</p>}
+        {pagination.totalPages > 1 && (
+          <nav class="pagination" aria-label="Runs pages">
+            <a
+              class:list={["pagination__step", !pagination.previousPath && "is-disabled"]}
+              href={pagination.previousPath ?? undefined}
+              aria-disabled={pagination.previousPath ? undefined : "true"}
+            >
+              Previous
             </a>
-          </li>
-        ))}
+
+            <ol class="pagination__pages">
+              {runPageItems.map((item) => item.kind === "ellipsis" ? (
+                <li>
+                  <span class="pagination__ellipsis" aria-hidden="true">…</span>
+                </li>
+              ) : (
+                <li>
+                  <a
+                    class:list={["pagination__page", item.page?.isCurrent && "is-current"]}
+                    href={item.page?.path}
+                    aria-current={item.page?.isCurrent ? "page" : undefined}
+                  >
+                    {item.page?.page}
+                  </a>
+                </li>
+              ))}
+            </ol>
+
+            <a
+              class:list={["pagination__step", !pagination.nextPath && "is-disabled"]}
+              href={pagination.nextPath ?? undefined}
+              aria-disabled={pagination.nextPath ? undefined : "true"}
+            >
+              Next
+            </a>
+          </nav>
+        )}
+      </>
+    )}
+  </div>
+
+  <div class="archive-view" data-archive-view="all" hidden>
+    {activityLog.all.length === 0 ? (
+      <p class="panel-copy">No activities in this view yet.</p>
+    ) : (
+      <ol class="archive-list" data-activity-page-list>
+        {activityLog.all.map((item) => item.kind === "session"
+          ? <ArchiveSessionItem session={item} />
+          : <ArchiveRawActivityItem activity={item} meta={formatRawMeta(item)} />
+        )}
       </ol>
+    )}
+    <div data-activity-pagination></div>
+  </div>
 
-      {pagination.totalPages > 1 && (
-        <nav class="pagination" aria-label="Runs pages">
-          <a
-            class:list={["pagination__step", !pagination.previousPath && "is-disabled"]}
-            href={pagination.previousPath ?? undefined}
-            aria-disabled={pagination.previousPath ? undefined : "true"}
-          >
-            Previous
-          </a>
+  <div class="archive-view" data-archive-view="gym" hidden>
+    {activityLog.gym.length === 0 ? (
+      <p class="panel-copy">No activities in this view yet.</p>
+    ) : (
+      <ol class="archive-list" data-activity-page-list>
+        {activityLog.gym.map((activity) => <ArchiveRawActivityItem activity={activity} meta={formatRawMeta(activity)} />)}
+      </ol>
+    )}
+    <div data-activity-pagination></div>
+  </div>
 
-          <ol class="pagination__pages">
-            {pagination.pages.map((page) => (
-              <li>
-                <a
-                  class:list={["pagination__page", page.isCurrent && "is-current"]}
-                  href={page.path}
-                  aria-current={page.isCurrent ? "page" : undefined}
-                >
-                  {page.page}
-                </a>
-              </li>
-            ))}
-          </ol>
+  <div class="archive-view" data-archive-view="rides" hidden>
+    {activityLog.rides.length === 0 ? (
+      <p class="panel-copy">No activities in this view yet.</p>
+    ) : (
+      <ol class="archive-list" data-activity-page-list>
+        {activityLog.rides.map((activity) => <ArchiveRawActivityItem activity={activity} meta={formatRawMeta(activity)} />)}
+      </ol>
+    )}
+    <div data-activity-pagination></div>
+  </div>
 
-          <a
-            class:list={["pagination__step", !pagination.nextPath && "is-disabled"]}
-            href={pagination.nextPath ?? undefined}
-            aria-disabled={pagination.nextPath ? undefined : "true"}
-          >
-            Next
-          </a>
-        </nav>
-      )}
-    </>
-  )}
+  <div class="archive-view" data-archive-view="other" hidden>
+    {activityLog.other.length === 0 ? (
+      <p class="panel-copy">No activities in this view yet.</p>
+    ) : (
+      <ol class="archive-list" data-activity-page-list>
+        {activityLog.other.map((activity) => <ArchiveRawActivityItem activity={activity} meta={formatRawMeta(activity)} />)}
+      </ol>
+    )}
+    <div data-activity-pagination></div>
+  </div>
 </section>

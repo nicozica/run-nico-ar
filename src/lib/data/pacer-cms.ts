@@ -31,6 +31,7 @@ export interface PacerCmsSessionAi {
   nextRunSummary: string;
   nextRunDurationMin: number | null;
   nextRunDurationMax: number | null;
+  nextRunDistanceKm: number | null;
   nextRunPaceMinSecPerKm: number | null;
   nextRunPaceMaxSecPerKm: number | null;
   weekTitle: string;
@@ -81,6 +82,7 @@ export interface PacerCmsNextRun {
   summary: string;
   durationMin: number | null;
   durationMax: number | null;
+  distanceKm: number | null;
   paceMinSecPerKm: number | null;
   paceMaxSecPerKm: number | null;
   workout?: {
@@ -360,6 +362,7 @@ export function buildFallbackNextRun(latestSession: PacerCmsLatestSession): Pace
     summary,
     durationMin: latestSession.ai.nextRunDurationMin,
     durationMax: latestSession.ai.nextRunDurationMax,
+    distanceKm: latestSession.ai.nextRunDistanceKm,
     paceMinSecPerKm: latestSession.ai.nextRunPaceMinSecPerKm,
     paceMaxSecPerKm: latestSession.ai.nextRunPaceMaxSecPerKm,
     updatedAt: latestSession.updatedAt
@@ -370,6 +373,9 @@ export function toNextRun(snapshot: PacerCmsNextRun): NextRun {
   return {
     name: snapshot.title || "Next run",
     estimatedDuration: formatDurationRange(snapshot.durationMin, snapshot.durationMax),
+    estimatedDistanceKm: typeof snapshot.distanceKm === "number" && snapshot.distanceKm > 0
+      ? roundOneDecimal(snapshot.distanceKm)
+      : null,
     paceRange: formatPaceRange(snapshot.paceMinSecPerKm, snapshot.paceMaxSecPerKm),
     goal: snapshot.summary || "Keep the next run simple and controlled.",
     workout: snapshot.workout && snapshot.workout.blocks.length > 0

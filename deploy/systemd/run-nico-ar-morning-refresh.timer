@@ -1,0 +1,12 @@
+[Unit]
+Description=Morning timer for run.nico.ar refresh after gym sessions
+
+[Timer]
+Unit=run-nico-ar-morning-refresh.service
+OnCalendar=*-*-* 08:30:00
+Persistent=true
+RandomizedDelaySec=30s
+AccuracySec=1m
+
+[Install]
+WantedBy=timers.target

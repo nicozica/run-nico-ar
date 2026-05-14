@@ -37,6 +37,7 @@ const displayTitle = shouldUseEditorialFallback
     ? editorialTitlesByWorkoutType[workoutType] ?? nextRun.name
     : nextRun.name
   : nextRun.name;
+const hasEstimatedDistance = typeof nextRun.estimatedDistanceKm === "number";
 ---
 
 <section class="panel panel--accent next-run-panel training-row-card" aria-labelledby="next-run-heading">
@@ -47,11 +48,17 @@ const displayTitle = shouldUseEditorialFallback
 
   <p class="panel-copy next-run-panel__summary">{nextRun.goal}</p>
 
-  <dl class="next-run-stats next-run-stats--integrated">
+  <dl class:list={["next-run-stats", "next-run-stats--integrated", hasEstimatedDistance && "next-run-stats--three"]}>
     <div class="next-run-stat">
-      <dt>Estimated duration</dt>
+      <dt>Total time</dt>
       <dd>{nextRun.estimatedDuration}</dd>
     </div>
+    {hasEstimatedDistance && nextRun.estimatedDistanceKm !== null && (
+      <div class="next-run-stat">
+        <dt>Est distance</dt>
+        <dd>{nextRun.estimatedDistanceKm.toFixed(1)} km</dd>
+      </div>
+    )}
     <div class="next-run-stat">
       <dt>Pace range</dt>
       <dd>{nextRun.paceRange}</dd>

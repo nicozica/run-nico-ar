@@ -65,6 +65,7 @@ export function buildFixtureNextRunSnapshot(session: PacerCmsLatestSession): Pac
     summary: session.ai.nextRunSummary,
     durationMin: session.ai.nextRunDurationMin,
     durationMax: session.ai.nextRunDurationMax,
+    distanceKm: session.ai.nextRunDistanceKm,
     paceMinSecPerKm: session.ai.nextRunPaceMinSecPerKm,
     paceMaxSecPerKm: session.ai.nextRunPaceMaxSecPerKm,
     updatedAt: session.updatedAt

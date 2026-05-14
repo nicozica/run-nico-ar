@@ -1,0 +1,40 @@
+---
+import RouteTrace from "./RouteTrace.astro";
+import type { ArchiveSessionCard } from "../lib/data/load-archive";
+
+interface Props {
+  session: ArchiveSessionCard;
+}
+
+const { session } = Astro.props;
+---
+
+<li class="archive-item">
+  <a class="archive-item__link" href={`/sessions/${session.slug}/`}>
+    <div class="archive-item__header">
+      <div class="archive-item__heading">
+        <p class="archive-item__date">{session.dateTimeLabel}</p>
+        <h2>{session.title}</h2>
+      </div>
+
+      {session.routeSvgPoints && (
+        <div class="archive-item__trace" aria-hidden="true">
+          <RouteTrace
+            points={session.routeSvgPoints}
+            class="archive-item__trace-svg"
+          />
+        </div>
+      )}
+    </div>
+
+    <div class="archive-item__meta">
+      {session.sessionType === "Race" && <span class="race-badge race-badge--archive">Race</span>}
+      <span>{session.distanceKm === null ? "—" : `${session.distanceKm.toFixed(1)} km`}</span>
+      <span>{session.durationLabel}</span>
+      <span>{session.paceLabel ?? "—"}</span>
+    </div>
+
+    {session.signalTitle && <p class="archive-item__signal">{session.signalTitle}</p>}
+    {session.nextRunTitle && <p class="archive-item__next">Next run: {session.nextRunTitle}</p>}
+  </a>
+</li>

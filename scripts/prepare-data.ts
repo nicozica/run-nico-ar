@@ -38,6 +38,7 @@ import type {
   RaceContext,
   RaceContextRecentActivity,
   RaceDefinition,
+  ActivityLogExport,
   UsefulRead,
   WeatherSnapshot,
   WeeklySnapshot
@@ -105,14 +106,6 @@ function formatHeartRate(value: number | null | undefined): string {
   return `${Math.round(value)} bpm`;
 }
 
-function formatCalories(value: number | null | undefined): string {
-  if (!value || !Number.isFinite(value)) {
-    return "—";
-  }
-
-  return `${Math.round(value)} kcal`;
-}
-
 function extractDateKey(value: string | null | undefined): string {
   return value?.slice(0, 10) ?? currentSiteDate();
 }
@@ -150,7 +143,7 @@ function toRecentTrainingActivity(activity: PacerActivity | undefined): RaceCont
     metrics: [
       { label: "Duration", value: formatCompactDuration(activity.moving_time) },
       { label: "Avg HR", value: formatHeartRate(activity.average_heartrate) },
-      { label: "Calories", value: formatCalories(activity.calories) }
+      { label: "Max HR", value: formatHeartRate(activity.max_heartrate) }
     ]
   };
 }
@@ -192,8 +185,8 @@ async function loadSupplementalRaceActivities(): Promise<{
               return { label: "Duration", value: formatCompactDuration(metric.value) };
             case "avgHr":
               return { label: "Avg HR", value: formatHeartRate(metric.value) };
-            case "calories":
-              return { label: "Calories", value: formatCalories(metric.value) };
+            case "maxHr":
+              return { label: "Max HR", value: formatHeartRate(metric.value) };
             case "distance":
               return { label: "Distance", value: formatDistanceKm(metric.value) };
             case "movingTime":
@@ -305,6 +298,7 @@ function buildAuthoritativeCanonicalOutput(input: {
     nextRunSummary: nextRunSnapshot.summary || canonicalOutput.nextRunSummary,
     nextRunDurationMin: nextRunSnapshot.durationMin ?? canonicalOutput.nextRunDurationMin,
     nextRunDurationMax: nextRunSnapshot.durationMax ?? canonicalOutput.nextRunDurationMax,
+    nextRunDistanceKm: nextRunSnapshot.distanceKm ?? canonicalOutput.nextRunDistanceKm,
     nextRunPaceMinSecPerKm: nextRunSnapshot.paceMinSecPerKm ?? canonicalOutput.nextRunPaceMinSecPerKm,
     nextRunPaceMaxSecPerKm: nextRunSnapshot.paceMaxSecPerKm ?? canonicalOutput.nextRunPaceMaxSecPerKm,
     weekTitle: weeklySummarySnapshot.title ?? canonicalOutput.weekTitle,
@@ -346,6 +340,7 @@ function buildPlaceholderNextRun(latestSnapshot: PacerCmsLatestSession): PacerCm
     summary: latestSnapshot.ai.carryForward || "No next-run guidance saved in Pacer yet.",
     durationMin: null,
     durationMax: null,
+    distanceKm: null,
     paceMinSecPerKm: null,
     paceMaxSecPerKm: null,
     workout: null,
@@ -410,6 +405,7 @@ async function writeCurrentFiles(input: {
   canonicalOutput: CanonicalSiteOutput;
   reviewOutput: unknown;
   einkSummary: EinkSummary;
+  activityLog: ActivityLogExport;
 }): Promise<void> {
   await Promise.all([
     writeJsonFile(path.join(currentDataDir, "latest-session.json"), input.latestSession),
@@ -424,7 +420,8 @@ async function writeCurrentFiles(input: {
     writeJsonFile(path.join(currentDataDir, "race-context.json"), input.raceContext),
     writeJsonFile(path.join(currentDataDir, "site-output.json"), input.canonicalOutput),
     writeJsonFile(path.join(currentDataDir, "review-output.json"), input.reviewOutput),
-    writeJsonFile(path.join(currentDataDir, "eink-summary.json"), input.einkSummary)
+    writeJsonFile(path.join(currentDataDir, "eink-summary.json"), input.einkSummary),
+    writeJsonFile(path.join(currentDataDir, "activity-log.json"), input.activityLog)
   ]);
 }
 
@@ -557,6 +554,7 @@ async function prepareFromMocks(): Promise<void> {
           nextRunSummary: canonicalOutput.nextRunSummary,
           nextRunDurationMin: canonicalOutput.nextRunDurationMin,
           nextRunDurationMax: canonicalOutput.nextRunDurationMax,
+          nextRunDistanceKm: canonicalOutput.nextRunDistanceKm > 0 ? canonicalOutput.nextRunDistanceKm : null,
           nextRunPaceMinSecPerKm: canonicalOutput.nextRunPaceMinSecPerKm,
           nextRunPaceMaxSecPerKm: canonicalOutput.nextRunPaceMaxSecPerKm,
           weekTitle: canonicalOutput.weekTitle,
@@ -591,7 +589,8 @@ async function prepareFromMocks(): Promise<void> {
     raceContext: raceContextWithActivities,
     canonicalOutput,
     reviewOutput,
-    einkSummary
+    einkSummary,
+    activityLog: { generatedAt: new Date().toISOString(), count: 0, activities: [] }
   });
   console.log("Prepared data/current from mocks.");
 }
@@ -613,12 +612,13 @@ async function loadWeatherSnapshot(latestSnapshot: PacerCmsLatestSession, latest
 }
 
 async function prepareFromPacer(): Promise<void> {
-  const [latestSnapshot, nextRunSnapshotRaw, weeklySummarySnapshot, archiveList, publishedSessionsSnapshot] = await Promise.all([
+  const [latestSnapshot, nextRunSnapshotRaw, weeklySummarySnapshot, archiveList, publishedSessionsSnapshot, activityLogSnapshot] = await Promise.all([
     loadPacerCmsFile<PacerCmsLatestSession>("latest-session.json"),
     loadPacerCmsFile<PacerCmsNextRun>("next-run.json"),
     loadPacerCmsFile<PacerCmsWeeklySummary>("weekly-summary.json"),
     loadPacerCmsFile<PacerCmsArchiveList>("archive-list.json"),
-    loadPacerCmsFile<PacerCmsLatestSession[]>("published-sessions.json")
+    loadPacerCmsFile<PacerCmsLatestSession[]>("published-sessions.json"),
+    loadPacerCmsFile<ActivityLogExport>("activity-log.json")
   ]);
 
   if (!latestSnapshot) {
@@ -714,7 +714,8 @@ async function prepareFromPacer(): Promise<void> {
     raceContext,
     canonicalOutput: authoritativeCanonicalOutput,
     reviewOutput,
-    einkSummary
+    einkSummary,
+    activityLog: activityLogSnapshot ?? { generatedAt: new Date().toISOString(), count: 0, activities: [] }
   });
   console.log(`Prepared data/current from Pacer CMS snapshots at ${resolvePacerCmsSnapshotPath("latest-session.json")}.`);
 }

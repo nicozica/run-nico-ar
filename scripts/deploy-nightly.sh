@@ -8,7 +8,7 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-DEPLOY_HOST="${DEPLOY_HOST:-pipita}"
+DEPLOY_HOST="${DEPLOY_HOST:-pizero}"
 DEPLOY_REMOTE_DIR="${DEPLOY_REMOTE_DIR:-/srv/data/www/run.nico.ar}"
 LOCK_FILE="${LOCK_FILE:-${PROJECT_ROOT}/.deploy/locks/nightly-deploy.lock}"
 LOG_DIR="${LOG_DIR:-${PROJECT_ROOT}/.deploy/logs/nightly}"

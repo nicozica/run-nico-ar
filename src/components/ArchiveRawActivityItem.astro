@@ -1,0 +1,43 @@
+---
+import RouteTrace from "./RouteTrace.astro";
+import type { ArchiveRawActivityCard } from "../lib/data/load-archive";
+
+interface Props {
+  activity: ArchiveRawActivityCard;
+  meta: string[];
+}
+
+const { activity, meta } = Astro.props;
+---
+
+<li class="archive-item archive-item--raw">
+  <a
+    class="archive-item__link"
+    href={activity.stravaUrl ?? undefined}
+    target={activity.stravaUrl ? "_blank" : undefined}
+    rel={activity.stravaUrl ? "noreferrer" : undefined}
+  >
+    <div class="archive-item__header">
+      <div class="archive-item__heading">
+        <p class="archive-item__date">{activity.dateTimeLabel}</p>
+        <h2>{activity.title}</h2>
+      </div>
+
+      {activity.routeSvgPoints ? (
+        <div class="archive-item__trace" aria-hidden="true">
+          <RouteTrace
+            points={activity.routeSvgPoints}
+            class="archive-item__trace-svg"
+          />
+        </div>
+      ) : (
+        <p class="archive-item__type">{activity.sportType || activity.type}</p>
+      )}
+    </div>
+
+    <div class="archive-item__meta">
+      {activity.routeSvgPoints && <span>{activity.sportType || activity.type}</span>}
+      {meta.map((item) => <span>{item}</span>)}
+    </div>
+  </a>
+</li>
