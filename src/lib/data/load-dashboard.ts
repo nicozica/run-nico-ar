@@ -82,12 +82,8 @@ export async function loadDashboardData(): Promise<RunDashboardData> {
     ...nextRun,
     forecast: weatherSnapshot?.nextRunForecast ?? []
   };
-  const latestSessionWithWeather: LatestSession = {
-    ...latestSession,
-    weatherLabel: weatherSnapshot?.latestRunLabel ?? latestSession.weatherLabel
-  };
   const einkSummary = einkSummaryBase ?? buildEinkSummary({
-    latestSession: latestSessionWithWeather,
+    latestSession,
     weeklySnapshot,
     coachFeedback,
     nextRun: nextRunWithForecast
@@ -95,7 +91,7 @@ export async function loadDashboardData(): Promise<RunDashboardData> {
 
   return {
     site,
-    latestSession: latestSessionWithWeather,
+    latestSession,
     weeklySnapshot,
     coachFeedback,
     nextRun: nextRunWithForecast,

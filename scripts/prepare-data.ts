@@ -34,11 +34,13 @@ import type {
   PacerActivity,
   PacerCmsActivityContext,
   PacerCmsActivityContextItem,
+  PacerCmsActivityContextMetric,
   PacerExport,
   RaceContext,
   RaceContextRecentActivity,
   RaceDefinition,
   ActivityLogExport,
+  ActivityLogItem,
   UsefulRead,
   WeatherSnapshot,
   WeeklySnapshot
@@ -161,6 +163,79 @@ function toRecentRideActivity(activity: PacerActivity | undefined): RaceContextR
       { label: "Moving time", value: formatCompactDuration(activity.moving_time) },
       { label: "Avg HR", value: formatHeartRate(activity.average_heartrate) }
     ]
+  };
+}
+
+function getActivityContextMetric(
+  item: PacerCmsActivityContextItem,
+  label: PacerCmsActivityContextMetric["label"]
+): number | null {
+  return item.metrics.find((metric) => metric.label === label)?.value ?? null;
+}
+
+function toActivityLogItemFromContext(item: PacerCmsActivityContextItem): ActivityLogItem {
+  const distanceM = getActivityContextMetric(item, "distance");
+  const movingTimeS = getActivityContextMetric(item, "movingTime") ?? getActivityContextMetric(item, "duration");
+  const averageHeartrate = getActivityContextMetric(item, "avgHr");
+  const maxHeartrate = getActivityContextMetric(item, "maxHr");
+
+  return {
+    id: item.sourceActivityId,
+    source: "strava",
+    title: item.title,
+    type: item.sport,
+    sportType: item.sport,
+    startDate: item.startDateLocal,
+    startDateLocal: item.startDateLocal,
+    distanceM,
+    movingTimeS,
+    elapsedTimeS: movingTimeS,
+    averageHeartrate,
+    maxHeartrate,
+    calories: null,
+    elevationGainM: null,
+    paceSecPerKm: null,
+    averageSpeedMps: distanceM && movingTimeS && movingTimeS > 0 ? distanceM / movingTimeS : null,
+    routeSvgPoints: null,
+    stravaUrl: item.sourceActivityId === null ? null : `https://www.strava.com/activities/${item.sourceActivityId}`
+  };
+}
+
+function activityLogSortKey(activity: ActivityLogItem): string {
+  return activity.startDateLocal || activity.startDate || "";
+}
+
+function reconcileActivityLogWithContext(
+  activityLog: ActivityLogExport | null,
+  activityContext: PacerCmsActivityContext | null
+): ActivityLogExport {
+  const activitiesById = new Map<number, ActivityLogItem>();
+  const anonymousActivities: ActivityLogItem[] = [];
+
+  for (const activity of activityLog?.activities ?? []) {
+    if (activity.id === null) {
+      anonymousActivities.push(activity);
+      continue;
+    }
+
+    activitiesById.set(activity.id, activity);
+  }
+
+  for (const item of [activityContext?.latestTraining, activityContext?.latestRide]) {
+    if (!item?.sourceActivityId || activitiesById.has(item.sourceActivityId)) {
+      continue;
+    }
+
+    activitiesById.set(item.sourceActivityId, toActivityLogItemFromContext(item));
+  }
+
+  const activities = [...activitiesById.values(), ...anonymousActivities]
+    .sort((left, right) => activityLogSortKey(right).localeCompare(activityLogSortKey(left)));
+
+  return {
+    generatedAt: activityLog?.generatedAt ?? activityContext?.generatedAt ?? new Date().toISOString(),
+    count: activities.length,
+    activities
   };
 }
 
@@ -612,13 +687,22 @@ async function loadWeatherSnapshot(latestSnapshot: PacerCmsLatestSession, latest
 }
 
 async function prepareFromPacer(): Promise<void> {
-  const [latestSnapshot, nextRunSnapshotRaw, weeklySummarySnapshot, archiveList, publishedSessionsSnapshot, activityLogSnapshot] = await Promise.all([
+  const [
+    latestSnapshot,
+    nextRunSnapshotRaw,
+    weeklySummarySnapshot,
+    archiveList,
+    publishedSessionsSnapshot,
+    activityLogSnapshot,
+    activityContextSnapshot
+  ] = await Promise.all([
     loadPacerCmsFile<PacerCmsLatestSession>("latest-session.json"),
     loadPacerCmsFile<PacerCmsNextRun>("next-run.json"),
     loadPacerCmsFile<PacerCmsWeeklySummary>("weekly-summary.json"),
     loadPacerCmsFile<PacerCmsArchiveList>("archive-list.json"),
     loadPacerCmsFile<PacerCmsLatestSession[]>("published-sessions.json"),
-    loadPacerCmsFile<ActivityLogExport>("activity-log.json")
+    loadPacerCmsFile<ActivityLogExport>("activity-log.json"),
+    loadPacerCmsFile<PacerCmsActivityContext>("activity-context.json")
   ]);
 
   if (!latestSnapshot) {
@@ -715,7 +799,7 @@ async function prepareFromPacer(): Promise<void> {
     canonicalOutput: authoritativeCanonicalOutput,
     reviewOutput,
     einkSummary,
-    activityLog: activityLogSnapshot ?? { generatedAt: new Date().toISOString(), count: 0, activities: [] }
+    activityLog: reconcileActivityLogWithContext(activityLogSnapshot, activityContextSnapshot)
   });
   console.log(`Prepared data/current from Pacer CMS snapshots at ${resolvePacerCmsSnapshotPath("latest-session.json")}.`);
 }

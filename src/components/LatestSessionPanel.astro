@@ -51,6 +51,7 @@ const eyebrow = eyebrowParts.join(" · ");
 const calloutParagraph = coachFeedback.summaryShort || coachFeedback.mainTakeaway;
 const hasRoute = Boolean(latestSession.routeSvgPoints);
 const isRace = latestSession.statusLabel?.trim().toLowerCase() === "race";
+const showAverageHeartRate = latestSession.averageHeartRate !== null;
 
 function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | "overcast" | "rain" | "storm" | "mixed" {
   const value = (label ?? "").toLowerCase();
@@ -82,7 +83,9 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
 <section class={`${
   variant === "featured"
     ? "run-hero run-hero--featured"
-    : `panel panel--hero run-hero ${variant === "detail" ? "run-hero--detail" : "run-hero--home"}`
+    : variant === "detail"
+      ? "panel panel--hero featured-session run-hero run-hero--featured run-hero--detail"
+      : "panel panel--hero run-hero run-hero--home"
 }`} aria-labelledby="run-hero-heading">
   <div class="run-hero__header">
     {hasRoute && (
@@ -109,7 +112,7 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
 
   </div>
 
-  <dl class="run-stat-row run-stat-row--cover">
+  <dl class={`run-stat-row run-stat-row--cover ${showAverageHeartRate ? "run-stat-row--with-hr" : ""}`}>
     <div class="run-stat run-stat--primary">
       <dt>Distance</dt>
       <dd>{latestSession.distanceKm === null ? "—" : `${latestSession.distanceKm.toFixed(1)} km`}</dd>
@@ -122,6 +125,12 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
       <dt>Pace</dt>
       <dd>{latestSession.paceLabel ?? "—"}</dd>
     </div>
+    {showAverageHeartRate && (
+      <div class="run-stat run-stat--primary">
+        <dt>Avg HR</dt>
+        <dd>{latestSession.averageHeartRate} bpm</dd>
+      </div>
+    )}
     <div class="run-stat">
       <dt>Conditions</dt>
       <dd class="run-condition">
@@ -131,67 +140,67 @@ function getWeatherKind(label: string | null | undefined): "clear" | "cloudy" | 
     </div>
   </dl>
 
-  {variant === "detail" && latestSession.laps.length > 0 && (
-    <div class="lap-preview">
-      <div class="lap-preview__header">
-        <p class="eyebrow lap-preview__label">Splits / {latestSession.laps.length} splits</p>
-        {sessionPath && (
-          <a class="lap-preview__link" href={sessionPath}>View full breakdown</a>
-        )}
-      </div>
-      <div class="lap-table-wrap">
-        <table class="lap-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Km</th>
-              <th>Pace</th>
-              <th>Time</th>
-              <th>HR</th>
-            </tr>
-          </thead>
-          <tbody>
-            {latestSession.laps.map((lap) => (
-              <tr>
-                <td class="lap-table__num">{lap.lapNumber}</td>
-                <td>{lap.distanceKm === null ? "—" : lap.distanceKm.toFixed(1)}</td>
-                <td>{lap.paceLabel ?? "—"}</td>
-                <td>{lap.durationLabel}</td>
-                <td>{lap.averageHeartRate === null ? "—" : lap.averageHeartRate}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )}
-
   {variant === "detail" && (
-    <div class="session-reading session-reading--embedded">
-      <div class="session-reading__column">
-        <div class="session-reading__header">
-          <p class="eyebrow">Reading</p>
-          <h2>{coachFeedback.headline}</h2>
-        </div>
+    <div class="session-detail-grid">
+      <div class="session-reading session-reading--embedded">
+        <div class="session-reading__column">
+          <div class="session-reading__header">
+            <p class="eyebrow">Reading</p>
+            <h2>{coachFeedback.headline}</h2>
+          </div>
 
-        <div class="session-reading__body">
-          {readingParagraphs.map((paragraph) => (
-            <p>{paragraph}</p>
-          ))}
+          <div class="session-reading__body">
+            {readingParagraphs.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
 
-          {carryForward && (
-            <p class="session-reading__callout">
-              <strong>Carry forward.</strong> {carryForward}
-            </p>
-          )}
+            {carryForward && (
+              <p class="session-reading__callout">
+                <strong>Takeaway.</strong> {carryForward}
+              </p>
+            )}
 
-          {nextRunTitle && nextRunSummary && (
-            <p class="session-reading__callout">
-              <strong>What followed.</strong> {nextRunTitle}. {nextRunSummary}
-            </p>
-          )}
+            {nextRunTitle && nextRunSummary && (
+              <p class="session-reading__callout">
+                <strong>Next step.</strong> {nextRunTitle}. {nextRunSummary}
+              </p>
+            )}
+          </div>
         </div>
       </div>
+
+      {latestSession.laps.length > 0 && (
+        <div class="lap-preview">
+          <div class="lap-preview__header">
+            <p class="eyebrow lap-preview__label">Splits / {latestSession.laps.length} splits</p>
+            {sessionPath && (
+              <a class="lap-preview__link" href={sessionPath}>View full breakdown</a>
+            )}
+          </div>
+          <div class="lap-table-wrap">
+            <table class="lap-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Pace</th>
+                  <th>Time</th>
+                  <th>HR</th>
+                </tr>
+              </thead>
+              <tbody>
+                {latestSession.laps.map((lap) => (
+                  <tr>
+                    <td class="lap-table__num">{lap.lapNumber}</td>
+                    <td>{lap.paceLabel ?? "—"}</td>
+                    <td>{lap.durationLabel}</td>
+                    <td>{lap.averageHeartRate === null ? "—" : `${lap.averageHeartRate}`}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   )}
 
