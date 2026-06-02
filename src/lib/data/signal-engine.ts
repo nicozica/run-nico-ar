@@ -918,7 +918,7 @@ function buildDerivedInsight(
   tcxSamples: SegmentSample[]
 ): DerivedSessionInsight {
   const title = selectEditorialSessionTitle(snapshot.title, snapshot.manual.sessionType);
-  const slug = buildSessionSlug(snapshot.sessionDate, snapshot.title, snapshot.manual.sessionType);
+  const slug = buildSessionSlug(snapshot.sessionDate, snapshot.displayActivityName ?? snapshot.title, snapshot.manual.sessionType);
   const intent = detectSessionIntent(snapshot, activity);
   const samples = getSignalSamples(snapshot, streamPayload, tcxSamples);
   const cardiacDrift = buildCardiacDrift(samples);

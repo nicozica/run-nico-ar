@@ -2,7 +2,7 @@
 
 set -Eeuo pipefail
 
-# Refresh Strava-backed Pacer exports in the morning and redeploy run.nico.ar.
+# Refresh Pacer training exports in the morning and redeploy run.nico.ar.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUN_REPO="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -45,8 +45,8 @@ if [[ ! -d node_modules ]]; then
   npm install
 fi
 
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Fetching latest Strava activities..."
-npm run strava:fetch
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Fetching latest training activities..."
+npm run training:fetch
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Publishing fresh Pacer snapshots..."
 npm run sessions:publish

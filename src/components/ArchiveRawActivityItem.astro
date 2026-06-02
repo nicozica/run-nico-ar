@@ -8,14 +8,15 @@ interface Props {
 }
 
 const { activity, meta } = Astro.props;
+const activityUrl = activity.sourceActivityUrl ?? activity.stravaUrl;
 ---
 
 <li class="archive-item archive-item--raw">
   <a
     class="archive-item__link"
-    href={activity.stravaUrl ?? undefined}
-    target={activity.stravaUrl ? "_blank" : undefined}
-    rel={activity.stravaUrl ? "noreferrer" : undefined}
+    href={activityUrl ?? undefined}
+    target={activityUrl ? "_blank" : undefined}
+    rel={activityUrl ? "noreferrer" : undefined}
   >
     <div class="archive-item__header">
       <div class="archive-item__heading">

@@ -14,11 +14,10 @@
     "priority": "B"
   },
   {
-    "slug": "carrera-maya",
-    "title": "Carrera Maya",
-    "date": "2026-05-25",
-    "distanceKm": 10,
-    "goalTimeMin": 55,
+    "slug": "21k-buenos-aires",
+    "title": "21K Buenos Aires",
+    "date": "2026-08-23",
+    "distanceKm": 21.1,
     "priority": "A"
   }
 ]

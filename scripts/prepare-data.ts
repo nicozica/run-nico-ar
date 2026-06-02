@@ -178,13 +178,17 @@ function toActivityLogItemFromContext(item: PacerCmsActivityContextItem): Activi
   const movingTimeS = getActivityContextMetric(item, "movingTime") ?? getActivityContextMetric(item, "duration");
   const averageHeartrate = getActivityContextMetric(item, "avgHr");
   const maxHeartrate = getActivityContextMetric(item, "maxHr");
+  const date = getActivityLogDate({ startDate: item.startDateLocal, startDateLocal: item.startDateLocal });
 
   return {
     id: item.sourceActivityId,
     source: "strava",
+    sourceActivityId: item.sourceActivityId,
+    originalActivityId: item.sourceActivityId === null ? null : String(item.sourceActivityId),
     title: item.title,
     type: item.sport,
     sportType: item.sport,
+    date,
     startDate: item.startDateLocal,
     startDateLocal: item.startDateLocal,
     distanceM,
@@ -196,8 +200,23 @@ function toActivityLogItemFromContext(item: PacerCmsActivityContextItem): Activi
     elevationGainM: null,
     paceSecPerKm: null,
     averageSpeedMps: distanceM && movingTimeS && movingTimeS > 0 ? distanceM / movingTimeS : null,
+    averageCadence: null,
+    trainingLoad: null,
+    deviceName: null,
     routeSvgPoints: null,
+    sourceActivityUrl: item.sourceActivityId === null ? null : `https://www.strava.com/activities/${item.sourceActivityId}`,
     stravaUrl: item.sourceActivityId === null ? null : `https://www.strava.com/activities/${item.sourceActivityId}`
+  };
+}
+
+function getActivityLogDate(activity: Pick<ActivityLogItem, "startDate" | "startDateLocal">): string {
+  return (activity.startDateLocal || activity.startDate || "").slice(0, 10);
+}
+
+function withActivityLogDate(activity: ActivityLogItem): ActivityLogItem {
+  return {
+    ...activity,
+    date: getActivityLogDate(activity)
   };
 }
 
@@ -230,6 +249,7 @@ function reconcileActivityLogWithContext(
   }
 
   const activities = [...activitiesById.values(), ...anonymousActivities]
+    .map(withActivityLogDate)
     .sort((left, right) => activityLogSortKey(right).localeCompare(activityLogSortKey(left)));
 
   return {

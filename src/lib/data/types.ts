@@ -77,6 +77,7 @@ export interface NextRun {
 }
 
 export interface NextRunWorkout {
+  title?: string;
   type: string;
   blocks: string[];
 }
@@ -373,6 +374,16 @@ export interface RunDashboardData {
 
 export interface PacerActivity {
   id?: number;
+  source?: "strava" | "intervals";
+  sourceActivityId?: number;
+  originalActivityId?: string | null;
+  originalActivityUrl?: string | null;
+  sourceActivityUrl?: string | null;
+  rawActivityName?: string;
+  displayActivityName?: string;
+  workoutCode?: string | null;
+  workoutType?: string | null;
+  sessionTypeSuggestion?: string | null;
   name: string;
   sport_type?: string;
   type?: string;
@@ -387,8 +398,12 @@ export interface PacerActivity {
   average_heartrate?: number;
   max_heartrate?: number;
   average_speed: number;
+  average_cadence?: number;
+  max_cadence?: number;
   calories?: number;
   kilojoules?: number;
+  training_load?: number;
+  device_name?: string | null;
   // Strava route map — present on full activity objects
   map?: {
     summary_polyline?: string;
@@ -415,10 +430,17 @@ export interface PacerExport {
 
 export interface ActivityLogItem {
   id: number | null;
-  source: "strava";
+  source: "strava" | "intervals";
+  sourceActivityId?: number | null;
+  originalActivityId?: string | null;
+  rawActivityName?: string | null;
+  displayActivityName?: string | null;
+  workoutCode?: string | null;
+  sessionTypeSuggestion?: string | null;
   title: string;
   type: string;
   sportType: string | null;
+  date: string;
   startDate: string;
   startDateLocal: string | null;
   distanceM: number | null;
@@ -430,7 +452,11 @@ export interface ActivityLogItem {
   elevationGainM: number | null;
   paceSecPerKm: number | null;
   averageSpeedMps: number | null;
+  averageCadence?: number | null;
+  trainingLoad?: number | null;
+  deviceName?: string | null;
   routeSvgPoints?: string | null;
+  sourceActivityUrl?: string | null;
   stravaUrl: string | null;
 }
 

@@ -75,7 +75,7 @@ function toPublishedSessionEntry(
   const aiParagraphs = snapshot.ai.signalParagraphs.filter((paragraph) => paragraph.trim().length > 0);
 
   return {
-    slug: buildSessionSlug(snapshot.sessionDate, snapshot.title, snapshot.manual.sessionType),
+    slug: buildSessionSlug(snapshot.sessionDate, snapshot.displayActivityName ?? snapshot.title, snapshot.manual.sessionType),
     sessionId: snapshot.sessionId,
     sessionDate: snapshot.sessionDate,
     title: selectEditorialSessionTitle(snapshot.title, snapshot.manual.sessionType),

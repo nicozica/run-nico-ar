@@ -34,6 +34,11 @@ export interface PacerCmsSessionAi {
   nextRunDistanceKm: number | null;
   nextRunPaceMinSecPerKm: number | null;
   nextRunPaceMaxSecPerKm: number | null;
+  nextRunWorkout?: {
+    title?: string;
+    type: string;
+    blocks: string[];
+  } | null;
   weekTitle: string;
   weekSummary: string;
 }
@@ -53,6 +58,10 @@ export interface PacerCmsLatestSession {
   sessionDate: string;
   startDateLocal: string | null;
   title: string;
+  rawActivityName?: string | null;
+  displayActivityName?: string | null;
+  workoutCode?: string | null;
+  sessionTypeSuggestion?: string | null;
   sport: string;
   distanceM: number | null;
   movingTimeS: number | null;
@@ -86,6 +95,7 @@ export interface PacerCmsNextRun {
   paceMinSecPerKm: number | null;
   paceMaxSecPerKm: number | null;
   workout?: {
+    title?: string;
     type: string;
     blocks: string[];
   } | null;
@@ -291,7 +301,7 @@ function toLapSummary(lap: PacerCmsLap): LapSummary {
 export function toLatestSession(snapshot: PacerCmsLatestSession): LatestSession {
   return {
     source: "pacer",
-    title: selectEditorialSessionTitle(snapshot.title, snapshot.manual.sessionType),
+    title: selectEditorialSessionTitle(snapshot.displayActivityName ?? snapshot.title, snapshot.manual.sessionType),
     activityType: snapshot.sport,
     date: snapshot.sessionDate,
     startDateLocal: snapshot.startDateLocal,
@@ -339,7 +349,10 @@ export function toCoachFeedback(
   ]);
 
   return {
-    headline: pickFirstText([latestSession.ai.signalTitle, selectEditorialSessionTitle(latestSession.title, latestSession.manual.sessionType)]),
+    headline: pickFirstText([
+      latestSession.ai.signalTitle,
+      selectEditorialSessionTitle(latestSession.displayActivityName ?? latestSession.title, latestSession.manual.sessionType)
+    ]),
     verdict,
     summaryShort,
     mainTakeaway: pickFirstText([firstParagraph, secondParagraph, carryForward]),
@@ -365,13 +378,14 @@ export function buildFallbackNextRun(latestSession: PacerCmsLatestSession): Pace
     distanceKm: latestSession.ai.nextRunDistanceKm,
     paceMinSecPerKm: latestSession.ai.nextRunPaceMinSecPerKm,
     paceMaxSecPerKm: latestSession.ai.nextRunPaceMaxSecPerKm,
+    workout: latestSession.ai.nextRunWorkout ?? null,
     updatedAt: latestSession.updatedAt
   };
 }
 
 export function toNextRun(snapshot: PacerCmsNextRun): NextRun {
   return {
-    name: snapshot.title || "Next run",
+    name: snapshot.workout?.title || snapshot.title || "Next run",
     estimatedDuration: formatDurationRange(snapshot.durationMin, snapshot.durationMax),
     estimatedDistanceKm: typeof snapshot.distanceKm === "number" && snapshot.distanceKm > 0
       ? roundOneDecimal(snapshot.distanceKm)
@@ -380,6 +394,7 @@ export function toNextRun(snapshot: PacerCmsNextRun): NextRun {
     goal: snapshot.summary || "Keep the next run simple and controlled.",
     workout: snapshot.workout && snapshot.workout.blocks.length > 0
       ? {
+        ...(snapshot.workout.title ? { title: snapshot.workout.title } : {}),
         type: snapshot.workout.type,
         blocks: snapshot.workout.blocks
       }
@@ -424,7 +439,7 @@ export function toWeatherActivity(snapshot: PacerCmsLatestSession): PacerActivit
 
   return {
     id: snapshot.sourceActivityId,
-    name: selectEditorialSessionTitle(snapshot.title, snapshot.manual.sessionType),
+    name: selectEditorialSessionTitle(snapshot.displayActivityName ?? snapshot.title, snapshot.manual.sessionType),
     sport_type: snapshot.sport,
     type: snapshot.sport,
     start_date: `${sessionDate}T09:00:00Z`,

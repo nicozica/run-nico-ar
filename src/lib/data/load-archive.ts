@@ -38,6 +38,7 @@ export interface ArchiveRawActivityCard {
   type: string;
   sportType: string | null;
   category: Exclude<ActivityLogFilter, "all">;
+  date: string;
   startDate: string;
   startDateLocal: string | null;
   dateTimeLabel: string;
@@ -51,6 +52,7 @@ export interface ArchiveRawActivityCard {
   elevationGainM: number | null;
   averageSpeedKmh: number | null;
   routeSvgPoints: string | null;
+  sourceActivityUrl: string | null;
   stravaUrl: string | null;
 }
 
@@ -168,6 +170,7 @@ function toRawActivityCard(activity: ActivityLogItem): ArchiveRawActivityCard {
     type: activity.type,
     sportType: activity.sportType,
     category: classifyActivity(activity),
+    date: activity.date || date,
     startDate: activity.startDate,
     startDateLocal,
     dateTimeLabel: timeLabel ? `${dateLabel} · ${timeLabel}` : dateLabel,
@@ -189,6 +192,7 @@ function toRawActivityCard(activity: ActivityLogItem): ArchiveRawActivityCard {
       ? roundOneDecimal(activity.averageSpeedMps * 3.6)
       : null,
     routeSvgPoints: activity.routeSvgPoints ?? null,
+    sourceActivityUrl: activity.sourceActivityUrl ?? activity.stravaUrl,
     stravaUrl: activity.stravaUrl
   };
 }
@@ -228,7 +232,7 @@ function toArchiveSessionCard(session: PacerCmsLatestSession): ArchiveSessionCar
 
   return {
     kind: "session",
-    slug: buildSessionSlug(session.sessionDate, session.title, session.manual.sessionType),
+    slug: buildSessionSlug(session.sessionDate, session.displayActivityName ?? session.title, session.manual.sessionType),
     sessionId: session.sessionId,
     sourceActivityId: session.sourceActivityId,
     sessionDate: session.sessionDate,

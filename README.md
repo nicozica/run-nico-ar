@@ -57,12 +57,12 @@ The source of truth lives in the sibling Pacer repo:
 
 - SQLite session storage
 - published CMS snapshots under `../pacer/storage/json/cms/`
-- local Strava activity bundle under `../pacer/storage/json/activities.latest.json`
+- local training activity bundle under `../pacer/storage/json/activities.latest.json`
 
 At build time, `run-nico-ar` does this:
 
 1. reads published CMS snapshots from Pacer
-2. reads the local Strava activity bundle when it is available
+2. reads the local training activity bundle when it is available
 3. optionally reads cached local streams from `../pacer/storage/json/streams/<activityId>.json`
 4. optionally reads a TCX file if the published session references one and the file exists in Pacer storage
 5. derives technical signal notes into `derived-insights.json`
@@ -104,11 +104,10 @@ Example shape:
     "priority": "B"
   },
   {
-    "slug": "carrera-maya",
-    "title": "Carrera Maya",
-    "date": "2026-05-25",
-    "distanceKm": 10,
-    "goalTimeMin": 55,
+    "slug": "21k-buenos-aires",
+    "title": "21K Buenos Aires",
+    "date": "2026-08-23",
+    "distanceKm": 21.1,
     "priority": "A"
   }
 ]
@@ -206,7 +205,7 @@ The separation is intentional:
 The pipeline prefers the richest available local source, in this order:
 
 1. published CMS snapshots from Pacer
-2. local Strava bundle for activity context
+2. local training bundle for activity context
 3. local stream cache, if available
 4. local TCX file, if available
 5. existing published laps and summary fields
@@ -231,6 +230,8 @@ Available `RUN_DATA_SOURCE` values:
 - `auto`: prefer real Pacer data, otherwise use mocks
 - `pacer`: require the Pacer snapshots
 - `mocks`: always use mock data
+
+The upstream training source is configured in Pacer with `TRAINING_SOURCE=strava` or `TRAINING_SOURCE=intervals`.
 
 ## Install
 
@@ -260,7 +261,7 @@ Typical local refresh flow:
 
 ```bash
 cd /srv/repos/personal/argensonix/labs/pacer
-npm run strava:fetch
+npm run training:fetch
 npm run sessions:publish
 
 cd /srv/repos/personal/argensonix/labs/run-nico-ar
@@ -272,7 +273,7 @@ High-level flow:
 
 ```text
 Pacer CMS snapshots
-  + local Strava bundle
+  + local training bundle
   + optional streams / TCX
     -> scripts/prepare-data.ts
       -> derived-insights.json
