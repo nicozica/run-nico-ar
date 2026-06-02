@@ -275,6 +275,79 @@ export function buildSessionSlug(
   return `${sessionDate}-${slug}`;
 }
 
+function buildSessionSlugParts(
+  sessionDate: string,
+  sourceTitle: string | null | undefined,
+  sessionType: string | null | undefined
+): { baseSlug: string; titleSlug: string } {
+  const title = selectEditorialSessionTitle(sourceTitle, sessionType);
+  const titleSlug = slugifySegment(title) || "session";
+
+  return {
+    baseSlug: `${sessionDate}-${titleSlug}`,
+    titleSlug
+  };
+}
+
+function extractLocalStartTimeSlug(startDateLocal: string | null | undefined): string | null {
+  const match = (startDateLocal ?? "").match(/T(\d{2}):(\d{2})/);
+
+  if (!match) {
+    return null;
+  }
+
+  return `${match[1]}${match[2]}`;
+}
+
+export function buildUniqueSessionSlugMap(snapshots: PacerCmsLatestSession[]): Map<number, string> {
+  const groups = new Map<string, PacerCmsLatestSession[]>();
+
+  for (const snapshot of snapshots) {
+    const { baseSlug } = buildSessionSlugParts(
+      snapshot.sessionDate,
+      snapshot.displayActivityName ?? snapshot.title,
+      snapshot.manual.sessionType
+    );
+    groups.set(baseSlug, [...(groups.get(baseSlug) ?? []), snapshot]);
+  }
+
+  const slugs = new Map<number, string>();
+
+  for (const [baseSlug, group] of groups) {
+    if (group.length === 1) {
+      slugs.set(group[0].sessionId, baseSlug);
+      continue;
+    }
+
+    const timeCounts = new Map<string, number>();
+
+    for (const snapshot of group) {
+      const timeSlug = extractLocalStartTimeSlug(snapshot.startDateLocal);
+
+      if (timeSlug) {
+        timeCounts.set(timeSlug, (timeCounts.get(timeSlug) ?? 0) + 1);
+      }
+    }
+
+    for (const snapshot of group) {
+      const { titleSlug } = buildSessionSlugParts(
+        snapshot.sessionDate,
+        snapshot.displayActivityName ?? snapshot.title,
+        snapshot.manual.sessionType
+      );
+      const timeSlug = extractLocalStartTimeSlug(snapshot.startDateLocal);
+      const uniqueTimeSlug = timeSlug && timeCounts.get(timeSlug) === 1 ? timeSlug : null;
+      const slug = uniqueTimeSlug
+        ? `${snapshot.sessionDate}-${uniqueTimeSlug}-${titleSlug}`
+        : `${baseSlug}-session-${snapshot.sessionId}`;
+
+      slugs.set(snapshot.sessionId, slug);
+    }
+  }
+
+  return slugs;
+}
+
 function pickFirstText(values: Array<string | null | undefined>): string {
   for (const value of values) {
     const normalized = (value ?? "").trim();

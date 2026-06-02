@@ -3,7 +3,7 @@ import { readJsonFile } from "./json.ts";
 import { currentDataDir, manualDataDir, mockDataDir } from "./paths.ts";
 import {
   buildFallbackNextRun,
-  buildSessionSlug,
+  buildUniqueSessionSlugMap,
   selectEditorialSessionTitle,
   toCoachFeedback,
   toLatestSession,
@@ -67,6 +67,7 @@ async function loadGeneratedOrMock<T>(fileName: string): Promise<T> {
 
 function toPublishedSessionEntry(
   snapshot: PacerCmsLatestSession,
+  slug: string,
   overrides: SessionEditorialOverrides = {}
 ): PublishedSessionEntry {
   const nextRun = buildFallbackNextRun(snapshot);
@@ -75,7 +76,7 @@ function toPublishedSessionEntry(
   const aiParagraphs = snapshot.ai.signalParagraphs.filter((paragraph) => paragraph.trim().length > 0);
 
   return {
-    slug: buildSessionSlug(snapshot.sessionDate, snapshot.displayActivityName ?? snapshot.title, snapshot.manual.sessionType),
+    slug,
     sessionId: snapshot.sessionId,
     sessionDate: snapshot.sessionDate,
     title: selectEditorialSessionTitle(snapshot.title, snapshot.manual.sessionType),
@@ -106,12 +107,17 @@ export async function loadPublishedSessionEntries(): Promise<PublishedSessionEnt
       return b.sessionId - a.sessionId;
     });
 
+  const slugMap = buildUniqueSessionSlugMap(snapshots);
+
   return sortedSnapshots.map((snapshot, index) => {
+    const slug = slugMap.get(snapshot.sessionId)
+      ?? `${snapshot.sessionDate}-session-${snapshot.sessionId}`;
+
     if (index !== 0 || !canonicalOutput) {
-      return toPublishedSessionEntry(snapshot);
+      return toPublishedSessionEntry(snapshot, slug);
     }
 
-    return toPublishedSessionEntry(snapshot, {
+    return toPublishedSessionEntry(snapshot, slug, {
       coachFeedback: currentCoachFeedback ?? undefined,
       aiParagraphs: canonicalOutput.signalParagraphs.filter((paragraph) => paragraph.trim().length > 0),
       carryForward: canonicalOutput.carryForward || null,

@@ -2,7 +2,7 @@ import path from "node:path";
 import { readJsonFile } from "./json.ts";
 import { currentDataDir, manualDataDir, mockDataDir } from "./paths.ts";
 import {
-  buildSessionSlug,
+  buildUniqueSessionSlugMap,
   selectEditorialSessionTitle,
   type PacerCmsLatestSession
 } from "./pacer-cms.ts";
@@ -226,13 +226,13 @@ async function loadGeneratedOrMock<T>(fileName: string): Promise<T> {
   return mock;
 }
 
-function toArchiveSessionCard(session: PacerCmsLatestSession): ArchiveSessionCard {
+function toArchiveSessionCard(session: PacerCmsLatestSession, slug: string): ArchiveSessionCard {
   const dateLabel = formatSessionDateLabel(session.sessionDate);
   const timeLabel = formatSessionTimeLabel(session.startDateLocal);
 
   return {
     kind: "session",
-    slug: buildSessionSlug(session.sessionDate, session.displayActivityName ?? session.title, session.manual.sessionType),
+    slug,
     sessionId: session.sessionId,
     sourceActivityId: session.sourceActivityId,
     sessionDate: session.sessionDate,
@@ -311,16 +311,22 @@ export async function loadArchivePageData(page = 1, pageSize = DEFAULT_PAGE_SIZE
   const activityLogExport = await loadGeneratedOrMock<ActivityLogExport>("activity-log.json")
     .catch(() => ({ generatedAt: null, count: 0, activities: [] }));
 
+  const slugMap = buildUniqueSessionSlugMap(publishedSessions);
   const allSessions = [...publishedSessions]
+    .map((session) => ({
+      session,
+      slug: slugMap.get(session.sessionId)
+        ?? `${session.sessionDate}-session-${session.sessionId}`
+    }))
     .sort((a, b) => {
-      const dateOrder = b.sessionDate.localeCompare(a.sessionDate);
+      const dateOrder = b.session.sessionDate.localeCompare(a.session.sessionDate);
       if (dateOrder !== 0) {
         return dateOrder;
       }
 
-      return b.sessionId - a.sessionId;
+      return b.session.sessionId - a.session.sessionId;
     })
-    .map((session) => toArchiveSessionCard(session));
+    .map(({ session, slug }) => toArchiveSessionCard(session, slug));
   const pagination = buildPagination(allSessions.length, page, pageSize);
   const start = (pagination.currentPage - 1) * pagination.pageSize;
   const sessions = allSessions.slice(start, start + pagination.pageSize);

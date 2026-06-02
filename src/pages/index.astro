@@ -15,7 +15,7 @@ import { buildSessionSlug } from "../lib/data/pacer-cms";
 
 const dashboard = await loadDashboardData();
 const latestSessionPath = dashboard.latestSession
-  ? `/sessions/${buildSessionSlug(dashboard.latestSession.date, dashboard.latestSession.title, null)}/`
+  ? `/sessions/${dashboard.derivedInsights.latest?.slug ?? buildSessionSlug(dashboard.latestSession.date, dashboard.latestSession.title, null)}/`
   : null;
 ---
 

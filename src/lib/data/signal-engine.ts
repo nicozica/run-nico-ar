@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { readJsonFile } from "./json.ts";
 import {
-  buildSessionSlug,
+  buildUniqueSessionSlugMap,
   selectEditorialSessionTitle,
   type PacerCmsLatestSession,
   type PacerCmsNextRun
@@ -915,10 +915,10 @@ function buildDerivedInsight(
   snapshot: PacerCmsLatestSession,
   activity: PacerActivity | null,
   streamPayload: LocalStreamPayload | null,
-  tcxSamples: SegmentSample[]
+  tcxSamples: SegmentSample[],
+  slug: string
 ): DerivedSessionInsight {
   const title = selectEditorialSessionTitle(snapshot.title, snapshot.manual.sessionType);
-  const slug = buildSessionSlug(snapshot.sessionDate, snapshot.displayActivityName ?? snapshot.title, snapshot.manual.sessionType);
   const intent = detectSessionIntent(snapshot, activity);
   const samples = getSignalSamples(snapshot, streamPayload, tcxSamples);
   const cardiacDrift = buildCardiacDrift(samples);
@@ -961,6 +961,7 @@ export async function buildDerivedInsights(snapshots: PacerCmsLatestSession[]): 
   const generatedAt = new Date().toISOString();
   const bundle = await loadActivityBundle();
   const activitiesById = new Map<number, PacerActivity>();
+  const slugMap = buildUniqueSessionSlugMap(snapshots);
 
   for (const activity of bundle?.activities ?? []) {
     if (typeof activity.id === "number") {
@@ -978,7 +979,8 @@ export async function buildDerivedInsights(snapshots: PacerCmsLatestSession[]): 
       snapshot,
       activitiesById.get(snapshot.sourceActivityId) ?? null,
       streamPayload,
-      tcxSamples
+      tcxSamples,
+      slugMap.get(snapshot.sessionId) ?? `${snapshot.sessionDate}-session-${snapshot.sessionId}`
     );
   }));
 
