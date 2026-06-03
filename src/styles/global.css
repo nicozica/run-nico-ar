@@ -1119,7 +1119,8 @@ p {
   text-decoration: none;
 }
 
-.archive-item:first-child {
+.archive-item:first-child,
+.archive-item.is-page-first {
   padding-top: 0;
   border-top: 0;
 }

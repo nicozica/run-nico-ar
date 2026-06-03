@@ -207,7 +207,9 @@ const activityViews = [
         const end = start + pageSize;
 
         items.forEach((item, index) => {
-          item.toggleAttribute("hidden", index < start || index >= end);
+          const isVisible = index >= start && index < end;
+          item.toggleAttribute("hidden", !isVisible);
+          item.classList.toggle("is-page-first", isVisible && index === start);
         });
 
         renderActivityPagination(activePanel, activePage, totalPages);

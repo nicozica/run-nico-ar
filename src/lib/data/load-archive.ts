@@ -155,6 +155,100 @@ function toComparableDate(value: string | null | undefined): string {
   return value || "";
 }
 
+function normalizeSourceActivityId(value: number | string | null | undefined): string | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return String(Math.trunc(value));
+  }
+
+  const normalized = String(value ?? "").trim();
+
+  if (!normalized) {
+    return null;
+  }
+
+  return normalized.replace(/^i/i, "") || null;
+}
+
+function getRawActivitySourceIds(activity: ActivityLogItem): Set<string> {
+  return new Set([
+    normalizeSourceActivityId(activity.id),
+    normalizeSourceActivityId(activity.sourceActivityId),
+    normalizeSourceActivityId(activity.originalActivityId)
+  ].filter((value): value is string => value !== null));
+}
+
+function getActivityLocalDate(activity: Pick<ActivityLogItem, "date" | "startDate" | "startDateLocal">): string {
+  return (activity.date || activity.startDateLocal || activity.startDate || "").slice(0, 10);
+}
+
+function parseLocalTimestamp(value: string | null | undefined): number | null {
+  const normalized = (value ?? "").trim();
+
+  if (!normalized) {
+    return null;
+  }
+
+  const timestamp = Date.parse(normalized);
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
+function areNumbersClose(
+  left: number | null | undefined,
+  right: number | null | undefined,
+  absoluteTolerance: number,
+  relativeTolerance: number
+): boolean {
+  if (typeof left !== "number" || typeof right !== "number") {
+    return false;
+  }
+
+  const tolerance = Math.max(absoluteTolerance, Math.abs(left) * relativeTolerance);
+  return Math.abs(left - right) <= tolerance;
+}
+
+function areActivitySportsCompatible(sessionSport: string, activity: Pick<ActivityLogItem, "sportType" | "type">): boolean {
+  return classifyActivity({ sportType: sessionSport, type: sessionSport }) === classifyActivity(activity);
+}
+
+function isRawActivityInterpreted(
+  activity: ActivityLogItem,
+  publishedSessions: PacerCmsLatestSession[]
+): boolean {
+  const rawSourceIds = getRawActivitySourceIds(activity);
+
+  for (const session of publishedSessions) {
+    const sessionSourceId = normalizeSourceActivityId(session.sourceActivityId);
+
+    if (sessionSourceId && rawSourceIds.has(sessionSourceId)) {
+      return true;
+    }
+
+    if (getActivityLocalDate(activity) !== session.sessionDate) {
+      continue;
+    }
+
+    if (!areActivitySportsCompatible(session.sport, activity)) {
+      continue;
+    }
+
+    const activityStart = parseLocalTimestamp(activity.startDateLocal || activity.startDate);
+    const sessionStart = parseLocalTimestamp(session.startDateLocal);
+    const closeStart = typeof activityStart === "number"
+      && typeof sessionStart === "number"
+      && Math.abs(activityStart - sessionStart) <= 180 * 1000;
+    const closeDistance = areNumbersClose(session.distanceM, activity.distanceM, 200, 0.03);
+    const closeDuration = areNumbersClose(session.movingTimeS, activity.movingTimeS, 180, 0.05)
+      || areNumbersClose(session.elapsedTimeS, activity.elapsedTimeS, 180, 0.05);
+
+    // Use a strong fingerprint when provider IDs changed across migrations.
+    if ((closeStart && (closeDistance || closeDuration)) || (closeDistance && closeDuration)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function toRawActivityCard(activity: ActivityLogItem): ArchiveRawActivityCard {
   const startDateLocal = activity.startDateLocal || activity.startDate;
   const date = startDateLocal.slice(0, 10);
@@ -250,12 +344,12 @@ function toArchiveSessionCard(session: PacerCmsLatestSession, slug: string): Arc
 }
 
 function buildActivityLog(
+  publishedSessionSnapshots: PacerCmsLatestSession[],
   publishedSessions: ArchiveSessionCard[],
   rawActivities: ActivityLogItem[],
 ): ArchivePageData["activityLog"] {
-  const interpretedActivityIds = new Set(publishedSessions.map((session) => session.sourceActivityId));
   const rawCards = rawActivities
-    .filter((activity) => activity.id === null || !interpretedActivityIds.has(activity.id))
+    .filter((activity) => !isRawActivityInterpreted(activity, publishedSessionSnapshots))
     .map((activity) => toRawActivityCard(activity));
   const all = [...publishedSessions, ...rawCards].sort((a, b) => {
     const left = a.kind === "session" ? a.startDateLocal || a.sessionDate : a.startDateLocal || a.startDate;
@@ -326,7 +420,7 @@ export async function loadArchivePageData(page = 1, pageSize = DEFAULT_PAGE_SIZE
   const pagination = buildPagination(allSessions.length, page, pageSize);
   const start = (pagination.currentPage - 1) * pagination.pageSize;
   const sessions = allSessions.slice(start, start + pagination.pageSize);
-  const activityLog = buildActivityLog(allSessions, activityLogExport.activities);
+  const activityLog = buildActivityLog(publishedSessions, allSessions, activityLogExport.activities);
 
   return {
     site,
