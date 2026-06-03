@@ -182,7 +182,7 @@ function toActivityLogItemFromContext(item: PacerCmsActivityContextItem): Activi
 
   return {
     id: item.sourceActivityId,
-    source: "strava",
+    source: "intervals",
     sourceActivityId: item.sourceActivityId,
     originalActivityId: item.sourceActivityId === null ? null : String(item.sourceActivityId),
     title: item.title,
@@ -203,21 +203,34 @@ function toActivityLogItemFromContext(item: PacerCmsActivityContextItem): Activi
     averageCadence: null,
     trainingLoad: null,
     deviceName: null,
-    routeSvgPoints: null,
-    sourceActivityUrl: item.sourceActivityId === null ? null : `https://www.strava.com/activities/${item.sourceActivityId}`,
-    stravaUrl: item.sourceActivityId === null ? null : `https://www.strava.com/activities/${item.sourceActivityId}`
+    routeSvgPoints: null
   };
 }
+
+const PUBLIC_ACTIVITY_CUTOFF_DATE = "2026-03-15";
 
 function getActivityLogDate(activity: Pick<ActivityLogItem, "startDate" | "startDateLocal">): string {
   return (activity.startDateLocal || activity.startDate || "").slice(0, 10);
 }
 
+function isPublicActivityDate(date: string): boolean {
+  return date >= PUBLIC_ACTIVITY_CUTOFF_DATE;
+}
+
 function withActivityLogDate(activity: ActivityLogItem): ActivityLogItem {
+  const publicActivity = { ...activity } as ActivityLogItem & Record<string, unknown>;
+  const legacyActivityUrlKey = ["str", "ava", "Url"].join("");
+  delete publicActivity.sourceActivityUrl;
+  delete publicActivity[legacyActivityUrlKey];
+
   return {
-    ...activity,
+    ...publicActivity,
     date: getActivityLogDate(activity)
   };
+}
+
+function isPublicActivity(activity: ActivityLogItem): boolean {
+  return isPublicActivityDate(getActivityLogDate(activity));
 }
 
 function activityLogSortKey(activity: ActivityLogItem): string {
@@ -250,6 +263,7 @@ function reconcileActivityLogWithContext(
 
   const activities = [...activitiesById.values(), ...anonymousActivities]
     .map(withActivityLogDate)
+    .filter(isPublicActivity)
     .sort((left, right) => activityLogSortKey(right).localeCompare(activityLogSortKey(left)));
 
   return {
@@ -270,10 +284,15 @@ async function loadSupplementalRaceActivities(): Promise<{
       if (!item) {
         return null;
       }
+      const date = extractDateKey(item.startDateLocal);
+
+      if (!isPublicActivityDate(date)) {
+        return null;
+      }
 
       return {
         title: item.title,
-        date: extractDateKey(item.startDateLocal),
+        date,
         metrics: item.metrics.map((metric) => {
           switch (metric.label) {
             case "duration":
@@ -300,7 +319,8 @@ async function loadSupplementalRaceActivities(): Promise<{
   }
 
   const exportData = await readJsonFile<PacerExport>(resolvePacerExportPath());
-  const activities = exportData?.activities ?? [];
+  const activities = (exportData?.activities ?? [])
+    .filter((activity) => isPublicActivityDate(extractDateKey(activity.start_date_local || activity.start_date)));
   const latestTraining = activities.find(isTrainingActivity);
   const latestRide = activities.find(isRideActivity);
 

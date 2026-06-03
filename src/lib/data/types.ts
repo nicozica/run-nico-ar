@@ -374,7 +374,7 @@ export interface RunDashboardData {
 
 export interface PacerActivity {
   id?: number;
-  source?: "strava" | "intervals";
+  source?: "intervals";
   sourceActivityId?: number;
   originalActivityId?: string | null;
   originalActivityUrl?: string | null;
@@ -404,7 +404,7 @@ export interface PacerActivity {
   kilojoules?: number;
   training_load?: number;
   device_name?: string | null;
-  // Strava route map — present on full activity objects
+  // Route map metadata can be present on full activity objects.
   map?: {
     summary_polyline?: string;
   };
@@ -430,7 +430,7 @@ export interface PacerExport {
 
 export interface ActivityLogItem {
   id: number | null;
-  source: "strava" | "intervals";
+  source: "intervals";
   sourceActivityId?: number | null;
   originalActivityId?: string | null;
   rawActivityName?: string | null;
@@ -457,7 +457,6 @@ export interface ActivityLogItem {
   deviceName?: string | null;
   routeSvgPoints?: string | null;
   sourceActivityUrl?: string | null;
-  stravaUrl: string | null;
 }
 
 export interface ActivityLogExport {

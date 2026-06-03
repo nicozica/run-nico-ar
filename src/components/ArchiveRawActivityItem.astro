@@ -8,16 +8,10 @@ interface Props {
 }
 
 const { activity, meta } = Astro.props;
-const activityUrl = activity.sourceActivityUrl ?? activity.stravaUrl;
 ---
 
 <li class="archive-item archive-item--raw">
-  <a
-    class="archive-item__link"
-    href={activityUrl ?? undefined}
-    target={activityUrl ? "_blank" : undefined}
-    rel={activityUrl ? "noreferrer" : undefined}
-  >
+  <div class="archive-item__link">
     <div class="archive-item__header">
       <div class="archive-item__heading">
         <p class="archive-item__date">{activity.dateTimeLabel}</p>
@@ -40,5 +34,5 @@ const activityUrl = activity.sourceActivityUrl ?? activity.stravaUrl;
       {activity.routeSvgPoints && <span>{activity.sportType || activity.type}</span>}
       {meta.map((item) => <span>{item}</span>)}
     </div>
-  </a>
+  </div>
 </li>

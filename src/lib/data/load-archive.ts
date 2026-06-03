@@ -52,8 +52,6 @@ export interface ArchiveRawActivityCard {
   elevationGainM: number | null;
   averageSpeedKmh: number | null;
   routeSvgPoints: string | null;
-  sourceActivityUrl: string | null;
-  stravaUrl: string | null;
 }
 
 export type ArchiveActivityCard = ArchiveSessionCard | ArchiveRawActivityCard;
@@ -191,9 +189,7 @@ function toRawActivityCard(activity: ActivityLogItem): ArchiveRawActivityCard {
     averageSpeedKmh: typeof activity.averageSpeedMps === "number" && activity.averageSpeedMps > 0
       ? roundOneDecimal(activity.averageSpeedMps * 3.6)
       : null,
-    routeSvgPoints: activity.routeSvgPoints ?? null,
-    sourceActivityUrl: activity.sourceActivityUrl ?? activity.stravaUrl,
-    stravaUrl: activity.stravaUrl
+    routeSvgPoints: activity.routeSvgPoints ?? null
   };
 }
 

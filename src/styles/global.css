@@ -609,7 +609,7 @@ p {
 }
 
 /* Override global h1 text-transform: lowercase for the session title.
-   Session titles from Strava arrive as Title Case — render them as authored. */
+   Source activity titles arrive as Title Case — render them as authored. */
 .run-hero__title {
   max-width: 10ch;
   margin-top: 0.2rem;

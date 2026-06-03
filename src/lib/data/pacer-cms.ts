@@ -236,7 +236,7 @@ function normalizeSessionTypeTitle(sessionType: string | null | undefined): stri
     .trim();
 }
 
-function isGenericStravaTitle(title: string | null | undefined): boolean {
+function isGenericSourceTitle(title: string | null | undefined): boolean {
   const normalized = (title ?? "").trim();
 
   if (!normalized) {
@@ -254,7 +254,7 @@ export function selectEditorialSessionTitle(
   const normalizedTitle = (sourceTitle ?? "").trim();
   const normalizedSessionType = normalizeSessionTypeTitle(sessionType);
 
-  if (normalizedTitle && !isGenericStravaTitle(normalizedTitle)) {
+  if (normalizedTitle && !isGenericSourceTitle(normalizedTitle)) {
     return normalizedTitle;
   }
 
