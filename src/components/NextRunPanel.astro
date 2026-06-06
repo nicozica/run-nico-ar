@@ -11,7 +11,6 @@ const editorialTitlesByWorkoutType: Record<string, string> = {
   "Easy Run": "Easy aerobic miles",
   "Long Run": "Steady endurance work",
   Hills: "Strength on the climb",
-  Intervals: "Controlled speed work",
   "Interval Session": "Controlled speed work",
   Race: "Race day execution",
   "Recovery Run": "Keep it light",
@@ -29,7 +28,23 @@ function normalizeSessionLabel(value: string): string {
     .trim();
 }
 
-const workoutType = nextRun.workout?.type ?? null;
+function normalizeWorkoutType(value: string | null): string | null {
+  if (!value) {
+    return null;
+  }
+
+  const normalized = normalizeSessionLabel(value);
+  if (["interval", "interval run", "interval session", "intervals", "fartlek", "fartlek run"].includes(normalized)) {
+    return "Interval Session";
+  }
+  if (["threshold", "threshold run", "tempo session"].includes(normalized)) {
+    return "Tempo Session";
+  }
+
+  return value;
+}
+
+const workoutType = normalizeWorkoutType(nextRun.workout?.type ?? null);
 const shouldUseEditorialFallback = workoutType
   ? normalizeSessionLabel(nextRun.name) === normalizeSessionLabel(workoutType)
   : false;

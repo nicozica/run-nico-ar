@@ -229,11 +229,21 @@ function normalizeSessionTypeTitle(sessionType: string | null | undefined): stri
     return null;
   }
 
-  return normalized
+  const compact = normalized
     .replace(/\bSessions\b/gi, "Session")
     .replace(/\bRuns\b/gi, "Run")
     .replace(/\s+/g, " ")
     .trim();
+
+  const label = compact.toLowerCase();
+  if (["interval", "interval run", "interval session", "intervals", "fartlek", "fartlek run"].includes(label)) {
+    return "Interval Session";
+  }
+  if (["threshold", "threshold run"].includes(label)) {
+    return "Tempo Session";
+  }
+
+  return compact;
 }
 
 function isGenericSourceTitle(title: string | null | undefined): boolean {
