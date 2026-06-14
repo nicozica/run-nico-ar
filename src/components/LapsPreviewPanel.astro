@@ -29,13 +29,13 @@ const laps = latestSession.laps.filter((lap) => lap.distanceKm !== null && lap.d
         <colgroup>
           <col class="lap-table__col lap-table__col--num" />
           <col class="lap-table__col lap-table__col--pace" />
-          <col class="lap-table__col lap-table__col--time" />
+          <col class="lap-table__col lap-table__col--hr" />
         </colgroup>
         <thead>
           <tr>
             <th><span class="lap-table__th-label">#</span></th>
             <th><span class="lap-table__th-label">Pace</span></th>
-            <th><span class="lap-table__th-label">Time</span></th>
+            <th><span class="lap-table__th-label">HR</span></th>
           </tr>
         </thead>
       </table>
@@ -46,14 +46,14 @@ const laps = latestSession.laps.filter((lap) => lap.distanceKm !== null && lap.d
         <colgroup>
           <col class="lap-table__col lap-table__col--num" />
           <col class="lap-table__col lap-table__col--pace" />
-          <col class="lap-table__col lap-table__col--time" />
+          <col class="lap-table__col lap-table__col--hr" />
         </colgroup>
         <tbody>
           {laps.map((lap) => (
             <tr>
               <td class="lap-table__num">{lap.lapNumber}</td>
               <td>{lap.paceLabel ?? "—"}</td>
-              <td>{lap.durationLabel}</td>
+              <td>{lap.averageHeartRate === null ? "—" : lap.averageHeartRate}</td>
             </tr>
           ))}
         </tbody>
