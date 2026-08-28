@@ -19,5 +19,12 @@
     "date": "2026-08-23",
     "distanceKm": 21.1,
     "priority": "A"
+  },
+  {
+    "slug": "maraton",
+    "title": "Maratón de Buenos Aires",
+    "date": "2026-09-20",
+    "distanceKm": 42.195,
+    "priority": "A"
   }
 ]
