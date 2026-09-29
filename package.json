@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "node --experimental-strip-types scripts/prepare-data.ts && astro dev",
-    "build": "node --experimental-strip-types scripts/prepare-data.ts && astro build",
+    "build": "tsx scripts/prepare-data.ts && astro build",
     "preview": "astro preview",
     "check": "astro check",
     "deploy:preview": "bash scripts/deploy-preview.sh",
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
     "@types/node": "^24.0.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.8.2"
   }
 }
